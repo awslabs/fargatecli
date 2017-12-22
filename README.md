@@ -22,7 +22,7 @@ applications.
 ### Services
 
 - fargate service list
-- fargate service create APPNAME [--cpu UNITS] [--memory GB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate service create APPNAME [--cpu UNITS] [--memory MiB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE]
 - fargate service deploy APPNAME [--image DOCKERIMAGE]
 - fargate service info APPNAME
 - fargate service logs APPNAME [--tail] [--num LINES]
@@ -31,7 +31,7 @@ applications.
 - fargate service env set APPNAME --env KEY=VALUE
 - fargate service env unset APPNAME --key KEYNAME
 - fargate service env list APPNAME
-- fargate service update APPNAME [--cpu UNITS] [--memory GB]
+- fargate service update APPNAME [--cpu UNITS] [--memory MiB]
 - fargate service restart APPNAME
 - fargate service destroy APPNAME
 

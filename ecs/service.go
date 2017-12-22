@@ -17,6 +17,18 @@ type CreateServiceInput struct {
 	TaskDefinitionArn string
 }
 
+type Service struct {
+	Name           string
+	Cluster        string
+	Image          string
+	Cpu            string
+	Memory         string
+	DesiredCount   int64
+	RunningCount   int64
+	PendingCount   int64
+	TargetGroupArn string
+}
+
 func (ecs *ECS) CreateService(input *CreateServiceInput) {
 	console.Debug("Creating ECS service")
 
@@ -105,4 +117,79 @@ func (ecs *ECS) DestroyService(serviceName string) {
 	if err != nil {
 		console.ErrorExit(err, "Could not destroy ECS service")
 	}
+}
+
+func (ecs *ECS) ListServices() []Service {
+	var serviceArnBatches [][]string
+	var services []Service
+
+	err := ecs.svc.ListServicesPages(
+		&awsecs.ListServicesInput{
+			Cluster:    aws.String(clusterName),
+			LaunchType: aws.String(awsecs.CompatibilityFargate),
+		},
+
+		func(resp *awsecs.ListServicesOutput, lastPage bool) bool {
+			serviceArnBatches = append(serviceArnBatches, aws.StringValueSlice(resp.ServiceArns))
+
+			return true
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not list ECS services")
+	}
+
+	for _, serviceArnBatch := range serviceArnBatches {
+		resp, err := ecs.svc.DescribeServices(
+			&awsecs.DescribeServicesInput{
+				Cluster:  aws.String(clusterName),
+				Services: aws.StringSlice(serviceArnBatch),
+			},
+		)
+
+		if err != nil {
+			console.ErrorExit(err, "Could not describe ECS service")
+		}
+
+		for _, service := range resp.Services {
+			s := Service{
+				Name:         aws.StringValue(service.ServiceName),
+				DesiredCount: aws.Int64Value(service.DesiredCount),
+				PendingCount: aws.Int64Value(service.PendingCount),
+				RunningCount: aws.Int64Value(service.RunningCount),
+			}
+
+			if len(service.LoadBalancers) > 0 {
+				s.TargetGroupArn = aws.StringValue(service.LoadBalancers[0].TargetGroupArn)
+			}
+
+			taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))
+
+			s.Cpu = aws.StringValue(taskDefinition.Cpu)
+			s.Memory = aws.StringValue(taskDefinition.Memory)
+
+			if len(taskDefinition.ContainerDefinitions) > 0 {
+				s.Image = aws.StringValue(taskDefinition.ContainerDefinitions[0].Image)
+			}
+
+			services = append(services, s)
+		}
+	}
+
+	return services
+}
+
+func (ecs *ECS) DescribeTaskDefinition(taskDefinitionArn string) *awsecs.TaskDefinition {
+	resp, err := ecs.svc.DescribeTaskDefinition(
+		&awsecs.DescribeTaskDefinitionInput{
+			TaskDefinition: aws.String(taskDefinitionArn),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not describe ECS task definition")
+	}
+
+	return resp.TaskDefinition
 }
