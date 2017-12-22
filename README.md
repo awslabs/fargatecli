@@ -22,40 +22,40 @@ applications.
 ### Services
 
 - fargate service list
-- fargate service create APPNAME
-- fargate service deploy APPNAME
+- fargate service create APPNAME [--cpu UNITS] [--memory GB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate service deploy APPNAME [--image DOCKERIMAGE]
 - fargate service info APPNAME
-- fargate service logs APPNAME
+- fargate service logs APPNAME [--tail] [--num LINES]
 - fargate service ps APPNAME
-- fargate service scale APPNAME
-- fargate service env set APPNAME
-- fargate service env unset APPNAME
+- fargate service scale APPNAME SCALEEXPRESSION
+- fargate service env set APPNAME --env KEY=VALUE
+- fargate service env unset APPNAME --key KEYNAME
 - fargate service env list APPNAME
-- fargate service update APPNAME
+- fargate service update APPNAME [--cpu UNITS] [--memory GB]
 - fargate service restart APPNAME
-- fargate service destory APPNAME
+- fargate service destroy APPNAME
 
 ### Tasks
 
 - fargate task list
-- fargate task start TASKNAME
+- fargate task start TASKNAME [--count TASKS] [--cpu UNITS] [--memory GB] [--image DOCKERIMAGE] [--env KEY=VALUE]
 - fargate task stop TASKNAME
-- fargate task logs TASKNAME
+- fargate task logs TASKNAME [--tail] [--num LINES]
 - fargate task ps TASKNAME
 - fargate task info TASKNAME
 
 ### Certificates
 
 - fargate certificate list
-- fargate certificate import CERTNAME
-- fargate certificate request CERTNAME
-- fargate certificate info CERTNAME
-- fargate certificate validate CERTNAME
-- fargate certificate destroy CERTNAME
+- fargate certificate import DOMAINNAME --certificate FILE --key FILE [--chain FILE]
+- fargate certificate request DOMAINNAME
+- fargate certificate info DOMAINNAME
+- fargate certificate validate DOMAINNAME
+- fargate certificate destroy DOMAINNAME
 
 ## Load Balancers
 
 - fargate lb list
-- fargate lb create LBNAME
+- fargate lb create LBNAME --type LBTYPE --port PORTEXPRESSION [--certificate DOMAINNAME]
 - fargate lb destroy LBNAME
-- fargate lb alias <load balancer name> <hostname>
+- fargate lb alias LBNAME HOSTNAME
