@@ -12,7 +12,6 @@ import (
 
 func GetShortSha() string {
 	console.Debug("Finding git HEAD short SHA")
-	console.Shell("git rev-parse --short HEAD")
 
 	buf := new(bytes.Buffer)
 	cmd := exec.Command("git", "rev-parse", "--short", "HEAD")
@@ -39,7 +38,6 @@ func GetShortSha() string {
 
 func IsCwdGitRepo() bool {
 	console.Debug("Checking if current working directory is a git repository")
-	console.Shell("git rev-parse --is-inside-work-tree")
 
 	cmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
 

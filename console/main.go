@@ -49,9 +49,7 @@ func Debug(msg string, a ...interface{}) {
 }
 
 func Shell(msg string, a ...interface{}) {
-	if Verbose {
-		fmt.Fprintf(os.Stdout, shell+green+msg+reset+"\n", a...)
-	}
+	fmt.Fprintf(os.Stdout, shell+green+msg+reset+"\n", a...)
 }
 
 func Issue(msg string, a ...interface{}) {
