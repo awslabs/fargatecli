@@ -56,6 +56,6 @@ applications.
 ## Load Balancers
 
 - fargate lb list
-- fargate lb create LBNAME --type LBTYPE --port PORTEXPRESSION [--certificate DOMAINNAME]
+- fargate lb create LBNAME --port PORTEXPRESSION [--certificate DOMAINNAME]
 - fargate lb destroy LBNAME
 - fargate lb alias LBNAME HOSTNAME

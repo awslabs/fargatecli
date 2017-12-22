@@ -32,7 +32,7 @@ var lbCreateCmd = &cobra.Command{
 		normalizeFields()
 		getCertificateArns()
 		validatePorts()
-		validateType()
+		inferType()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		createLb(args[0])
@@ -41,7 +41,6 @@ var lbCreateCmd = &cobra.Command{
 
 func init() {
 	lbCreateCmd.Flags().StringSliceVarP(&certificateDomainNames, "certificate", "c", []string{}, "Name of certificate to add (can be specified multiple times)")
-	lbCreateCmd.Flags().StringVarP(&lbType, "type", "t", "application", "Type of load balancer [application, network]")
 	lbCreateCmd.Flags().StringSliceVarP(&portsRaw, "port", "p", []string{}, "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)
@@ -68,6 +67,7 @@ func getCertificateArns() {
 
 func validatePorts() {
 	var msgs []string
+	var protocols []string
 
 	for _, port := range ports {
 		if !validProtocols.MatchString(port.Protocol) {
@@ -78,27 +78,37 @@ func validatePorts() {
 			msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
 		}
 
-		if port.Protocol == "TCP" && lbType == "application" {
-			msgs = append(msgs, "application load balancer only supports HTTP and HTTPS protocols")
+		if port.Protocol == "TCP" {
+			for _, protocol := range protocols {
+				if protocol == "HTTP" || protocol == "HTTPS" {
+					msgs = append(msgs, "load balancers do not support comingled groups of TCP and HTTP/HTTPS ports")
+				}
+			}
 		}
 
-		if port.Protocol != "TCP" && lbType == "network" {
-			msgs = append(msgs, "network load balancer only supports TCP protocol")
-		}
-
-		if port.Protocol == "HTTPS" && len(certificateDomainNames) == 0 {
-			msgs = append(msgs, "HTTPS protocol requires certificate")
+		if port.Protocol == "HTTP" || port.Protocol == "HTTPS" {
+			for _, protocol := range protocols {
+				if protocol == "TCP" {
+					msgs = append(msgs, "load balancers do not support comingled groups of TCP and HTTP/HTTPS ports")
+				}
+			}
 		}
 
 		if len(msgs) > 0 {
 			console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
 		}
+
+		protocols = append(protocols, port.Protocol)
 	}
 }
 
-func validateType() {
-	if !validTypes.MatchString(lbType) {
-		console.ErrorExit(fmt.Errorf("Invalid type %s [specify application or network]", lbType), "Invalid command line flags")
+func inferType() {
+	if ports[0].Protocol == "HTTP" || ports[0].Protocol == "HTTPS" {
+		lbType = "application"
+	} else if ports[0].Protocol == "TCP" {
+		lbType = "network"
+	} else {
+		console.ErrorExit(fmt.Errorf("Could not infer type; check port settings"), "Invalid command line flags")
 	}
 }
 
