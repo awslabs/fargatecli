@@ -3,8 +3,8 @@ package service
 import "testing"
 
 var validateCpuAndMemoryTests = []struct {
-	CpuUnits  int64
-	Mebibytes int64
+	CpuUnits  int16
+	Mebibytes int16
 	Out       error
 }{
 	// 0.25 vCpu
@@ -20,8 +20,8 @@ var validateCpuAndMemoryTests = []struct {
 	{512, 1024, nil},
 	{512, 2048, nil},
 	{512, 3072, nil},
+	{512, 4096, nil},
 	{512, 512, InvalidCpuAndMemoryCombination},
-	{512, 4096, InvalidCpuAndMemoryCombination},
 
 	// 1 vCpu
 	{1024, 2048, nil},
@@ -54,7 +54,7 @@ func TestValidateCpuAndMemoryWithValidParameters(t *testing.T) {
 }
 
 func TestValidateCpuAndMemoryWithInvalidParameters(t *testing.T) {
-	err := ValidateCpuAndMemory(5, 2384903284982349)
+	err := ValidateCpuAndMemory(5, 23849)
 
 	if err == nil {
 		t.Errorf("Validation failed, got nil, want %s", InvalidCpuAndMemoryCombination)
@@ -66,7 +66,7 @@ func TestValidateCpuAndMemory(t *testing.T) {
 		s := ValidateCpuAndMemory(test.CpuUnits, test.Mebibytes)
 
 		if s != test.Out {
-			t.Errorf("ValidateCpuAndMemory(%s, %s) => %s, want %s", test.CpuUnits, test.Mebibytes, s, test.Out)
+			t.Errorf("ValidateCpuAndMemory(%d, %d) => %#v, want %s", test.CpuUnits, test.Mebibytes, s, test.Out)
 		}
 	}
 }
