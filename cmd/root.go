@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -89,34 +88,4 @@ func inflatePorts(src []string) (ports []Port) {
 	}
 
 	return
-}
-
-func validatePorts() {
-	var msgs []string
-
-	for _, port := range ports {
-		if !validProtocols.MatchString(port.Protocol) {
-			msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
-		}
-
-		if port.Port < 1 || port.Port > 65535 {
-			msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
-		}
-
-		if port.Protocol == "TCP" && lbType == "application" {
-			msgs = append(msgs, "application load balancer only supports HTTP and HTTPS protocols")
-		}
-
-		if port.Protocol != "TCP" && lbType == "network" {
-			msgs = append(msgs, "network load balancer only supports TCP protocol")
-		}
-
-		if port.Protocol == "HTTPS" && len(certificateDomainNames) == 0 {
-			msgs = append(msgs, "HTTPS protocol requires certificate")
-		}
-
-		if len(msgs) > 0 {
-			console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
-		}
-	}
 }

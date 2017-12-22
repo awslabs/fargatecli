@@ -38,7 +38,7 @@ var serviceCreateCmd = &cobra.Command{
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if portRaw != "" {
 			port = inflatePort(portRaw)
-			validatePorts()
+			validatePort()
 		}
 
 		if lbName != "" {
@@ -83,6 +83,24 @@ func validateLb() {
 	}
 
 	lbArn = loadBalancer.Arn
+}
+
+func validatePort() {
+	var msgs []string
+
+	for _, port := range ports {
+		if !validProtocols.MatchString(port.Protocol) {
+			msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
+		}
+
+		if port.Port < 1 || port.Port > 65535 {
+			msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
+		}
+
+		if len(msgs) > 0 {
+			console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
+		}
+	}
 }
 
 func validateAndExtractRules() {
