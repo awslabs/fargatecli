@@ -36,13 +36,18 @@ var serviceCreateCmd = &cobra.Command{
 	Use:  "create <service name>",
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
-		port = inflatePort(portRaw)
+		if portRaw != "" {
+			port = inflatePort(portRaw)
+			validatePorts()
+		}
+
+		if lbName != "" {
+			validateLb()
+		}
 
 		validateCpuAndMemory()
-		validatePorts()
 		extractEnvVars()
 		validateAndExtractRules()
-		validateLb()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		createService(args[0])
