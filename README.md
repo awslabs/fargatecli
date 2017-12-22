@@ -58,3 +58,4 @@ applications.
 - fargate lb list
 - fargate lb create LBNAME
 - fargate lb destroy LBNAME
+- fargate lb alias <load balancer name> <hostname>
