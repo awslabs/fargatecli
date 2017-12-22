@@ -44,25 +44,27 @@ func validateScale(scale string) {
 }
 
 func setDesiredCount(serviceName, scale string) {
-	if s, err := strconv.ParseInt(scale, 10, 64); err == nil {
-		desiredCount = s
-		return
+	if scale[0] == '+' || scale[0] == '-' {
+		if s, err := strconv.ParseInt(scale[1:len(scale)], 10, 64); err == nil {
+			ecs := ECS.New()
+			desiredCount = ecs.GetDesiredCount(serviceName)
+
+			if scale[0] == '+' {
+				desiredCount = desiredCount + s
+			} else if scale[0] == '-' {
+				desiredCount = desiredCount - s
+
+				if desiredCount < 0 {
+					console.ErrorExit(fmt.Errorf("requested scale %d < 0", desiredCount), "Invalid command line argument")
+				}
+			}
+
+			return
+		}
 	}
 
-	if s, err := strconv.ParseInt(scale[1:len(scale)], 10, 64); err == nil {
-		ecs := ECS.New()
-		desiredCount = ecs.GetDesiredCount(serviceName)
-
-		if scale[0] == '+' {
-			desiredCount = desiredCount + s
-		} else if scale[0] == '-' {
-			desiredCount = desiredCount - s
-
-			if desiredCount < 0 {
-				console.ErrorExit(fmt.Errorf("requested scale %d < 0", desiredCount), "Invalid command line argument")
-			}
-		}
-
+	if s, err := strconv.ParseInt(scale, 10, 64); err == nil {
+		desiredCount = s
 		return
 	}
 
