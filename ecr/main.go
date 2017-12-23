@@ -1,26 +1,16 @@
 package ecr
 
 import (
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws/session"
-	awsecr "github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/fatih/color"
+	"github.com/aws/aws-sdk-go/service/ecr"
 )
 
 type ECR struct {
-	svc *awsecr.ECR
+	svc *ecr.ECR
 }
 
-func New() ECR {
-	sess, err := session.NewSession()
-
-	if err != nil {
-		color.Red("Error creating ECR session: ", err)
-		os.Exit(1)
-	}
-
+func New(sess *session.Session) ECR {
 	return ECR{
-		svc: awsecr.New(sess),
+		svc: ecr.New(sess),
 	}
 }

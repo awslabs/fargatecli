@@ -38,7 +38,7 @@ func init() {
 func createCertificate(domainName string) {
 	console.Info("Requesting certificate [%s]", domainName)
 
-	acm := ACM.New()
+	acm := ACM.New(sess)
 	acm.RequestCertificate(domainName, aliases)
 
 	console.Info("[%s] You must validate ownership of the domain name for the certificate to be issued", domainName)

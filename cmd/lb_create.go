@@ -51,7 +51,7 @@ func normalizeFields() {
 }
 
 func getCertificateArns() {
-	acm := ACM.New()
+	acm := ACM.New(sess)
 
 	for _, certificateDomainName := range certificateDomainNames {
 		certificate := acm.DescribeCertificate(certificateDomainName)
@@ -115,8 +115,8 @@ func inferType() {
 func createLb(lbName string) {
 	console.Info("Creating load balancer [%s]", lbName)
 
-	elbv2 := ELBV2.New()
-	ec2 := EC2.New()
+	elbv2 := ELBV2.New(sess)
+	ec2 := EC2.New(sess)
 
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
 	vpcId := ec2.GetDefaultVpcId()

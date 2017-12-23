@@ -36,8 +36,8 @@ func init() {
 func validateCertificate(domainName string) {
 	console.Info("Validating certificate [%s]", domainName)
 
-	route53 := Route53.New()
-	acm := ACM.New()
+	route53 := Route53.New(sess)
+	acm := ACM.New(sess)
 
 	hostedZones := route53.ListHostedZones()
 	certificate := acm.DescribeCertificate(domainName)

@@ -19,6 +19,7 @@ type CreateTaskDefinitionInput struct {
 	Name             string
 	Port             int64
 	LogGroupName     string
+	LogRegion        string
 }
 
 func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
@@ -27,7 +28,7 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 	logConfiguration := &awsecs.LogConfiguration{
 		LogDriver: aws.String(awsecs.LogDriverAwslogs),
 		Options: map[string]*string{
-			"awslogs-region":        ecs.Region(),
+			"awslogs-region":        aws.String(input.LogRegion),
 			"awslogs-group":         aws.String(input.LogGroupName),
 			"awslogs-stream-prefix": aws.String(logStreamPrefix),
 		},

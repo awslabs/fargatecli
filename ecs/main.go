@@ -1,32 +1,17 @@
 package ecs
 
 import (
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws/session"
-	awsecs "github.com/aws/aws-sdk-go/service/ecs"
-	"github.com/fatih/color"
+	"github.com/aws/aws-sdk-go/service/ecs"
 )
 
 type ECS struct {
-	svc  *awsecs.ECS
+	svc  *ecs.ECS
 	sess *session.Session
 }
 
-func New() ECS {
-	sess, err := session.NewSession()
-
-	if err != nil {
-		color.Red("Error creating ECS session: ", err)
-		os.Exit(1)
-	}
-
+func New(sess *session.Session) ECS {
 	return ECS{
-		svc:  awsecs.New(sess),
-		sess: sess,
+		svc: ecs.New(sess),
 	}
-}
-
-func (ecs *ECS) Region() *string {
-	return ecs.sess.Config.Region
 }

@@ -58,7 +58,7 @@ func validateCertificateAndKeyFiles() {
 func importCertificate() {
 	console.Info("Importing certificate")
 
-	acm := ACM.New()
+	acm := ACM.New(sess)
 
 	certificateData, err := ioutil.ReadFile(certificateFile)
 

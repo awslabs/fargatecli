@@ -26,7 +26,7 @@ func init() {
 }
 
 func infoCertificate(domainName string) {
-	acm := ACM.New()
+	acm := ACM.New(sess)
 	certificate := acm.DescribeCertificate(domainName)
 
 	console.KeyValue("Domain Name", "%s\n", certificate.DomainName)

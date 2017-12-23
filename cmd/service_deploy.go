@@ -26,13 +26,13 @@ func init() {
 func deployService(serviceName string) {
 	console.Info("Deploying %s", serviceName)
 
-	ecs := ECS.New()
+	ecs := ECS.New(sess)
 	service := ecs.DescribeService(serviceName)
 
 	if image == "" {
 		var tag string
 
-		ecr := ECR.New()
+		ecr := ECR.New(sess)
 		repositoryUri := ecr.GetRepositoryUri(serviceName)
 		repository := docker.Repository{
 			Uri: repositoryUri,

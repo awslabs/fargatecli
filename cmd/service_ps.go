@@ -28,8 +28,8 @@ func init() {
 func psService(serviceName string) {
 	var eniIds []string
 
-	ecs := ECS.New()
-	ec2 := EC2.New()
+	ecs := ECS.New(sess)
+	ec2 := EC2.New(sess)
 	tasks := ecs.DescribeTasksForService(serviceName)
 
 	for _, task := range tasks {

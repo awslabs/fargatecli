@@ -1,26 +1,16 @@
 package iam
 
 import (
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws/session"
-	awsiam "github.com/aws/aws-sdk-go/service/iam"
-	"github.com/fatih/color"
+	"github.com/aws/aws-sdk-go/service/iam"
 )
 
 type IAM struct {
-	svc *awsiam.IAM
+	svc *iam.IAM
 }
 
-func New() IAM {
-	sess, err := session.NewSession()
-
-	if err != nil {
-		color.Red("Error creating IAM session: ", err)
-		os.Exit(1)
-	}
-
+func New(sess *session.Session) IAM {
 	return IAM{
-		svc: awsiam.New(sess),
+		svc: iam.New(sess),
 	}
 }

@@ -23,7 +23,7 @@ func init() {
 }
 
 func listServices() {
-	ecs := ECS.New()
+	ecs := ECS.New(sess)
 	services := ecs.ListServices()
 
 	if len(services) > 0 {

@@ -22,6 +22,6 @@ func init() {
 func destroyCertificate(domainName string) {
 	console.Info("[%s] Destroying certificate", domainName)
 
-	acm := ACM.New()
+	acm := ACM.New(sess)
 	acm.DeleteCertificate(domainName)
 }

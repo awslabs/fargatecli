@@ -28,8 +28,8 @@ func init() {
 func infoService(serviceName string) {
 	var eniIds []string
 
-	ecs := ECS.New()
-	ec2 := EC2.New()
+	ecs := ECS.New(sess)
+	ec2 := EC2.New(sess)
 	service := ecs.DescribeService(serviceName)
 	tasks := ecs.DescribeTasksForService(serviceName)
 

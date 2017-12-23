@@ -36,7 +36,7 @@ func init() {
 }
 
 func listCertificates() {
-	acm := ACM.New()
+	acm := ACM.New(sess)
 	certificates := acm.ListCertificates()
 
 	if len(certificates) > 0 {

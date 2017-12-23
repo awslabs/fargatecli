@@ -36,7 +36,7 @@ func init() {
 }
 
 func listLoadBalancers() {
-	elbv2 := ELBV2.New()
+	elbv2 := ELBV2.New(sess)
 	loadBalancers := elbv2.DescribeLoadBalancers([]string{})
 
 	if len(loadBalancers) > 0 {

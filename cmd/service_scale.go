@@ -46,7 +46,7 @@ func validateScale(scale string) {
 func setDesiredCount(serviceName, scale string) {
 	if scale[0] == '+' || scale[0] == '-' {
 		if s, err := strconv.ParseInt(scale[1:len(scale)], 10, 64); err == nil {
-			ecs := ECS.New()
+			ecs := ECS.New(sess)
 			desiredCount = ecs.GetDesiredCount(serviceName)
 
 			if scale[0] == '+' {
@@ -74,6 +74,6 @@ func setDesiredCount(serviceName, scale string) {
 func scaleService(serviceName string) {
 	console.Info("Scaling service %s to %d", serviceName, desiredCount)
 
-	ecs := ECS.New()
+	ecs := ECS.New(sess)
 	ecs.SetDesiredCount(serviceName, desiredCount)
 }

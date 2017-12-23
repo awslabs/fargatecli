@@ -22,7 +22,7 @@ func init() {
 func destroyLoadBalancer(domainName string) {
 	console.Info("[%s] Destroying load balancer", domainName)
 
-	elbv2 := ELBV2.New()
+	elbv2 := ELBV2.New(sess)
 	elbv2.DeleteLoadBalancer(domainName)
 	elbv2.DeleteTargetGroup(domainName + "-" + "default")
 }

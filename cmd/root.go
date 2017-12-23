@@ -1,34 +1,66 @@
 package cmd
 
 import (
+	"os"
 	"strconv"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/jpignata/fargate/console"
 	"github.com/spf13/cobra"
 )
 
-const version = "0.0.1"
+const (
+	version       = "0.0.1"
+	defaultRegion = "us-east-1"
+)
 
 type Port struct {
 	Port     int64
 	Protocol string
 }
 
-var verbose bool
+var (
+	region  string
+	verbose bool
+	sess    *session.Session
+)
 
 var rootCmd = &cobra.Command{
 	Use: "fargate",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		envAwsRegion := os.Getenv("AWS_REGION")
+		envAwsDefaultRegion := os.Getenv("AWS_DEFAULT_REGION")
+
 		if verbose {
 			verbose = true
 			console.Verbose = true
 		}
+
+		if region == "" {
+			if envAwsDefaultRegion != "" {
+				region = envAwsDefaultRegion
+			} else if envAwsRegion != "" {
+				region = envAwsDefaultRegion
+			} else {
+				region = defaultRegion
+			}
+		}
+
+		sess = session.Must(
+			session.NewSession(
+				&aws.Config{
+					Region: aws.String(region),
+				},
+			),
+		)
 	},
 }
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	rootCmd.PersistentFlags().StringVarP(&region, "region", "r", "", "AWS Region (defaults to us-east-1)")
 }
 
 func Execute() {

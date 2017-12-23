@@ -70,7 +70,7 @@ func init() {
 }
 
 func validateLb() {
-	elbv2 := ELBV2.New()
+	elbv2 := ELBV2.New(sess)
 	loadBalancer := elbv2.DescribeLoadBalancer(lbName)
 
 	if loadBalancer.Type == "network" {
@@ -166,12 +166,12 @@ func extractEnvVars() {
 func createService(serviceName string) {
 	console.Info("Creating %s", serviceName)
 
-	cwl := CWL.New()
-	ec2 := EC2.New()
-	ecr := ECR.New()
-	ecs := ECS.New()
-	elbv2 := ELBV2.New()
-	iam := IAM.New()
+	cwl := CWL.New(sess)
+	ec2 := EC2.New(sess)
+	ecr := ECR.New(sess)
+	ecs := ECS.New(sess)
+	elbv2 := ELBV2.New(sess)
+	iam := IAM.New(sess)
 
 	var (
 		targetGroupArn string
@@ -240,6 +240,7 @@ func createService(serviceName string) {
 			Name:             serviceName,
 			Port:             port.Port,
 			LogGroupName:     logGroupName,
+			LogRegion:        region,
 		},
 	)
 	ecs.CreateService(
