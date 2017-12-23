@@ -13,7 +13,7 @@ import (
 )
 
 var serviceInfoCmd = &cobra.Command{
-	Use:   "info <domain name>",
+	Use:   "info <service name>",
 	Short: "Display information about a service",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
