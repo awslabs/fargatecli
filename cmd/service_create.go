@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	CWL "github.com/jpignata/fargate/cloudwatchlogs"
 	"github.com/jpignata/fargate/console"
 	"github.com/jpignata/fargate/docker"
 	EC2 "github.com/jpignata/fargate/ec2"
@@ -17,6 +18,8 @@ import (
 	"github.com/jpignata/fargate/service"
 	"github.com/spf13/cobra"
 )
+
+const logGroupFormat = "/fargate/service/%s"
 
 var validRuleTypes = regexp.MustCompile("(?i)^host|path$")
 
@@ -163,21 +166,31 @@ func extractEnvVars() {
 func createService(serviceName string) {
 	console.Info("Creating %s", serviceName)
 
+	cwl := CWL.New()
 	ec2 := EC2.New()
 	ecr := ECR.New()
 	ecs := ECS.New()
 	elbv2 := ELBV2.New()
 	iam := IAM.New()
 
-	var targetGroupArn string
+	var (
+		targetGroupArn string
+		repositoryUri  string
+	)
+
+	if ecr.IsRepositoryCreated(serviceName) {
+		repositoryUri = ecr.GetRepositoryUri(serviceName)
+	} else {
+		repositoryUri = ecr.CreateRepository(serviceName)
+	}
 
 	clusterName := ecs.CreateCluster()
-	repositoryUri := ecr.CreateRepository(serviceName)
 	repository := docker.Repository{
 		Uri: repositoryUri,
 	}
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
+	logGroupName := cwl.CreateLogGroup(logGroupFormat, serviceName)
 
 	if image == "" {
 		var tag string
@@ -226,6 +239,7 @@ func createService(serviceName string) {
 			Memory:           strconv.FormatInt(int64(memory), 10),
 			Name:             serviceName,
 			Port:             port.Port,
+			LogGroupName:     logGroupName,
 		},
 	)
 	ecs.CreateService(

@@ -24,6 +24,10 @@ func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
 	var tasks []Task
 	taskArns := ecs.ListTasksForService(serviceName)
 
+	if len(taskArns) == 0 {
+		return tasks
+	}
+
 	resp, err := ecs.svc.DescribeTasks(
 		&awsecs.DescribeTasksInput{
 			Cluster: aws.String(clusterName),

@@ -6,6 +6,8 @@ import (
 	"github.com/jpignata/fargate/console"
 )
 
+const logStreamPrefix = "fargate"
+
 var taskDefinitionCache = make(map[string]*awsecs.TaskDefinition)
 
 type CreateTaskDefinitionInput struct {
@@ -16,22 +18,27 @@ type CreateTaskDefinitionInput struct {
 	Memory           string
 	Name             string
 	Port             int64
+	LogGroupName     string
 }
 
 func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 	console.Debug("Creating ECS task definition")
 
-	const essential = true
-	const launchType = "FARGATE"
-	const networkMode = "awsvpc"
-
-	compatbilities := []string{launchType}
+	logConfiguration := &awsecs.LogConfiguration{
+		LogDriver: aws.String(awsecs.LogDriverAwslogs),
+		Options: map[string]*string{
+			"awslogs-region":        ecs.Region(),
+			"awslogs-group":         aws.String(input.LogGroupName),
+			"awslogs-stream-prefix": aws.String(logStreamPrefix),
+		},
+	}
 
 	containerDefinition := &awsecs.ContainerDefinition{
-		Name:        aws.String(input.Name),
-		Essential:   aws.Bool(essential),
-		Image:       aws.String(input.Image),
-		Environment: input.Environment(),
+		Name:             aws.String(input.Name),
+		Essential:        aws.Bool(true),
+		Image:            aws.String(input.Image),
+		Environment:      input.Environment(),
+		LogConfiguration: logConfiguration,
 	}
 
 	if input.Port != 0 {
@@ -47,9 +54,9 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 	resp, err := ecs.svc.RegisterTaskDefinition(
 		&awsecs.RegisterTaskDefinitionInput{
 			Family:                  aws.String(input.Name),
-			RequiresCompatibilities: aws.StringSlice(compatbilities),
+			RequiresCompatibilities: aws.StringSlice([]string{awsecs.CompatibilityFargate}),
 			ContainerDefinitions:    []*awsecs.ContainerDefinition{containerDefinition},
-			NetworkMode:             aws.String(networkMode),
+			NetworkMode:             aws.String(awsecs.NetworkModeAwsvpc),
 			Memory:                  aws.String(input.Memory),
 			Cpu:                     aws.String(input.Cpu),
 			ExecutionRoleArn:        aws.String(input.ExecutionRoleArn),

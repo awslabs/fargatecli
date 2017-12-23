@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	awsecr "github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/jpignata/fargate/console"
 )
@@ -24,6 +25,29 @@ func (ecr *ECR) CreateRepository(repositoryName string) string {
 
 	console.Debug("Created Amazon ECR repository [%s]", *resp.Repository.RepositoryName)
 	return aws.StringValue(resp.Repository.RepositoryUri)
+}
+
+func (ecr *ECR) IsRepositoryCreated(repositoryName string) bool {
+	resp, err := ecr.svc.DescribeRepositories(
+		&awsecr.DescribeRepositoriesInput{
+			RepositoryNames: aws.StringSlice([]string{repositoryName}),
+		},
+	)
+
+	if err != nil {
+		if awsErr, ok := err.(awserr.Error); ok {
+			switch awsErr.Code() {
+			case awsecr.ErrCodeRepositoryNotFoundException:
+				return false
+			default:
+				console.ErrorExit(awsErr, "Could not create Cloudwatch Logs log group")
+			}
+		}
+
+		console.ErrorExit(err, "Couldn't describe Amazon ECR repositories")
+	}
+
+	return len(resp.Repositories) == 1
 }
 
 func (ecr *ECR) GetRepositoryUri(repositoryName string) string {

@@ -37,8 +37,6 @@ func infoService(serviceName string) {
 		eniIds = append(eniIds, task.EniId)
 	}
 
-	enis := ec2.DescribeNetworkInterfaces(eniIds)
-
 	console.KeyValue("Service Name", "%s\n", serviceName)
 	console.KeyValue("Status", "\n")
 	console.KeyValue("  Desired", "%d\n", service.DesiredCount)
@@ -51,6 +49,7 @@ func infoService(serviceName string) {
 	if len(tasks) > 0 {
 		console.Header("== Tasks ==")
 
+		enis := ec2.DescribeNetworkInterfaces(eniIds)
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
 		fmt.Fprintln(w, "IMAGE\tSTATUS\tDESIRED STATUS\tCREATED\tIP\tCPU\tMEMORY\t")

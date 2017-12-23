@@ -9,7 +9,8 @@ import (
 )
 
 type ECS struct {
-	svc *awsecs.ECS
+	svc  *awsecs.ECS
+	sess *session.Session
 }
 
 func New() ECS {
@@ -21,6 +22,11 @@ func New() ECS {
 	}
 
 	return ECS{
-		svc: awsecs.New(sess),
+		svc:  awsecs.New(sess),
+		sess: sess,
 	}
+}
+
+func (ecs *ECS) Region() *string {
+	return ecs.sess.Config.Region
 }

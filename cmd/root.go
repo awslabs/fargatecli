@@ -21,6 +21,7 @@ var rootCmd = &cobra.Command{
 	Use: "fargate",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
+			verbose = true
 			console.Verbose = true
 		}
 	},

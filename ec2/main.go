@@ -16,7 +16,7 @@ func New() EC2 {
 	sess, err := session.NewSession()
 
 	if err != nil {
-		color.Red("Error creating VPC session: ", err)
+		color.Red("Error creating EC2 session: ", err)
 		os.Exit(1)
 	}
 

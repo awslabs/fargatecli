@@ -24,7 +24,7 @@ func init() {
 }
 
 func deployService(serviceName string) {
-	console.Info("Creating %s", serviceName)
+	console.Info("Deploying %s", serviceName)
 
 	ecs := ECS.New()
 	service := ecs.DescribeService(serviceName)

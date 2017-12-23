@@ -36,9 +36,9 @@ func psService(serviceName string) {
 		eniIds = append(eniIds, task.EniId)
 	}
 
-	enis := ec2.DescribeNetworkInterfaces(eniIds)
-
 	if len(tasks) > 0 {
+		enis := ec2.DescribeNetworkInterfaces(eniIds)
+
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
 		fmt.Fprintln(w, "IMAGE\tSTATUS\tDESIRED STATUS\tCREATED\tIP\tCPU\tMEMORY\t")
