@@ -101,3 +101,26 @@ func (ecs *ECS) DescribeTaskDefinition(taskDefinitionArn string) *awsecs.TaskDef
 
 	return taskDefinitionCache[taskDefinitionArn]
 }
+
+func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) string {
+	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
+	taskDefinition.ContainerDefinitions[0].Image = aws.String(image)
+
+	resp, err := ecs.svc.RegisterTaskDefinition(
+		&awsecs.RegisterTaskDefinitionInput{
+			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
+			Cpu:                     taskDefinition.Cpu,
+			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
+			Family:                  taskDefinition.Family,
+			Memory:                  taskDefinition.Memory,
+			NetworkMode:             taskDefinition.NetworkMode,
+			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not register ECS task definition")
+	}
+
+	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
+}

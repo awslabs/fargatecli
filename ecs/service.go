@@ -19,17 +19,18 @@ type CreateServiceInput struct {
 }
 
 type Service struct {
-	Cluster        string
-	Cpu            string
-	Deployments    []Deployment
-	DesiredCount   int64
-	Events         []Event
-	Image          string
-	Memory         string
-	Name           string
-	PendingCount   int64
-	RunningCount   int64
-	TargetGroupArn string
+	Cluster           string
+	Cpu               string
+	Deployments       []Deployment
+	DesiredCount      int64
+	Events            []Event
+	Image             string
+	Memory            string
+	Name              string
+	PendingCount      int64
+	RunningCount      int64
+	TargetGroupArn    string
+	TaskDefinitionArn string
 }
 
 type Event struct {
@@ -190,10 +191,11 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 
 	for _, service := range resp.Services {
 		s := Service{
-			Name:         aws.StringValue(service.ServiceName),
-			DesiredCount: aws.Int64Value(service.DesiredCount),
-			PendingCount: aws.Int64Value(service.PendingCount),
-			RunningCount: aws.Int64Value(service.RunningCount),
+			Name:              aws.StringValue(service.ServiceName),
+			DesiredCount:      aws.Int64Value(service.DesiredCount),
+			PendingCount:      aws.Int64Value(service.PendingCount),
+			RunningCount:      aws.Int64Value(service.RunningCount),
+			TaskDefinitionArn: aws.StringValue(service.TaskDefinition),
 		}
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))
@@ -237,4 +239,18 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 	}
 
 	return services
+}
+
+func (ecs *ECS) UpdateServiceTaskDefinition(serviceName, taskDefinitionArn string) {
+	_, err := ecs.svc.UpdateService(
+		&awsecs.UpdateServiceInput{
+			Cluster:        aws.String(clusterName),
+			Service:        aws.String(serviceName),
+			TaskDefinition: aws.String(taskDefinitionArn),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not update ECS service task definition")
+	}
 }
