@@ -1,6 +1,7 @@
 package ecs
 
 import (
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,6 +12,7 @@ import (
 const networkInterfaceId = "networkInterfaceId"
 
 type Task struct {
+	TaskId        string
 	Cpu           string
 	CreatedAt     time.Time
 	DesiredStatus string
@@ -40,12 +42,17 @@ func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
 	}
 
 	for _, t := range resp.Tasks {
+		taskArn := aws.StringValue(t.TaskArn)
+		contents := strings.Split(taskArn, "/")
+		taskId := contents[len(contents)-1]
+
 		task := Task{
 			Cpu:           aws.StringValue(t.Cpu),
 			CreatedAt:     aws.TimeValue(t.CreatedAt),
 			DesiredStatus: aws.StringValue(t.DesiredStatus),
 			LastStatus:    aws.StringValue(t.LastStatus),
 			Memory:        aws.StringValue(t.Memory),
+			TaskId:        taskId,
 		}
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(t.TaskDefinitionArn))
