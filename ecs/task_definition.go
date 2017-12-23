@@ -6,6 +6,8 @@ import (
 	"github.com/jpignata/fargate/console"
 )
 
+var taskDefinitionCache = make(map[string]*awsecs.TaskDefinition)
+
 type CreateTaskDefinitionInput struct {
 	Cpu              string
 	EnvVars          map[string]string
@@ -78,4 +80,24 @@ func (input *CreateTaskDefinitionInput) Environment() []*awsecs.KeyValuePair {
 	}
 
 	return environment
+}
+
+func (ecs *ECS) DescribeTaskDefinition(taskDefinitionArn string) *awsecs.TaskDefinition {
+	if taskDefinitionCache[taskDefinitionArn] != nil {
+		return taskDefinitionCache[taskDefinitionArn]
+	}
+
+	resp, err := ecs.svc.DescribeTaskDefinition(
+		&awsecs.DescribeTaskDefinitionInput{
+			TaskDefinition: aws.String(taskDefinitionArn),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not describe ECS task definition")
+	}
+
+	taskDefinitionCache[taskDefinitionArn] = resp.TaskDefinition
+
+	return taskDefinitionCache[taskDefinitionArn]
 }

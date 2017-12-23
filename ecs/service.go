@@ -2,6 +2,7 @@ package ecs
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
@@ -18,15 +19,39 @@ type CreateServiceInput struct {
 }
 
 type Service struct {
-	Name           string
 	Cluster        string
-	Image          string
 	Cpu            string
-	Memory         string
+	Deployments    []Deployment
 	DesiredCount   int64
-	RunningCount   int64
+	Events         []Event
+	Image          string
+	Memory         string
+	Name           string
 	PendingCount   int64
+	RunningCount   int64
 	TargetGroupArn string
+}
+
+type Event struct {
+	CreatedAt time.Time
+	Message   string
+}
+
+type Deployment struct {
+	Status       string
+	DesiredCount int64
+	RunningCount int64
+	PendingCount int64
+	Image        string
+	CreatedAt    time.Time
+}
+
+func (s *Service) AddEvent(e Event) {
+	s.Events = append(s.Events, e)
+}
+
+func (s *Service) AddDeployment(d Deployment) {
+	s.Deployments = append(s.Deployments, d)
 }
 
 func (ecs *ECS) CreateService(input *CreateServiceInput) {
@@ -73,23 +98,19 @@ func (ecs *ECS) CreateService(input *CreateServiceInput) {
 	return
 }
 
+func (ecs *ECS) DescribeService(serviceName string) Service {
+	services := ecs.DescribeServices([]string{serviceName})
+
+	if len(services) == 0 {
+		console.ErrorExit(fmt.Errorf("Could not find %s", serviceName), "Could not describe ECS service")
+	}
+
+	return services[0]
+}
+
 func (ecs *ECS) GetDesiredCount(serviceName string) int64 {
-	resp, err := ecs.svc.DescribeServices(
-		&awsecs.DescribeServicesInput{
-			Services: aws.StringSlice([]string{serviceName}),
-			Cluster:  aws.String(clusterName),
-		},
-	)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not get desired count")
-	}
-
-	if len(resp.Services) == 0 {
-		console.ErrorExit(fmt.Errorf("Could not find %s", serviceName), "Could not get desired count")
-	}
-
-	return aws.Int64Value(resp.Services[0].DesiredCount)
+	service := ecs.DescribeService(serviceName)
+	return service.DesiredCount
 }
 
 func (ecs *ECS) SetDesiredCount(serviceName string, desiredCount int64) {
@@ -120,8 +141,8 @@ func (ecs *ECS) DestroyService(serviceName string) {
 }
 
 func (ecs *ECS) ListServices() []Service {
-	var serviceArnBatches [][]string
 	var services []Service
+	var serviceArnBatches [][]string
 
 	err := ecs.svc.ListServicesPages(
 		&awsecs.ListServicesInput{
@@ -130,7 +151,9 @@ func (ecs *ECS) ListServices() []Service {
 		},
 
 		func(resp *awsecs.ListServicesOutput, lastPage bool) bool {
-			serviceArnBatches = append(serviceArnBatches, aws.StringValueSlice(resp.ServiceArns))
+			if len(resp.ServiceArns) > 0 {
+				serviceArnBatches = append(serviceArnBatches, aws.StringValueSlice(resp.ServiceArns))
+			}
 
 			return true
 		},
@@ -140,56 +163,78 @@ func (ecs *ECS) ListServices() []Service {
 		console.ErrorExit(err, "Could not list ECS services")
 	}
 
-	for _, serviceArnBatch := range serviceArnBatches {
-		resp, err := ecs.svc.DescribeServices(
-			&awsecs.DescribeServicesInput{
-				Cluster:  aws.String(clusterName),
-				Services: aws.StringSlice(serviceArnBatch),
-			},
-		)
-
-		if err != nil {
-			console.ErrorExit(err, "Could not describe ECS service")
-		}
-
-		for _, service := range resp.Services {
-			s := Service{
-				Name:         aws.StringValue(service.ServiceName),
-				DesiredCount: aws.Int64Value(service.DesiredCount),
-				PendingCount: aws.Int64Value(service.PendingCount),
-				RunningCount: aws.Int64Value(service.RunningCount),
+	if len(serviceArnBatches) > 0 {
+		for _, serviceArnBatch := range serviceArnBatches {
+			for _, service := range ecs.DescribeServices(serviceArnBatch) {
+				services = append(services, service)
 			}
-
-			if len(service.LoadBalancers) > 0 {
-				s.TargetGroupArn = aws.StringValue(service.LoadBalancers[0].TargetGroupArn)
-			}
-
-			taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))
-
-			s.Cpu = aws.StringValue(taskDefinition.Cpu)
-			s.Memory = aws.StringValue(taskDefinition.Memory)
-
-			if len(taskDefinition.ContainerDefinitions) > 0 {
-				s.Image = aws.StringValue(taskDefinition.ContainerDefinitions[0].Image)
-			}
-
-			services = append(services, s)
 		}
 	}
 
 	return services
 }
 
-func (ecs *ECS) DescribeTaskDefinition(taskDefinitionArn string) *awsecs.TaskDefinition {
-	resp, err := ecs.svc.DescribeTaskDefinition(
-		&awsecs.DescribeTaskDefinitionInput{
-			TaskDefinition: aws.String(taskDefinitionArn),
+func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
+	var services []Service
+
+	resp, err := ecs.svc.DescribeServices(
+		&awsecs.DescribeServicesInput{
+			Cluster:  aws.String(clusterName),
+			Services: aws.StringSlice(serviceArns),
 		},
 	)
 
 	if err != nil {
-		console.ErrorExit(err, "Could not describe ECS task definition")
+		console.ErrorExit(err, "Could not describe ECS services")
 	}
 
-	return resp.TaskDefinition
+	for _, service := range resp.Services {
+		s := Service{
+			Name:         aws.StringValue(service.ServiceName),
+			DesiredCount: aws.Int64Value(service.DesiredCount),
+			PendingCount: aws.Int64Value(service.PendingCount),
+			RunningCount: aws.Int64Value(service.RunningCount),
+		}
+
+		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))
+
+		s.Cpu = aws.StringValue(taskDefinition.Cpu)
+		s.Memory = aws.StringValue(taskDefinition.Memory)
+
+		if len(service.LoadBalancers) > 0 {
+			s.TargetGroupArn = aws.StringValue(service.LoadBalancers[0].TargetGroupArn)
+		}
+
+		if len(taskDefinition.ContainerDefinitions) > 0 {
+			s.Image = aws.StringValue(taskDefinition.ContainerDefinitions[0].Image)
+		}
+
+		for _, event := range service.Events {
+			s.AddEvent(
+				Event{
+					CreatedAt: aws.TimeValue(event.CreatedAt),
+					Message:   aws.StringValue(event.Message),
+				},
+			)
+		}
+
+		for _, d := range service.Deployments {
+			deployment := Deployment{
+				Status:       aws.StringValue(d.Status),
+				DesiredCount: aws.Int64Value(d.DesiredCount),
+				PendingCount: aws.Int64Value(d.PendingCount),
+				RunningCount: aws.Int64Value(d.RunningCount),
+				CreatedAt:    aws.TimeValue(d.CreatedAt),
+			}
+
+			deploymentTaskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(d.TaskDefinition))
+			deployment.Image = aws.StringValue(deploymentTaskDefinition.ContainerDefinitions[0].Image)
+
+			s.AddDeployment(deployment)
+		}
+
+		services = append(services, s)
+	}
+
+	return services
 }

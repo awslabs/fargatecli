@@ -3,7 +3,6 @@ package console
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/mgutz/ansi"
 )
@@ -34,8 +33,6 @@ func KeyValue(key, value string, a ...interface{}) {
 func Header(s string) {
 	fmt.Print("\n")
 	fmt.Print(white + s + reset + "\n")
-	fmt.Println(strings.Repeat("=", len(s)))
-	fmt.Print("\n")
 }
 
 func Info(msg string, a ...interface{}) {

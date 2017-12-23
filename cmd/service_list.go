@@ -29,7 +29,7 @@ func listServices() {
 	if len(services) > 0 {
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-		fmt.Fprintln(w, "Name\tImage\tCPU\tMemory\tScale\tRunning\tPending\t")
+		fmt.Fprintln(w, "NAME\tIMAGE\tCPU\tMEMORY\tDESIRED\tRUNNING\tPENDING\t")
 
 		for _, service := range services {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%d\t%d\t%d\t\n",

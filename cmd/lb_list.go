@@ -23,7 +23,7 @@ such as type, status, and DNS name.
 e.g.:
 
   $ fargate lb list
-  Name   Type          Status  DNS Name                                    Listeners
+  NAME   TYPE          STATUS  DNS NAME                                    LISTENERS
   web    Application   Active  web-1186393493.us-east-1.elb.amazonaws.com  HTTP:80
 `,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -42,7 +42,7 @@ func listLoadBalancers() {
 	if len(loadBalancers) > 0 {
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-		fmt.Fprintln(w, "Name\tType\tStatus\tDNS Name\tListeners")
+		fmt.Fprintln(w, "NAME\tTYPE\tSTATUS\tDNS NAME\tLISTENERS")
 
 		for _, loadBalancer := range loadBalancers {
 			var listeners []string

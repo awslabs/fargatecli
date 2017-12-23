@@ -23,7 +23,7 @@ such as type, status, and subject alternative names.
 e.g.:
 
   $ fargate certificate list
-  Certificate      Type          Status              Subject Alternative Names
+  CERTIFICATE      TYPE          STATUS              SUBJECT ALTERNATIVE NAMES
   www.example.com  Amazon Issue  Pending Validation  www.example.com
 `,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -42,7 +42,7 @@ func listCertificates() {
 	if len(certificates) > 0 {
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-		fmt.Fprintln(w, "Certificate\tType\tStatus\tSubject Alternative Names")
+		fmt.Fprintln(w, "CERTIFICATE\tTYPE\tSTATUS\tSUBJECT ALTERNATIVE NAMES")
 
 		for _, c := range certificates {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
