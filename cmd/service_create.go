@@ -19,8 +19,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const logGroupFormat = "/fargate/service/%s"
-
 var validRuleTypes = regexp.MustCompile("(?i)^host|path$")
 
 var cpu int16

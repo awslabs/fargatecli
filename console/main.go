@@ -3,6 +3,7 @@ package console
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/mgutz/ansi"
 )
@@ -25,6 +26,11 @@ var (
 	reset  = ansi.ColorCode("reset")
 	orange = ansi.ColorCode("214+bh")
 )
+
+func LogLine(prefix, msg string, color int) {
+	colorCode := strconv.Itoa(color)
+	fmt.Println(ansi.ColorCode(colorCode) + prefix + reset + " " + msg)
+}
 
 func KeyValue(key, value string, a ...interface{}) {
 	fmt.Fprintf(os.Stdout, white+key+reset+": "+value, a...)
