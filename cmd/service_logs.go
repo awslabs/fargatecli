@@ -66,8 +66,8 @@ func init() {
 
 	serviceLogsCmd.Flags().BoolVarP(&follow, "follow", "f", false, "Poll logs and continuously print new events")
 	serviceLogsCmd.Flags().StringVar(&filter, "filter", "", "Filter pattern to apply")
-	serviceLogsCmd.Flags().StringVar(&startTimeRaw, "start-time", "", "Earliest time to return logs (e.g. -1h, 2018-01-01 09:36:00 EST")
-	serviceLogsCmd.Flags().StringVar(&endTimeRaw, "end-time", "", "Latest time to return logs (e.g. 3y, 2021-01-20 12:00:00 EST")
+	serviceLogsCmd.Flags().StringVar(&startTimeRaw, "start", "", "Earliest time to return logs (e.g. -1h, 2018-01-01 09:36:00 EST")
+	serviceLogsCmd.Flags().StringVar(&endTimeRaw, "end", "", "Latest time to return logs (e.g. 3y, 2021-01-20 12:00:00 EST")
 	serviceLogsCmd.Flags().StringSliceVarP(&tasks, "tasks", "t", []string{}, "Show logs from specific task (can be specified multiple times)")
 }
 
