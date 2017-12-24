@@ -99,7 +99,7 @@ func infoService(serviceName string) {
 		for i, event := range service.Events {
 			fmt.Printf("[%s] %s\n", event.CreatedAt, event.Message)
 
-			if i == 10 {
+			if i == 10 && !verbose {
 				break
 			}
 		}
