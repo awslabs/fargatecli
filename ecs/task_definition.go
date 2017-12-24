@@ -1,6 +1,8 @@
 package ecs
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/jpignata/fargate/console"
@@ -131,4 +133,9 @@ func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) strin
 	}
 
 	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
+}
+
+func (ecs *ECS) getDeploymentId(taskDefinitionArn string) string {
+	contents := strings.Split(taskDefinitionArn, ":")
+	return contents[len(contents)-1]
 }

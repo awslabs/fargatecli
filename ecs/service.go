@@ -39,6 +39,7 @@ type Event struct {
 }
 
 type Deployment struct {
+	Id           string
 	Status       string
 	DesiredCount int64
 	RunningCount int64
@@ -227,6 +228,7 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 				PendingCount: aws.Int64Value(d.PendingCount),
 				RunningCount: aws.Int64Value(d.RunningCount),
 				CreatedAt:    aws.TimeValue(d.CreatedAt),
+				Id:           ecs.getDeploymentId(aws.StringValue(d.TaskDefinition)),
 			}
 
 			deploymentTaskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(d.TaskDefinition))

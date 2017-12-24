@@ -12,6 +12,7 @@ import (
 const networkInterfaceId = "networkInterfaceId"
 
 type Task struct {
+	DeploymentId  string
 	TaskId        string
 	Cpu           string
 	CreatedAt     time.Time
@@ -22,8 +23,13 @@ type Task struct {
 	EniId         string
 }
 
+func (t *Task) RunningFor() time.Duration {
+	return time.Now().Sub(t.CreatedAt).Truncate(time.Second)
+}
+
 func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
 	var tasks []Task
+
 	taskArns := ecs.ListTasksForService(serviceName)
 
 	if len(taskArns) == 0 {
@@ -49,6 +55,7 @@ func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
 		task := Task{
 			Cpu:           aws.StringValue(t.Cpu),
 			CreatedAt:     aws.TimeValue(t.CreatedAt),
+			DeploymentId:  ecs.getDeploymentId(aws.StringValue(t.TaskDefinitionArn)),
 			DesiredStatus: aws.StringValue(t.DesiredStatus),
 			LastStatus:    aws.StringValue(t.LastStatus),
 			Memory:        aws.StringValue(t.Memory),
