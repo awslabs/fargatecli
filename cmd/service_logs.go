@@ -29,9 +29,8 @@ var (
 	streamColors   map[string]int
 	logStreamNames []string
 	tasks          []string
+	eventCache     *lru.Cache
 )
-
-var eventCache, _ = lru.New(10000)
 
 var serviceLogsCmd = &cobra.Command{
 	Use:   "logs <service name>",
@@ -94,6 +93,7 @@ func parseTime(timeRaw string) time.Time {
 
 func getServiceLogs(serviceName string) {
 	logGroupName := fmt.Sprintf(logGroupFormat, serviceName)
+	eventCache, _ = lru.New(10000)
 
 	if follow {
 		followLogs(logGroupName)
