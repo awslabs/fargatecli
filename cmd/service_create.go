@@ -32,8 +32,9 @@ var rules []ELBV2.Rule
 var rulesRaw []string
 
 var serviceCreateCmd = &cobra.Command{
-	Use:  "create <service name>",
-	Args: cobra.ExactArgs(1),
+	Use:   "create <service name>",
+	Short: "Create and deploy and new service",
+	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if portRaw != "" {
 			port = inflatePort(portRaw)

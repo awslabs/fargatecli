@@ -7,7 +7,8 @@ import (
 const logGroupFormat = "/fargate/service/%s"
 
 var serviceCmd = &cobra.Command{
-	Use: "service",
+	Use:   "service",
+	Short: "Manage services",
 }
 
 func init() {

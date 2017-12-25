@@ -8,7 +8,7 @@ import (
 
 var serviceDestroyCmd = &cobra.Command{
 	Use:   "destroy <service name>",
-	Short: "Deletes a service",
+	Short: "Delete a service",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		destroyService(args[0])

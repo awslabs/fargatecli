@@ -12,8 +12,8 @@ import (
 
 var serviceUpdateCmd = &cobra.Command{
 	Use:   "update <service name>",
-	Short: "Updates all tasks within a service",
-	Long:  "Updates all tasks within a service",
+	Short: "Update cpu and/or memory settings",
+	Long:  "Update cpu and/or memory settings",
 	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if cpu == 0 && memory == 0 {

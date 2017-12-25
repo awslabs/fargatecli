@@ -5,7 +5,8 @@ import (
 )
 
 var serviceEnvCmd = &cobra.Command{
-	Use: "env",
+	Use:   "env",
+	Short: "Manage environment variables",
 }
 
 func init() {

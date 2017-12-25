@@ -10,8 +10,9 @@ import (
 )
 
 var serviceDeployCmd = &cobra.Command{
-	Use:  "deploy <service name>",
-	Args: cobra.ExactArgs(1),
+	Use:   "deploy <service name>",
+	Short: "Deploy a service from an image or local Dockerfile",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		deployService(args[0])
 	},
