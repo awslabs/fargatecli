@@ -31,6 +31,7 @@ type Service struct {
 	RunningCount      int64
 	TargetGroupArn    string
 	TaskDefinitionArn string
+	LoadBalancerName  string
 }
 
 type Event struct {

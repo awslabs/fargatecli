@@ -17,6 +17,11 @@ type LoadBalancer struct {
 	Type        string
 }
 
+type DescribeLoadBalancersInput struct {
+	Names []string
+	Arns  []string
+}
+
 type CreateLoadBalancerInput struct {
 	Name      string
 	SubnetIds []string
@@ -42,7 +47,11 @@ func (elbv2 *ELBV2) CreateLoadBalancer(input *CreateLoadBalancerInput) string {
 }
 
 func (elbv2 *ELBV2) DescribeLoadBalancer(lbName string) LoadBalancer {
-	loadBalancers := elbv2.DescribeLoadBalancers([]string{lbName})
+	loadBalancers := elbv2.DescribeLoadBalancers(
+		DescribeLoadBalancersInput{
+			Names: []string{lbName},
+		},
+	)
 
 	if len(loadBalancers) == 0 {
 		console.ErrorExit(fmt.Errorf("%s not found", lbName), "Could not find ELB load balancer")
@@ -64,13 +73,17 @@ func (elbv2 *ELBV2) DeleteLoadBalancer(lbName string) {
 	}
 }
 
-func (elbv2 *ELBV2) DescribeLoadBalancers(lbNames []string) []LoadBalancer {
+func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBalancer {
 	var loadBalancers []LoadBalancer
 
 	input := &awselbv2.DescribeLoadBalancersInput{}
 
-	if len(lbNames) > 0 {
-		input.SetNames(aws.StringSlice(lbNames))
+	if len(i.Names) > 0 {
+		input.SetNames(aws.StringSlice(i.Names))
+	}
+
+	if len(i.Arns) > 0 {
+		input.SetLoadBalancerArns(aws.StringSlice(i.Arns))
 	}
 
 	err := elbv2.svc.DescribeLoadBalancersPages(

@@ -37,7 +37,7 @@ func init() {
 
 func listLoadBalancers() {
 	elbv2 := ELBV2.New(sess)
-	loadBalancers := elbv2.DescribeLoadBalancers([]string{})
+	loadBalancers := elbv2.DescribeLoadBalancers(ELBV2.DescribeLoadBalancersInput{})
 
 	if len(loadBalancers) > 0 {
 		w := new(tabwriter.Writer)
