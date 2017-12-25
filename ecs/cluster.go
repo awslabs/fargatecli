@@ -18,7 +18,7 @@ func (ecs *ECS) CreateCluster() string {
 	)
 
 	if err != nil {
-		console.ErrorExit(err, "Couldn't create Amazon ECS cluster")
+		console.ErrorExit(err, "Couldn't create ECS cluster")
 	}
 
 	console.Debug("Created ECS cluster [%s]", clusterName)

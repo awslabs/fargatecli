@@ -15,9 +15,12 @@ import (
 )
 
 const (
-	version       = "0.0.1"
+	clusterName   = "fargate"
 	defaultRegion = "us-east-1"
+	version       = "0.0.1"
 )
+
+var validRegions = []string{"us-east-1"}
 
 var (
 	region     string
@@ -36,26 +39,25 @@ type Port struct {
 var rootCmd = &cobra.Command{
 	Use: "fargate",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		envAwsRegion := os.Getenv("AWS_REGION")
 		envAwsDefaultRegion := os.Getenv("AWS_DEFAULT_REGION")
-
-		if verbose {
-			verbose = true
-			console.Verbose = true
-		}
-
-		if noColor || !terminal.IsTerminal(int(os.Stdout.Fd())) {
-			console.Color = false
-		}
+		envAwsRegion := os.Getenv("AWS_REGION")
 
 		if region == "" {
 			if envAwsDefaultRegion != "" {
 				region = envAwsDefaultRegion
 			} else if envAwsRegion != "" {
-				region = envAwsDefaultRegion
+				region = envAwsRegion
 			} else {
 				region = defaultRegion
 			}
+		}
+
+		for _, validRegion := range validRegions {
+			if region == validRegion {
+				break
+			}
+
+			console.IssueExit("Invalid region: %s [valid regions: %s]", region, strings.Join(validRegions, ", "))
 		}
 
 		sess = session.Must(
@@ -65,6 +67,18 @@ var rootCmd = &cobra.Command{
 				},
 			),
 		)
+
+		ecs := ECS.New(sess)
+		ecs.CreateCluster()
+
+		if verbose {
+			verbose = true
+			console.Verbose = true
+		}
+
+		if noColor || !terminal.IsTerminal(int(os.Stdout.Fd())) {
+			console.Color = false
+		}
 	},
 }
 
