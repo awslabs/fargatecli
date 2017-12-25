@@ -14,7 +14,7 @@ var taskDefinitionCache = make(map[string]*awsecs.TaskDefinition)
 
 type CreateTaskDefinitionInput struct {
 	Cpu              string
-	EnvVars          map[string]string
+	EnvVars          []EnvVar
 	ExecutionRoleArn string
 	Image            string
 	Memory           string
@@ -22,6 +22,11 @@ type CreateTaskDefinitionInput struct {
 	Port             int64
 	LogGroupName     string
 	LogRegion        string
+}
+
+type EnvVar struct {
+	Key   string
+	Value string
 }
 
 func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
@@ -80,11 +85,11 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 func (input *CreateTaskDefinitionInput) Environment() []*awsecs.KeyValuePair {
 	var environment []*awsecs.KeyValuePair
 
-	for name, value := range input.EnvVars {
+	for _, envVar := range input.EnvVars {
 		environment = append(environment,
 			&awsecs.KeyValuePair{
-				Name:  aws.String(name),
-				Value: aws.String(value),
+				Name:  aws.String(envVar.Key),
+				Value: aws.String(envVar.Value),
 			},
 		)
 	}
@@ -118,11 +123,10 @@ func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) strin
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
 		&awsecs.RegisterTaskDefinitionInput{
-			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
-			Cpu:                     taskDefinition.Cpu,
-			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
-			Family:                  taskDefinition.Family,
-			Memory:                  taskDefinition.Memory,
+			ContainerDefinitions: taskDefinition.ContainerDefinitions,
+			Cpu:                  taskDefinition.Cpu,
+			ExecutionRoleArn:     taskDefinition.ExecutionRoleArn,
+			Family:               taskDefinition.Family, Memory: taskDefinition.Memory,
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
 		},
@@ -155,6 +159,94 @@ func (ecs *ECS) IncrementTaskDefinition(taskDefinitionArn string) string {
 	}
 
 	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
+}
+
+func (ecs *ECS) AddEnvVarsToTaskDefinition(taskDefinitionArn string, envVars []EnvVar) string {
+	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
+
+	for _, envVar := range envVars {
+		keyValuePair := &awsecs.KeyValuePair{
+			Name:  aws.String(envVar.Key),
+			Value: aws.String(envVar.Value),
+		}
+
+		taskDefinition.ContainerDefinitions[0].Environment = append(
+			taskDefinition.ContainerDefinitions[0].Environment,
+			keyValuePair,
+		)
+	}
+
+	resp, err := ecs.svc.RegisterTaskDefinition(
+		&awsecs.RegisterTaskDefinitionInput{
+			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
+			Cpu:                     taskDefinition.Cpu,
+			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
+			Family:                  taskDefinition.Family,
+			Memory:                  taskDefinition.Memory,
+			NetworkMode:             taskDefinition.NetworkMode,
+			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not register ECS task definition")
+	}
+
+	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
+}
+
+func (ecs *ECS) RemoveEnvVarsFromTaskDefinition(taskDefinitionArn string, keys []string) string {
+	var newEnvironment []*awsecs.KeyValuePair
+
+	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
+	environment := taskDefinition.ContainerDefinitions[0].Environment
+
+	for _, keyValuePair := range environment {
+		for _, key := range keys {
+			if aws.StringValue(keyValuePair.Name) == key {
+				continue
+			}
+
+			newEnvironment = append(newEnvironment, keyValuePair)
+		}
+	}
+
+	taskDefinition.ContainerDefinitions[0].Environment = newEnvironment
+
+	resp, err := ecs.svc.RegisterTaskDefinition(
+		&awsecs.RegisterTaskDefinitionInput{
+			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
+			Cpu:                     taskDefinition.Cpu,
+			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
+			Family:                  taskDefinition.Family,
+			Memory:                  taskDefinition.Memory,
+			NetworkMode:             taskDefinition.NetworkMode,
+			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not register ECS task definition")
+	}
+
+	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
+}
+
+func (ecs *ECS) GetEnvVarsFromTaskDefinition(taskDefinitionArn string) []EnvVar {
+	var envVars []EnvVar
+
+	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
+
+	for _, keyValuePair := range taskDefinition.ContainerDefinitions[0].Environment {
+		envVars = append(envVars,
+			EnvVar{
+				Key:   aws.StringValue(keyValuePair.Name),
+				Value: aws.StringValue(keyValuePair.Value),
+			},
+		)
+	}
+
+	return envVars
 }
 
 func (ecs *ECS) getDeploymentId(taskDefinitionArn string) string {

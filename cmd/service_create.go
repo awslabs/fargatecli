@@ -22,8 +22,6 @@ import (
 var validRuleTypes = regexp.MustCompile("(?i)^host|path$")
 
 var cpu int16
-var envVars map[string]string
-var envVarsRaw []string
 var image string
 var memory int16
 var portRaw string
@@ -58,7 +56,7 @@ var serviceCreateCmd = &cobra.Command{
 func init() {
 	serviceCreateCmd.Flags().Int16VarP(&cpu, "cpu", "c", 256, "Amount of cpu units to allocate for each task")
 	serviceCreateCmd.Flags().Int16VarP(&memory, "memory", "m", 512, "Amount of MiB to allocate for each task")
-	serviceCreateCmd.Flags().StringSliceVarP(&envVarsRaw, "env", "e", []string{}, "Environment variables [e.g. KEY=value]")
+	serviceCreateCmd.Flags().StringSliceVarP(&envVarsRaw, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
 	serviceCreateCmd.Flags().StringVarP(&portRaw, "port", "p", "", "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935]")
 	serviceCreateCmd.Flags().StringVarP(&image, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
 	serviceCreateCmd.Flags().StringVarP(&lbName, "lb", "l", "", "Name of a load balancer to use")
@@ -140,24 +138,6 @@ func validateCpuAndMemory() {
 
 	if err != nil {
 		console.ErrorExit(err, "Invalid command line flags")
-	}
-}
-
-func extractEnvVars() {
-	if len(envVarsRaw) == 0 {
-		return
-	}
-
-	envVars = make(map[string]string)
-
-	for _, envVar := range envVarsRaw {
-		splitEnvVar := strings.Split(envVar, "=")
-
-		if len(splitEnvVar) != 2 {
-			console.ErrorExit(fmt.Errorf("%s must be in the form of KEY=value", envVar), "Invalid environment variable")
-		}
-
-		envVars[splitEnvVar[0]] = splitEnvVar[1]
 	}
 }
 

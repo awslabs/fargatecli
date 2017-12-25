@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/jpignata/fargate/console"
+	ECS "github.com/jpignata/fargate/ecs"
 	"github.com/spf13/cobra"
 )
 
@@ -16,16 +18,18 @@ const (
 	defaultRegion = "us-east-1"
 )
 
+var (
+	region     string
+	verbose    bool
+	sess       *session.Session
+	envVars    []ECS.EnvVar
+	envVarsRaw []string
+)
+
 type Port struct {
 	Port     int64
 	Protocol string
 }
-
-var (
-	region  string
-	verbose bool
-	sess    *session.Session
-)
 
 var rootCmd = &cobra.Command{
 	Use: "fargate",
@@ -121,4 +125,25 @@ func inflatePorts(src []string) (ports []Port) {
 	}
 
 	return
+}
+
+func extractEnvVars() {
+	if len(envVarsRaw) == 0 {
+		return
+	}
+
+	for _, envVar := range envVarsRaw {
+		splitEnvVar := strings.Split(envVar, "=")
+
+		if len(splitEnvVar) != 2 {
+			console.ErrorExit(fmt.Errorf("%s must be in the form of KEY=value", envVar), "Invalid environment variable")
+		}
+
+		envVar := ECS.EnvVar{
+			Key:   strings.ToUpper(splitEnvVar[0]),
+			Value: splitEnvVar[1],
+		}
+
+		envVars = append(envVars, envVar)
+	}
 }
