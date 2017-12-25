@@ -1,12 +1,9 @@
 package ec2
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws"
 	awsec2 "github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/fatih/color"
+	"github.com/jpignata/fargate/console"
 )
 
 func (ec2 *EC2) GetDefaultVpcSubnetIds() []string {
@@ -29,8 +26,7 @@ func (ec2 *EC2) GetDefaultVpcSubnetIds() []string {
 	)
 
 	if err != nil {
-		fmt.Println("Could not get default vpc subnets")
-		os.Exit(1)
+		console.IssueExit("Could not find default VPC subnets")
 	}
 
 	for _, subnet := range resp.Subnets {
@@ -52,8 +48,7 @@ func (ec2 *EC2) getDefaultVpc() *awsec2.Vpc {
 	vpcs := ec2.describeVpcs([]*awsec2.Filter{filter})
 
 	if len(vpcs) != 1 {
-		color.Red("Could not find a default Vpc")
-		os.Exit(1)
+		console.IssueExit("Could not find a default VPC")
 	}
 
 	return vpcs[0]
@@ -67,9 +62,7 @@ func (ec2 *EC2) describeVpcs(filters []*awsec2.Filter) []*awsec2.Vpc {
 	)
 
 	if err != nil {
-		color.Red("Could not EC2.DescribeVpcs")
-		fmt.Println(err)
-		os.Exit(1)
+		console.ErrorExit(err, "Could not describe VPCs")
 	}
 
 	return resp.Vpcs

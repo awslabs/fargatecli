@@ -107,6 +107,11 @@ func ErrorExit(err error, msg string, a ...interface{}) {
 	os.Exit(1)
 }
 
+func IssueExit(msg string, a ...interface{}) {
+	Issue(msg, a...)
+	os.Exit(1)
+}
+
 func SetVerbose(verbose bool) {
 	Verbose = verbose
 }
