@@ -22,23 +22,23 @@ applications.
 ### Services
 
 - fargate service list
-- fargate service create APPNAME [--cpu UNITS] [--memory MiB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE]
-- fargate service deploy APPNAME [--image DOCKERIMAGE]
-- fargate service info APPNAME
-- fargate service logs APPNAME [--tail] [--num LINES]
-- fargate service ps APPNAME
-- fargate service scale APPNAME SCALEEXPRESSION
-- fargate service env set APPNAME --env KEY=VALUE
-- fargate service env unset APPNAME --key KEYNAME
-- fargate service env list APPNAME
-- fargate service update APPNAME [--cpu UNITS] [--memory MiB]
-- fargate service restart APPNAME
-- fargate service destroy APPNAME
+- fargate service create SERVICENAME [--cpu UNITS] [--memory MiB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate service deploy SERVICENAME [--image DOCKERIMAGE]
+- fargate service info SERVICENAME
+- fargate service logs SERVICENAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION]
+- fargate service ps SERVICENAME
+- fargate service scale SERVICENAME SCALEEXPRESSION
+- fargate service env set SERVICENAME --env KEY=VALUE
+- fargate service env unset SERVICENAME --key KEYNAME
+- fargate service env list SERVICENAME
+- fargate service update SERVICENAME [--cpu UNITS] [--memory MiB]
+- fargate service restart SERVICENAME
+- fargate service destroy SERVICENAME
 
 ### Tasks
 
 - fargate task list
-- fargate task start TASKNAME [--count TASKS] [--cpu UNITS] [--memory GB] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate task start TASKNAME [--count TASKS] [--cpu UNITS] [--memory MiB] [--image DOCKERIMAGE] [--env KEY=VALUE]
 - fargate task stop TASKNAME
 - fargate task logs TASKNAME [--tail] [--num LINES]
 - fargate task ps TASKNAME
@@ -59,3 +59,4 @@ applications.
 - fargate lb create LBNAME --port PORTEXPRESSION [--certificate DOMAINNAME]
 - fargate lb destroy LBNAME
 - fargate lb alias LBNAME HOSTNAME
+- fargate lb info LBNAME
