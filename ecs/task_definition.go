@@ -249,6 +249,36 @@ func (ecs *ECS) GetEnvVarsFromTaskDefinition(taskDefinitionArn string) []EnvVar 
 	return envVars
 }
 
+func (ecs *ECS) UpdateTaskDefinitionCpuAndMemory(taskDefinitionArn, cpu, memory string) string {
+	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
+
+	if cpu != "" {
+		taskDefinition.Cpu = aws.String(cpu)
+	}
+
+	if memory != "" {
+		taskDefinition.Memory = aws.String(memory)
+	}
+
+	resp, err := ecs.svc.RegisterTaskDefinition(
+		&awsecs.RegisterTaskDefinitionInput{
+			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
+			Cpu:                     taskDefinition.Cpu,
+			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
+			Family:                  taskDefinition.Family,
+			Memory:                  taskDefinition.Memory,
+			NetworkMode:             taskDefinition.NetworkMode,
+			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not register ECS task definition")
+	}
+
+	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
+}
+
 func (ecs *ECS) getDeploymentId(taskDefinitionArn string) string {
 	contents := strings.Split(taskDefinitionArn, ":")
 	return contents[len(contents)-1]

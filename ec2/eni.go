@@ -25,12 +25,14 @@ func (ec2 *EC2) DescribeNetworkInterfaces(eniIds []string) map[string]Eni {
 	}
 
 	for _, e := range resp.NetworkInterfaces {
-		eni := Eni{
-			EniId:           aws.StringValue(e.NetworkInterfaceId),
-			PublicIpAddress: aws.StringValue(e.Association.PublicIp),
-		}
+		if e.Association != nil {
+			eni := Eni{
+				EniId:           aws.StringValue(e.NetworkInterfaceId),
+				PublicIpAddress: aws.StringValue(e.Association.PublicIp),
+			}
 
-		enis[eni.EniId] = eni
+			enis[eni.EniId] = eni
+		}
 	}
 
 	return enis
