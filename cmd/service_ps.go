@@ -33,7 +33,9 @@ func psService(serviceName string) {
 	tasks := ecs.DescribeTasksForService(serviceName)
 
 	for _, task := range tasks {
-		eniIds = append(eniIds, task.EniId)
+		if task.EniId != "" {
+			eniIds = append(eniIds, task.EniId)
+		}
 	}
 
 	if len(tasks) > 0 {
