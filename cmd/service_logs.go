@@ -109,8 +109,6 @@ func followLogs(logGroupName string) {
 		startTime = time.Now()
 	}
 
-	endTime = time.Time{}
-
 	for {
 		getLogs(logGroupName)
 
