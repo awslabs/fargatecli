@@ -33,7 +33,9 @@ func (repository *Repository) Login(username, password string) {
 		console.ErrorExit(err, "Couldn't login to Docker repository [%s]", repository.Uri)
 	}
 
-	cmd.Wait()
+	if err := cmd.Wait(); err != nil {
+		console.IssueExit("Couldn't login to Docker repository [%s]", repository.Uri)
+	}
 }
 
 func (repository *Repository) Build(tag string) {
@@ -49,7 +51,9 @@ func (repository *Repository) Build(tag string) {
 		console.ErrorExit(err, "Couldn't build Docker image [%s]", repository.UriFor(tag))
 	}
 
-	cmd.Wait()
+	if err := cmd.Wait(); err != nil {
+		console.IssueExit("Couldn't build Docker image [%s]", repository.Uri)
+	}
 }
 
 func (repository *Repository) Push(tag string) {
@@ -65,7 +69,9 @@ func (repository *Repository) Push(tag string) {
 		console.ErrorExit(err, "Couldn't push Docker image [%s]", repository.UriFor(tag))
 	}
 
-	cmd.Wait()
+	if err := cmd.Wait(); err != nil {
+		console.IssueExit("Couldn't push Docker image [%s]", repository.UriFor(tag))
+	}
 }
 
 func (repository *Repository) UriFor(tag string) string {
