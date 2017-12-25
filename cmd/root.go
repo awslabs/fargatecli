@@ -11,6 +11,7 @@ import (
 	"github.com/jpignata/fargate/console"
 	ECS "github.com/jpignata/fargate/ecs"
 	"github.com/spf13/cobra"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 const (
@@ -24,6 +25,7 @@ var (
 	sess       *session.Session
 	envVars    []ECS.EnvVar
 	envVarsRaw []string
+	noColor    bool
 )
 
 type Port struct {
@@ -40,6 +42,10 @@ var rootCmd = &cobra.Command{
 		if verbose {
 			verbose = true
 			console.Verbose = true
+		}
+
+		if noColor || !terminal.IsTerminal(int(os.Stdout.Fd())) {
+			console.Color = false
 		}
 
 		if region == "" {
@@ -65,6 +71,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	rootCmd.PersistentFlags().StringVar(&region, "region", "", "AWS Region (defaults to us-east-1)")
+	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Suppress colors in output")
 }
 
 func Execute() {

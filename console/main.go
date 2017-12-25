@@ -10,13 +10,19 @@ import (
 
 var (
 	Verbose = false
+	Color   = true
 )
 
 var (
-	info  = white + "[" + blue + "i" + white + "]" + reset + " "
-	debug = white + "[" + orange + "d" + white + "]" + reset + " "
-	issue = white + "[" + red + "!" + white + "]" + reset + " "
-	shell = white + "[" + green + ">" + white + "]" + reset + " "
+	info  = "[i] "
+	debug = "[d] "
+	issue = "[!] "
+	shell = "[>] "
+
+	colorInfo  = white + "[" + blue + "i" + white + "]" + reset + " "
+	colorDebug = white + "[" + orange + "d" + white + "]" + reset + " "
+	colorIssue = white + "[" + red + "!" + white + "]" + reset + " "
+	colorShell = white + "[" + green + ">" + white + "]" + reset + " "
 
 	blue   = ansi.ColorCode("blue+bh")
 	white  = ansi.ColorCode("white+bh")
@@ -28,35 +34,64 @@ var (
 )
 
 func LogLine(prefix, msg string, color int) {
-	colorCode := strconv.Itoa(color)
-	fmt.Println(ansi.ColorCode(colorCode) + prefix + reset + " " + msg)
+	if Color {
+		colorCode := strconv.Itoa(color)
+		fmt.Println(ansi.ColorCode(colorCode) + prefix + reset + " " + msg)
+	} else {
+		fmt.Println(prefix + " " + msg)
+	}
 }
 
 func KeyValue(key, value string, a ...interface{}) {
-	fmt.Fprintf(os.Stdout, white+key+reset+": "+value, a...)
+	if Color {
+		fmt.Fprintf(os.Stdout, white+key+reset+": "+value, a...)
+	} else {
+		fmt.Fprintf(os.Stdout, key+": "+value, a...)
+	}
 }
 
 func Header(s string) {
 	fmt.Print("\n")
-	fmt.Print(white + s + reset + "\n")
+
+	if Color {
+		fmt.Print(white + s + reset + "\n")
+	} else {
+		fmt.Println(s)
+	}
 }
 
 func Info(msg string, a ...interface{}) {
-	fmt.Fprintf(os.Stdout, info+msg+reset+"\n", a...)
+	if Color {
+		fmt.Fprintf(os.Stdout, colorInfo+msg+reset+"\n", a...)
+	} else {
+		fmt.Fprintf(os.Stdout, info+msg+"\n", a...)
+	}
 }
 
 func Debug(msg string, a ...interface{}) {
 	if Verbose {
-		fmt.Fprintf(os.Stdout, debug+msg+reset+"\n", a...)
+		if Color {
+			fmt.Fprintf(os.Stdout, colorDebug+msg+reset+"\n", a...)
+		} else {
+			fmt.Fprintf(os.Stdout, debug+msg+"\n", a...)
+		}
 	}
 }
 
 func Shell(msg string, a ...interface{}) {
-	fmt.Fprintf(os.Stdout, shell+green+msg+reset+"\n", a...)
+	if Color {
+		fmt.Fprintf(os.Stdout, colorShell+green+msg+reset+"\n", a...)
+	} else {
+		fmt.Fprintf(os.Stdout, shell+msg+"\n", a...)
+	}
 }
 
 func Issue(msg string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, issue+red+msg+reset+"\n", a...)
+	if Color {
+		fmt.Fprintf(os.Stderr, colorIssue+red+msg+reset+"\n", a...)
+	} else {
+		fmt.Fprintf(os.Stderr, issue+msg+"\n", a...)
+	}
 }
 
 func Error(err error, msg string, a ...interface{}) {
