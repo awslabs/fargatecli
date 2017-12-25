@@ -135,6 +135,28 @@ func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) strin
 	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
 }
 
+func (ecs *ECS) IncrementTaskDefinition(taskDefinitionArn string) string {
+	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
+
+	resp, err := ecs.svc.RegisterTaskDefinition(
+		&awsecs.RegisterTaskDefinitionInput{
+			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
+			Cpu:                     taskDefinition.Cpu,
+			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
+			Family:                  taskDefinition.Family,
+			Memory:                  taskDefinition.Memory,
+			NetworkMode:             taskDefinition.NetworkMode,
+			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not register ECS task definition")
+	}
+
+	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
+}
+
 func (ecs *ECS) getDeploymentId(taskDefinitionArn string) string {
 	contents := strings.Split(taskDefinitionArn, ":")
 	return contents[len(contents)-1]
