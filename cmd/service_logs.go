@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	lru "github.com/hashicorp/golang-lru"
@@ -74,7 +75,7 @@ func init() {
 func parseTime(timeRaw string) time.Time {
 	var t time.Time
 
-	if duration, err := time.ParseDuration(timeRaw); err == nil {
+	if duration, err := time.ParseDuration(strings.ToLower(timeRaw)); err == nil {
 		return time.Now().Add(duration)
 	}
 
@@ -103,7 +104,6 @@ func getServiceLogs(serviceName string) {
 
 func followLogs(logGroupName string) {
 	ticker := time.NewTicker(time.Second)
-	followStartTime := time.Now()
 
 	if startTime.IsZero() {
 		startTime = time.Now()
@@ -114,7 +114,7 @@ func followLogs(logGroupName string) {
 	for {
 		getLogs(logGroupName)
 
-		if newStartTime := time.Now().Add(-10 * time.Second); newStartTime.After(followStartTime) {
+		if newStartTime := time.Now().Add(-10 * time.Second); newStartTime.After(startTime) {
 			startTime = newStartTime
 		}
 
