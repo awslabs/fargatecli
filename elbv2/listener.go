@@ -33,9 +33,10 @@ func (r *Rule) String() string {
 }
 
 type Listener struct {
-	Arn      string
-	Port     int64
-	Protocol string
+	Arn             string
+	Port            int64
+	Protocol        string
+	CertificateArns []string
 }
 
 func (l *Listener) String() string {
@@ -225,15 +226,21 @@ func (elbv2 *ELBV2) GetListeners(lbArn string) []Listener {
 	err := elbv2.svc.DescribeListenersPages(
 		input,
 		func(resp *awselbv2.DescribeListenersOutput, lastPage bool) bool {
-			for _, listener := range resp.Listeners {
-				listeners = append(
-					listeners,
-					Listener{
-						Arn:      aws.StringValue(listener.ListenerArn),
-						Port:     aws.Int64Value(listener.Port),
-						Protocol: aws.StringValue(listener.Protocol),
-					},
-				)
+			for _, l := range resp.Listeners {
+				listener := Listener{
+					Arn:      aws.StringValue(l.ListenerArn),
+					Port:     aws.Int64Value(l.Port),
+					Protocol: aws.StringValue(l.Protocol),
+				}
+
+				for _, certificate := range l.Certificates {
+					listener.CertificateArns = append(
+						listener.CertificateArns,
+						aws.StringValue(certificate.CertificateArn),
+					)
+				}
+
+				listeners = append(listeners, listener)
 			}
 
 			return true

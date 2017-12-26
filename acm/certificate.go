@@ -184,6 +184,20 @@ func (acm *ACM) DescribeCertificate(domainName string) *Certificate {
 	return certificate
 }
 
+func (acm *ACM) ListCertificateDomainNames(certificateArns []string) []string {
+	var domainNames []string
+
+	for _, certificate := range acm.listCertificates() {
+		for _, certificateArn := range certificateArns {
+			if certificate.Arn == certificateArn {
+				domainNames = append(domainNames, certificate.DomainName)
+			}
+		}
+	}
+
+	return domainNames
+}
+
 func (acm *ACM) ImportCertificate(certificate, privateKey, certificateChain []byte) {
 	console.Debug("Importing ACM certificate")
 

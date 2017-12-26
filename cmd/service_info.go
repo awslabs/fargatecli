@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	ACM "github.com/jpignata/fargate/acm"
 	"github.com/jpignata/fargate/console"
 	EC2 "github.com/jpignata/fargate/ec2"
 	ECS "github.com/jpignata/fargate/ecs"
@@ -38,6 +39,7 @@ func init() {
 func getServiceInfo(operation *ServiceInfoOperation) {
 	var eniIds []string
 
+	acm := ACM.New(sess)
 	ecs := ECS.New(sess)
 	ec2 := EC2.New(sess)
 	elbv2 := ELBV2.New(sess)
@@ -61,6 +63,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 		if len(listeners) > 0 {
 			var listenerOutput []string
 			var ruleOutput []string
+			var certificateDomains []string
 
 			for _, listener := range listeners {
 				listenerOutput = append(listenerOutput, listener.String())
@@ -70,6 +73,10 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 						ruleOutput = append(ruleOutput, rule.String())
 					}
 				}
+
+				if len(listener.CertificateArns) > 0 {
+					certificateDomains = acm.ListCertificateDomainNames(listener.CertificateArns)
+				}
 			}
 
 			console.KeyValue("Load Balancer", "\n")
@@ -77,6 +84,11 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 			console.KeyValue("  DNS Name", "%s\n", loadBalancer.DNSName)
 			console.KeyValue("  Listeners", "%s\n", strings.Join(listenerOutput, ", "))
 			console.KeyValue("  Rules", "%s\n", strings.Join(ruleOutput, ", "))
+
+			if len(certificateDomains) > 0 {
+				console.KeyValue("  Certificates", "%s\n", strings.Join(certificateDomains, ", "))
+			}
+
 		}
 	}
 
