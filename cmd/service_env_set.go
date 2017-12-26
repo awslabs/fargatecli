@@ -6,36 +6,53 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type ServiceEnvSetOperation struct {
+	ServiceName string
+	EnvVars     []ECS.EnvVar
+}
+
+func (o *ServiceEnvSetOperation) Validate() {
+	if len(o.EnvVars) == 0 {
+		console.IssueExit("No environment variables specified")
+	}
+}
+
+func (o *ServiceEnvSetOperation) SetEnvVars(inputEnvVars []string) {
+	o.EnvVars = extractEnvVars(inputEnvVars)
+}
+
+var flagServiceEnvSetEnvVars []string
+
 var serviceEnvSetCmd = &cobra.Command{
 	Use: "set",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		extractEnvVars()
-	},
 	Run: func(cmd *cobra.Command, args []string) {
-		serviceEnvSet(args[0])
+		operation := &ServiceEnvSetOperation{
+			ServiceName: args[0],
+			EnvVars:     envVars,
+		}
+
+		operation.SetEnvVars(flagServiceEnvSetEnvVars)
+		operation.Validate()
+		serviceEnvSet(operation)
 	},
 }
 
 func init() {
-	serviceEnvSetCmd.Flags().StringSliceVarP(&envVarsRaw, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
+	serviceEnvSetCmd.Flags().StringSliceVarP(&flagServiceEnvSetEnvVars, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
 
 	serviceEnvCmd.AddCommand(serviceEnvSetCmd)
 }
 
-func serviceEnvSet(serviceName string) {
-	if len(envVars) == 0 {
-		console.ErrorExit(nil, "No environment variables specified")
-	}
+func serviceEnvSet(operation *ServiceEnvSetOperation) {
+	console.Info("Setting %s environment variables:", operation.ServiceName)
 
-	console.Info("Setting %s environment variables:", serviceName)
-
-	for _, envVar := range envVars {
+	for _, envVar := range operation.EnvVars {
 		console.Info("- %s=%s", envVar.Key, envVar.Value)
 	}
 
 	ecs := ECS.New(sess)
-	service := ecs.DescribeService(serviceName)
-	taskDefinitionArn := ecs.AddEnvVarsToTaskDefinition(service.TaskDefinitionArn, envVars)
+	service := ecs.DescribeService(operation.ServiceName)
+	taskDefinitionArn := ecs.AddEnvVarsToTaskDefinition(service.TaskDefinitionArn, operation.EnvVars)
 
-	ecs.UpdateServiceTaskDefinition(serviceName, taskDefinitionArn)
+	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
 }

@@ -15,10 +15,23 @@ import (
 )
 
 const (
-	clusterName   = "fargate"
-	defaultRegion = "us-east-1"
-	version       = "0.0.1"
+	clusterName         = "fargate"
+	defaultRegion       = "us-east-1"
+	version             = "0.0.1"
+	mebibytesInGibibyte = 1024
+	cpuUnitsInVCpu      = 1024
 )
+
+var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings
+
+CPU (CPU Units)    Memory (MiB)
+---------------    ------------
+256                512, 1024, or 2048
+512                1024 through 4096 in 1GB increments
+1024               2048 through 8192 in 1GB increments
+2048               4096 through 16384 in 1GB increments
+4096               8192 through 30720 in 1GB increments
+`)
 
 var validRegions = []string{"us-east-1"}
 
@@ -148,23 +161,70 @@ func inflatePorts(src []string) (ports []Port) {
 	return
 }
 
-func extractEnvVars() {
-	if len(envVarsRaw) == 0 {
-		return
+func extractEnvVars(inputEnvVars []string) []ECS.EnvVar {
+	var envVars []ECS.EnvVar
+
+	if len(inputEnvVars) == 0 {
+		return envVars
 	}
 
-	for _, envVar := range envVarsRaw {
-		splitEnvVar := strings.Split(envVar, "=")
+	for _, inputEnvVar := range inputEnvVars {
+		splitInputEnvVar := strings.SplitN(inputEnvVar, "=", 2)
 
-		if len(splitEnvVar) != 2 {
-			console.ErrorExit(fmt.Errorf("%s must be in the form of KEY=value", envVar), "Invalid environment variable")
+		if len(splitInputEnvVar) != 2 {
+			console.ErrorExit(fmt.Errorf("%s must be in the form of KEY=value", inputEnvVar), "Invalid environment variable")
 		}
 
 		envVar := ECS.EnvVar{
-			Key:   strings.ToUpper(splitEnvVar[0]),
-			Value: splitEnvVar[1],
+			Key:   strings.ToUpper(splitInputEnvVar[0]),
+			Value: splitInputEnvVar[1],
 		}
 
 		envVars = append(envVars, envVar)
 	}
+
+	return envVars
+}
+
+func validateCpuAndMemory(inputCpuUnits, inputMebibytes string) error {
+	cpuUnits, err := strconv.ParseInt(inputCpuUnits, 10, 16)
+
+	if err != nil {
+		return err
+	}
+
+	mebibytes, err := strconv.ParseInt(inputMebibytes, 10, 16)
+
+	if err != nil {
+		return err
+	}
+
+	switch cpuUnits {
+	case 256:
+		if mebibytes == 512 || validateMebibytes(mebibytes, 1024, 2048) {
+			return nil
+		}
+	case 512:
+		if validateMebibytes(mebibytes, 1024, 4096) {
+			return nil
+		}
+	case 1024:
+		if validateMebibytes(mebibytes, 2048, 8192) {
+			return nil
+		}
+	case 2048:
+		if validateMebibytes(mebibytes, 4096, 16384) {
+			return nil
+		}
+	case 4096:
+		if validateMebibytes(mebibytes, 8192, 30720) {
+			return nil
+		}
+	}
+
+	return InvalidCpuAndMemoryCombination
+}
+
+func validateMebibytes(mebibytes, min, max int64) bool {
+	return mebibytes >= min && mebibytes <= max && mebibytes%mebibytesInGibibyte == 0
 }

@@ -12,12 +12,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type ServiceProcessListOperation struct {
+	ServiceName string
+}
+
 var servicePsCmd = &cobra.Command{
 	Use:   "ps <service name>",
 	Short: "List running tasks in a service",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		psService(args[0])
+		operation := &ServiceProcessListOperation{
+			ServiceName: args[0],
+		}
+
+		getServiceProcessList(operation)
 	},
 }
 
@@ -25,12 +33,12 @@ func init() {
 	serviceCmd.AddCommand(servicePsCmd)
 }
 
-func psService(serviceName string) {
+func getServiceProcessList(operation *ServiceProcessListOperation) {
 	var eniIds []string
 
 	ecs := ECS.New(sess)
 	ec2 := EC2.New(sess)
-	tasks := ecs.DescribeTasksForService(serviceName)
+	tasks := ecs.DescribeTasksForService(operation.ServiceName)
 
 	for _, task := range tasks {
 		if task.EniId != "" {

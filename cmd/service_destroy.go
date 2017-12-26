@@ -6,12 +6,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type ServiceDestroyOperation struct {
+	ServiceName string
+}
+
 var serviceDestroyCmd = &cobra.Command{
 	Use:   "destroy <service name>",
 	Short: "Delete a service",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		destroyService(args[0])
+		operation := &ServiceDestroyOperation{
+			ServiceName: args[0],
+		}
+
+		destroyService(operation)
 	},
 }
 
@@ -19,9 +27,9 @@ func init() {
 	serviceCmd.AddCommand(serviceDestroyCmd)
 }
 
-func destroyService(serviceName string) {
-	console.Info("[%s] Destroying service", serviceName)
+func destroyService(operation *ServiceDestroyOperation) {
+	console.Info("[%s] Destroying service", operation.ServiceName)
 
 	ecs := ECS.New(sess)
-	ecs.DestroyService(serviceName)
+	ecs.DestroyService(operation.ServiceName)
 }

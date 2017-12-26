@@ -2,12 +2,46 @@ package cmd
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/jpignata/fargate/console"
 	ECS "github.com/jpignata/fargate/ecs"
-	serviceutil "github.com/jpignata/fargate/service"
 	"github.com/spf13/cobra"
+)
+
+type ServiceUpdateOperation struct {
+	ServiceName string
+	Cpu         string
+	Memory      string
+	Ecs         ECS.ECS
+	Service     ECS.Service
+}
+
+func (o *ServiceUpdateOperation) Validate() {
+	if o.Cpu == "" && o.Memory == "" {
+		console.ErrorExit(fmt.Errorf("--cpu and/or --memory must be supplied"), "Invalid command line arguments")
+	}
+
+	o.Service = o.Ecs.DescribeService(o.ServiceName)
+	cpu, memory := o.Ecs.GetCpuAndMemoryFromTaskDefinition(o.Service.TaskDefinitionArn)
+
+	if o.Cpu == "" {
+		o.Cpu = cpu
+	}
+
+	if o.Memory == "" {
+		o.Memory = memory
+	}
+
+	err := validateCpuAndMemory(o.Cpu, o.Memory)
+
+	if err != nil {
+		console.ErrorExit(err, "Invalid settings: %d CPU units / %d MiB", o.Cpu, o.Memory)
+	}
+}
+
+var (
+	flagServiceUpdateCpu    string
+	flagServiceUpdateMemory string
 )
 
 var serviceUpdateCmd = &cobra.Command{
@@ -15,70 +49,32 @@ var serviceUpdateCmd = &cobra.Command{
 	Short: "Update cpu and/or memory settings",
 	Long:  "Update cpu and/or memory settings",
 	Args:  cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, args []string) {
-		if cpu == 0 && memory == 0 {
-			console.ErrorExit(fmt.Errorf("--cpu and/or --memory must be supplied"), "Invalid command line arguments")
-		}
-	},
 	Run: func(cmd *cobra.Command, args []string) {
-		updateService(args[0])
+		operation := &ServiceUpdateOperation{
+			ServiceName: args[0],
+			Cpu:         flagServiceUpdateCpu,
+			Memory:      flagServiceUpdateMemory,
+		}
+
+		updateService(operation)
 	},
 }
 
 func init() {
 	serviceCmd.AddCommand(serviceUpdateCmd)
 
-	serviceUpdateCmd.Flags().Int16VarP(&cpu, "cpu", "c", 0, "Amount of cpu units to allocate for each task")
-	serviceUpdateCmd.Flags().Int16VarP(&memory, "memory", "m", 0, "Amount of MiB to allocate for each task")
+	serviceUpdateCmd.Flags().StringVarP(&flagServiceUpdateCpu, "cpu", "c", "", "Amount of cpu units to allocate for each task")
+	serviceUpdateCmd.Flags().StringVarP(&flagServiceUpdateMemory, "memory", "m", "", "Amount of MiB to allocate for each task")
 }
 
-func updateService(serviceName string) {
-	var (
-		newCpu    int16
-		newMemory int16
+func updateService(operation *ServiceUpdateOperation) {
+	console.Info("Updating service %s to %d CPU units / %d MiB", operation.ServiceName, operation.Cpu, operation.Memory)
+
+	newTaskDefinitionArn := operation.Ecs.UpdateTaskDefinitionCpuAndMemory(
+		operation.Service.TaskDefinitionArn,
+		operation.Cpu,
+		operation.Memory,
 	)
 
-	ecs := ECS.New(sess)
-	service := ecs.DescribeService(serviceName)
-	taskDefinition := ecs.DescribeTaskDefinition(service.TaskDefinitionArn)
-
-	if cpu > 0 {
-		newCpu = cpu
-	} else {
-		parsedCpu, err := strconv.ParseInt(*taskDefinition.Cpu, 10, 16)
-
-		if err == nil {
-			newCpu = int16(parsedCpu)
-		} else {
-			console.ErrorExit(err, "Invalid command line arguments")
-		}
-	}
-
-	if memory > 0 {
-		newMemory = memory
-	} else {
-		parsedMemory, err := strconv.ParseInt(*taskDefinition.Memory, 10, 16)
-
-		if err == nil {
-			newMemory = int16(parsedMemory)
-		} else {
-			console.ErrorExit(err, "Invalid command line arguments")
-		}
-	}
-
-	err := serviceutil.ValidateCpuAndMemory(newCpu, newMemory)
-
-	if err != nil {
-		console.ErrorExit(err, "Invalid settings: %d CPU units / %d MiB", newCpu, newMemory)
-	}
-
-	console.Info("Updating service %s to %d CPU units / %d MiB", serviceName, newCpu, newMemory)
-
-	newTaskDefinitionArn := ecs.UpdateTaskDefinitionCpuAndMemory(
-		service.TaskDefinitionArn,
-		strconv.FormatInt(int64(newCpu), 10),
-		strconv.FormatInt(int64(newMemory), 10),
-	)
-
-	ecs.UpdateServiceTaskDefinition(serviceName, newTaskDefinitionArn)
+	operation.Ecs.UpdateServiceTaskDefinition(operation.ServiceName, newTaskDefinitionArn)
 }

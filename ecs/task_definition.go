@@ -283,3 +283,9 @@ func (ecs *ECS) getDeploymentId(taskDefinitionArn string) string {
 	contents := strings.Split(taskDefinitionArn, ":")
 	return contents[len(contents)-1]
 }
+
+func (ecs *ECS) GetCpuAndMemoryFromTaskDefinition(taskDefinitionArn string) (string, string) {
+	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
+
+	return aws.StringValue(taskDefinition.Cpu), aws.StringValue(taskDefinition.Memory)
+}

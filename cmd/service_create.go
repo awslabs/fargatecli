@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	CWL "github.com/jpignata/fargate/cloudwatchlogs"
@@ -15,116 +14,96 @@ import (
 	ELBV2 "github.com/jpignata/fargate/elbv2"
 	"github.com/jpignata/fargate/git"
 	IAM "github.com/jpignata/fargate/iam"
-	"github.com/jpignata/fargate/service"
 	"github.com/spf13/cobra"
 )
 
-var validRuleTypes = regexp.MustCompile("(?i)^host|path$")
+const validRuleTypesPattern = "(?i)^host|path$"
 
-var cpu int16
-var image string
-var memory int16
-var portRaw string
-var port Port
-var lbName string
-var lbArn string
-var rules []ELBV2.Rule
-var rulesRaw []string
-
-var serviceCreateCmd = &cobra.Command{
-	Use:   "create <service name>",
-	Short: "Create and deploy and new service",
-	Args:  cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, args []string) {
-		if portRaw != "" {
-			port = inflatePort(portRaw)
-			validatePort()
-		}
-
-		if lbName != "" {
-			validateLb()
-		}
-
-		validateCpuAndMemory()
-		extractEnvVars()
-		validateAndExtractRules()
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		createService(args[0])
-	},
+type ServiceCreateOperation struct {
+	ServiceName      string
+	Cpu              string
+	Image            string
+	Memory           string
+	Port             Port
+	LoadBalancerArn  string
+	LoadBalancerName string
+	Rules            []ELBV2.Rule
+	Elbv2            ELBV2.ELBV2
+	EnvVars          []ECS.EnvVar
 }
 
-func init() {
-	serviceCreateCmd.Flags().Int16VarP(&cpu, "cpu", "c", 256, "Amount of cpu units to allocate for each task")
-	serviceCreateCmd.Flags().Int16VarP(&memory, "memory", "m", 512, "Amount of MiB to allocate for each task")
-	serviceCreateCmd.Flags().StringSliceVarP(&envVarsRaw, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
-	serviceCreateCmd.Flags().StringVarP(&portRaw, "port", "p", "", "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935]")
-	serviceCreateCmd.Flags().StringVarP(&image, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
-	serviceCreateCmd.Flags().StringVarP(&lbName, "lb", "l", "", "Name of a load balancer to use")
-	serviceCreateCmd.Flags().StringSliceVarP(&rulesRaw, "rule", "r", []string{}, "Routing rule for the load balancer [e.g. host=api.example.com, path=/api/*]; if omitted service will be the default route")
+func (o *ServiceCreateOperation) SetPort(inputPort string) {
+	var msgs []string
 
-	serviceCmd.AddCommand(serviceCreateCmd)
+	port := inflatePort(inputPort)
+
+	if !validProtocols.MatchString(port.Protocol) {
+		msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
+	}
+
+	if port.Port < 1 || port.Port > 65535 {
+		msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
+	}
+
+	if len(msgs) > 0 {
+		console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
+	}
+
+	o.Port = port
 }
 
-func validateLb() {
-	elbv2 := ELBV2.New(sess)
-	loadBalancer := elbv2.DescribeLoadBalancer(lbName)
+func (o *ServiceCreateOperation) Validate() {
+	err := validateCpuAndMemory(o.Cpu, o.Memory)
+
+	if err != nil {
+		console.ErrorExit(err, "Invalid settings: %d CPU units / %d MiB", o.Cpu, o.Memory)
+	}
+}
+
+func (o *ServiceCreateOperation) SetLoadBalancer(lb string) {
+	loadBalancer := o.Elbv2.DescribeLoadBalancer(o.LoadBalancerName)
 
 	if loadBalancer.Type == "network" {
-		if port.Protocol != "TCP" {
-			console.ErrorExit(fmt.Errorf("network load balancer only supports TCP"), "Invalid load balancer and protocol")
+		if o.Port.Protocol != "TCP" {
+			console.ErrorExit(fmt.Errorf("network load balancer %s only supports TCP", lb), "Invalid load balancer and protocol")
 		}
 	}
 
 	if loadBalancer.Type == "application" {
-		if !(port.Protocol == "HTTP" || port.Protocol == "HTTPS") {
-			console.ErrorExit(fmt.Errorf("application load balancer only supports HTTP or HTTPS"), "Invalid load balancer and protocol")
+		if !(o.Port.Protocol == "HTTP" || o.Port.Protocol == "HTTPS") {
+			console.ErrorExit(fmt.Errorf("application load balancer %s only supports HTTP or HTTPS", lb), "Invalid load balancer and protocol")
 		}
 	}
 
-	lbArn = loadBalancer.Arn
+	o.LoadBalancerName = lb
+	o.LoadBalancerArn = loadBalancer.Arn
 }
 
-func validatePort() {
+func (o *ServiceCreateOperation) SetRules(inputRules []string) {
+	var rules []ELBV2.Rule
 	var msgs []string
 
-	for _, port := range ports {
-		if !validProtocols.MatchString(port.Protocol) {
-			msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
-		}
+	validRuleTypes := regexp.MustCompile(validRuleTypesPattern)
 
-		if port.Port < 1 || port.Port > 65535 {
-			msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
-		}
-
-		if len(msgs) > 0 {
-			console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
-		}
-	}
-}
-
-func validateAndExtractRules() {
-	var msgs []string
-
-	if len(rulesRaw) > 0 && lbName == "" {
+	if len(inputRules) > 0 && o.LoadBalancerArn == "" {
 		msgs = append(msgs, "lb must be configured if rules are specified")
 	}
 
-	for _, ruleRaw := range rulesRaw {
-		splitRuleRaw := strings.Split(ruleRaw, "=")
+	for _, inputRule := range inputRules {
+		splitInputRule := strings.SplitN(inputRule, "=", 2)
 
-		if len(splitRuleRaw) != 2 {
+		if len(splitInputRule) != 2 {
 			msgs = append(msgs, "rules must be in the form of type=value")
 		}
 
-		if !validRuleTypes.MatchString(splitRuleRaw[0]) {
-			msgs = append(msgs, fmt.Sprintf("Invalid rule type %s [must be path or host]", splitRuleRaw[0]))
+		if !validRuleTypes.MatchString(splitInputRule[0]) {
+			msgs = append(msgs, fmt.Sprintf("Invalid rule type %s [must be path or host]", splitInputRule[0]))
 		}
 
 		rules = append(rules,
 			ELBV2.Rule{
-				Type:  splitRuleRaw[0],
-				Value: splitRuleRaw[1],
+				Type:  splitInputRule[0],
+				Value: splitInputRule[1],
 			},
 		)
 	}
@@ -132,24 +111,66 @@ func validateAndExtractRules() {
 	if len(msgs) > 0 {
 		console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid rule")
 	}
+
+	o.Rules = rules
 }
 
-func validateCpuAndMemory() {
-	err := service.ValidateCpuAndMemory(cpu, memory)
-
-	if err != nil {
-		console.ErrorExit(err, "Invalid command line flags")
-	}
+func (o *ServiceCreateOperation) SetEnvVars(inputEnvVars []string) {
+	o.EnvVars = extractEnvVars(inputEnvVars)
 }
 
-func createService(serviceName string) {
-	console.Info("Creating %s", serviceName)
+var (
+	flagServiceCreateCpu     string
+	flagServiceCreateEnvVars []string
+	flagServiceCreateImage   string
+	flagServiceCreateLb      string
+	flagServiceCreateMemory  string
+	flagServiceCreatePort    string
+	flagServiceCreateRules   []string
+)
+
+var serviceCreateCmd = &cobra.Command{
+	Use:   "create <service name>",
+	Short: "Create and deploy and new service",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		operation := &ServiceCreateOperation{
+			ServiceName: args[0],
+			Cpu:         flagServiceCreateCpu,
+			Memory:      flagServiceCreateMemory,
+			Image:       flagServiceCreateImage,
+			Elbv2:       ELBV2.New(sess),
+		}
+
+		operation.Validate()
+		operation.SetPort(flagServiceCreatePort)
+		operation.SetLoadBalancer(flagServiceCreateLb)
+		operation.SetRules(flagServiceCreateRules)
+		operation.SetEnvVars(flagServiceCreateEnvVars)
+
+		createService(operation)
+	},
+}
+
+func init() {
+	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateCpu, "cpu", "c", "256", "Amount of cpu units to allocate for each task")
+	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateMemory, "memory", "m", "512", "Amount of MiB to allocate for each task")
+	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateEnvVars, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
+	serviceCreateCmd.Flags().StringVarP(&flagServiceCreatePort, "port", "p", "", "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935]")
+	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateImage, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
+	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateLb, "lb", "l", "", "Name of a load balancer to use")
+	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateRules, "rule", "r", []string{}, "Routing rule for the load balancer [e.g. host=api.example.com, path=/api/*]; if omitted service will be the default route")
+
+	serviceCmd.AddCommand(serviceCreateCmd)
+}
+
+func createService(operation *ServiceCreateOperation) {
+	console.Info("Creating %s", operation.ServiceName)
 
 	cwl := CWL.New(sess)
 	ec2 := EC2.New(sess)
 	ecr := ECR.New(sess)
 	ecs := ECS.New(sess)
-	elbv2 := ELBV2.New(sess)
 	iam := IAM.New(sess)
 
 	var (
@@ -157,21 +178,19 @@ func createService(serviceName string) {
 		repositoryUri  string
 	)
 
-	if ecr.IsRepositoryCreated(serviceName) {
-		repositoryUri = ecr.GetRepositoryUri(serviceName)
+	if ecr.IsRepositoryCreated(operation.ServiceName) {
+		repositoryUri = ecr.GetRepositoryUri(operation.ServiceName)
 	} else {
-		repositoryUri = ecr.CreateRepository(serviceName)
+		repositoryUri = ecr.CreateRepository(operation.ServiceName)
 	}
 
 	clusterName := ecs.CreateCluster()
-	repository := docker.Repository{
-		Uri: repositoryUri,
-	}
+	repository := docker.Repository{Uri: repositoryUri}
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
-	logGroupName := cwl.CreateLogGroup(logGroupFormat, serviceName)
+	logGroupName := cwl.CreateLogGroup(logGroupFormat, operation.ServiceName)
 
-	if image == "" {
+	if operation.Image == "" {
 		var tag string
 
 		username, password := ecr.GetUsernameAndPassword()
@@ -186,38 +205,38 @@ func createService(serviceName string) {
 		repository.Build(tag)
 		repository.Push(tag)
 
-		image = repository.UriFor(tag)
+		operation.Image = repository.UriFor(tag)
 	}
 
-	if lbArn != "" {
+	if operation.LoadBalancerArn != "" {
 		vpcId := ec2.GetDefaultVpcId()
-		targetGroupArn = elbv2.CreateTargetGroup(
+		targetGroupArn = operation.Elbv2.CreateTargetGroup(
 			&ELBV2.CreateTargetGroupInput{
-				Name:     lbName + "-" + serviceName,
-				Port:     port.Port,
-				Protocol: port.Protocol,
+				Name:     operation.LoadBalancerName + "-" + operation.ServiceName,
+				Port:     operation.Port.Port,
+				Protocol: operation.Port.Protocol,
 				VpcId:    vpcId,
 			},
 		)
 
-		if len(rules) > 0 {
-			for _, rule := range rules {
-				elbv2.AddRule(lbArn, targetGroupArn, rule)
+		if len(operation.Rules) > 0 {
+			for _, rule := range operation.Rules {
+				operation.Elbv2.AddRule(operation.LoadBalancerArn, targetGroupArn, rule)
 			}
 		} else {
-			elbv2.ModifyLoadBalancerDefaultAction(lbArn, targetGroupArn)
+			operation.Elbv2.ModifyLoadBalancerDefaultAction(operation.LoadBalancerArn, targetGroupArn)
 		}
 	}
 
 	taskDefinitionArn := ecs.CreateTaskDefinition(
 		&ECS.CreateTaskDefinitionInput{
-			Cpu:              strconv.FormatInt(int64(cpu), 10),
-			EnvVars:          envVars,
+			Cpu:              operation.Cpu,
+			EnvVars:          operation.EnvVars,
 			ExecutionRoleArn: ecsTaskExecutionRoleArn,
-			Image:            image,
-			Memory:           strconv.FormatInt(int64(memory), 10),
-			Name:             serviceName,
-			Port:             port.Port,
+			Image:            operation.Image,
+			Memory:           operation.Memory,
+			Name:             operation.ServiceName,
+			Port:             operation.Port.Port,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
 		},
@@ -225,8 +244,8 @@ func createService(serviceName string) {
 	ecs.CreateService(
 		&ECS.CreateServiceInput{
 			Cluster:           clusterName,
-			Name:              serviceName,
-			Port:              port.Port,
+			Name:              operation.ServiceName,
+			Port:              operation.Port.Port,
 			SubnetIds:         subnetIds,
 			TargetGroupArn:    targetGroupArn,
 			TaskDefinitionArn: taskDefinitionArn,

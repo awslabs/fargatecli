@@ -16,130 +16,177 @@ const (
 	timeFormat          = "2006-01-02 15:04:05"
 	timeFormatWithZone  = "2006-01-02 15:04:05 MST"
 	logStreamNameFormat = "fargate/%s/%s"
+	eventCacheSize      = 10000
 )
 
+type Empty struct{}
+
+type GetServiceLogsOperation struct {
+	ServiceName     string
+	EndTime         time.Time
+	Filter          string
+	Follow          bool
+	LogStreamColors map[string]int
+	LogStreamNames  []string
+	StartTime       time.Time
+	EventCache      *lru.Cache
+}
+
+func (o *GetServiceLogsOperation) AddStartTime(rawStartTime string) {
+	if rawStartTime != "" {
+		o.StartTime = o.parseTime(rawStartTime)
+	}
+}
+
+func (o *GetServiceLogsOperation) AddEndTime(rawEndTime string) {
+	if rawEndTime != "" {
+		o.EndTime = o.parseTime(rawEndTime)
+	}
+}
+
+func (o *GetServiceLogsOperation) AddTasks(tasks []string) {
+	for _, task := range tasks {
+		logStreamName := fmt.Sprintf(logStreamNameFormat, o.ServiceName, task)
+		o.LogStreamNames = append(o.LogStreamNames, logStreamName)
+	}
+}
+
+func (o *GetServiceLogsOperation) Validate() {
+	if o.Follow && !o.EndTime.IsZero() {
+		console.ErrorExit(fmt.Errorf("--end-time cannot be specified if following"), "Invalid command line flags")
+	}
+}
+
+func (o *GetServiceLogsOperation) GetStreamColor(logStreamName string) int {
+	if o.LogStreamColors == nil {
+		o.LogStreamColors = make(map[string]int)
+	}
+
+	if o.LogStreamColors[logStreamName] == 0 {
+		o.LogStreamColors[logStreamName] = rand.Intn(256)
+	}
+
+	return o.LogStreamColors[logStreamName]
+}
+
+func (o *GetServiceLogsOperation) SeenEvent(eventId string) bool {
+	if o.EventCache == nil {
+		o.EventCache, _ = lru.New(eventCacheSize)
+	}
+
+	if !o.EventCache.Contains(eventId) {
+		o.EventCache.Add(eventId, Empty{})
+		return false
+	} else {
+		return true
+	}
+}
+
+func (o *GetServiceLogsOperation) LogGroupName() string {
+	return fmt.Sprintf(logGroupFormat, o.ServiceName)
+}
+
+func (o *GetServiceLogsOperation) parseTime(rawTime string) time.Time {
+	var t time.Time
+
+	if duration, err := time.ParseDuration(strings.ToLower(rawTime)); err == nil {
+		return time.Now().Add(duration)
+	}
+
+	if t, err := time.Parse(timeFormat, rawTime); err == nil {
+		return t
+	}
+
+	if t, err := time.Parse(timeFormatWithZone, rawTime); err == nil {
+		return t
+	}
+
+	console.ErrorExit(fmt.Errorf("Could not parse %s", rawTime), "Invalid command line flags")
+
+	return t
+}
+
 var (
-	filter         string
-	endTime        time.Time
-	startTime      time.Time
-	limit          int64
-	follow         bool
-	startTimeRaw   string
-	endTimeRaw     string
-	streamColors   map[string]int
-	logStreamNames []string
-	tasks          []string
-	eventCache     *lru.Cache
+	flagServiceLogsFilter    string
+	flagServiceLogsEndTime   string
+	flagServiceLogsStartTime string
+	flagServiceLogsFollow    bool
+	flagServiceLogsTasks     []string
 )
 
 var serviceLogsCmd = &cobra.Command{
 	Use:   "logs <service name>",
-	Short: "View logs from a service", Args: cobra.ExactArgs(1),
+	Short: "View logs from a service",
+	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
-		streamColors = make(map[string]int)
 		rand.Seed(time.Now().UTC().UnixNano())
-
-		if startTimeRaw != "" {
-			startTime = parseTime(startTimeRaw)
-		}
-
-		if endTimeRaw != "" {
-			endTime = parseTime(endTimeRaw)
-		}
-
-		if follow && !endTime.IsZero() {
-			console.ErrorExit(fmt.Errorf("--end-time cannot be specified if following"), "Invalid command line flags")
-		}
-
-		for _, task := range tasks {
-			logStreamName := fmt.Sprintf(logStreamNameFormat, args[0], task)
-			logStreamNames = append(logStreamNames, logStreamName)
-		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		getServiceLogs(args[0])
+		operation := &GetServiceLogsOperation{
+			ServiceName: args[0],
+			Filter:      flagServiceLogsFilter,
+			Follow:      flagServiceLogsFollow,
+		}
+
+		operation.AddTasks(flagServiceLogsTasks)
+		operation.AddStartTime(flagServiceLogsStartTime)
+		operation.AddEndTime(flagServiceLogsEndTime)
+
+		getServiceLogs(operation)
 	},
 }
 
 func init() {
 	serviceCmd.AddCommand(serviceLogsCmd)
 
-	serviceLogsCmd.Flags().BoolVarP(&follow, "follow", "f", false, "Poll logs and continuously print new events")
-	serviceLogsCmd.Flags().StringVar(&filter, "filter", "", "Filter pattern to apply")
-	serviceLogsCmd.Flags().StringVar(&startTimeRaw, "start", "", "Earliest time to return logs (e.g. -1h, 2018-01-01 09:36:00 EST")
-	serviceLogsCmd.Flags().StringVar(&endTimeRaw, "end", "", "Latest time to return logs (e.g. 3y, 2021-01-20 12:00:00 EST")
-	serviceLogsCmd.Flags().StringSliceVarP(&tasks, "tasks", "t", []string{}, "Show logs from specific task (can be specified multiple times)")
+	serviceLogsCmd.Flags().BoolVarP(&flagServiceLogsFollow, "follow", "f", false, "Poll logs and continuously print new events")
+	serviceLogsCmd.Flags().StringVar(&flagServiceLogsFilter, "filter", "", "Filter pattern to apply")
+	serviceLogsCmd.Flags().StringVar(&flagServiceLogsStartTime, "start", "", "Earliest time to return logs (e.g. -1h, 2018-01-01 09:36:00 EST")
+	serviceLogsCmd.Flags().StringVar(&flagServiceLogsEndTime, "end", "", "Latest time to return logs (e.g. 3y, 2021-01-20 12:00:00 EST")
+	serviceLogsCmd.Flags().StringSliceVarP(&flagServiceLogsTasks, "tasks", "t", []string{}, "Show logs from specific task (can be specified multiple times)")
 }
 
-func parseTime(timeRaw string) time.Time {
-	var t time.Time
-
-	if duration, err := time.ParseDuration(strings.ToLower(timeRaw)); err == nil {
-		return time.Now().Add(duration)
-	}
-
-	if t, err := time.Parse(timeFormat, timeRaw); err == nil {
-		return t
-	}
-
-	if t, err := time.Parse(timeFormatWithZone, timeRaw); err == nil {
-		return t
-	}
-
-	console.ErrorExit(fmt.Errorf("Could not parse %s", timeRaw), "Invalid command line flags")
-
-	return t
-}
-
-func getServiceLogs(serviceName string) {
-	logGroupName := fmt.Sprintf(logGroupFormat, serviceName)
-	eventCache, _ = lru.New(10000)
-
-	if follow {
-		followLogs(logGroupName)
+func getServiceLogs(operation *GetServiceLogsOperation) {
+	if operation.Follow {
+		followLogs(operation)
 	} else {
-		getLogs(logGroupName)
+		getLogs(operation)
 	}
 }
 
-func followLogs(logGroupName string) {
+func followLogs(operation *GetServiceLogsOperation) {
 	ticker := time.NewTicker(time.Second)
 
-	if startTime.IsZero() {
-		startTime = time.Now()
+	if operation.StartTime.IsZero() {
+		operation.StartTime = time.Now()
 	}
 
 	for {
-		getLogs(logGroupName)
+		getLogs(operation)
 
-		if newStartTime := time.Now().Add(-10 * time.Second); newStartTime.After(startTime) {
-			startTime = newStartTime
+		if newStartTime := time.Now().Add(-10 * time.Second); newStartTime.After(operation.StartTime) {
+			operation.StartTime = newStartTime
 		}
 
 		<-ticker.C
 	}
 }
 
-func getLogs(logGroupName string) {
-	var empty struct{}
-
+func getLogs(operation *GetServiceLogsOperation) {
 	cwl := CWL.New(sess)
 	input := &CWL.GetLogsInput{
-		LogStreamNames: logStreamNames,
-		LogGroupName:   logGroupName,
-		Filter:         filter,
-		StartTime:      startTime,
-		EndTime:        endTime,
+		LogStreamNames: operation.LogStreamNames,
+		LogGroupName:   operation.LogGroupName(),
+		Filter:         operation.Filter,
+		StartTime:      operation.StartTime,
+		EndTime:        operation.EndTime,
 	}
 
 	for _, logLine := range cwl.GetLogs(input) {
-		if streamColors[logLine.LogStreamName] == 0 {
-			streamColors[logLine.LogStreamName] = rand.Intn(256)
-		}
+		streamColor := operation.GetStreamColor(logLine.LogStreamName)
 
-		if !eventCache.Contains(logLine.EventId) {
-			console.LogLine(logLine.LogStreamName, logLine.Message, streamColors[logLine.LogStreamName])
-			eventCache.Add(logLine.EventId, empty)
+		if !operation.SeenEvent(logLine.EventId) {
+			console.LogLine(logLine.LogStreamName, logLine.Message, streamColor)
 		}
 	}
 }

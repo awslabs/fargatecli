@@ -12,12 +12,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type ServiceInfoOperation struct {
+	ServiceName string
+}
+
 var serviceInfoCmd = &cobra.Command{
 	Use:   "info <service name>",
 	Short: "Display information about a service",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		infoService(args[0])
+		operation := &ServiceInfoOperation{
+			ServiceName: args[0],
+		}
+
+		getServiceInfo(operation)
 	},
 }
 
@@ -25,21 +33,15 @@ func init() {
 	serviceCmd.AddCommand(serviceInfoCmd)
 }
 
-func infoService(serviceName string) {
+func getServiceInfo(operation *ServiceInfoOperation) {
 	var eniIds []string
 
 	ecs := ECS.New(sess)
 	ec2 := EC2.New(sess)
-	service := ecs.DescribeService(serviceName)
-	tasks := ecs.DescribeTasksForService(serviceName)
+	service := ecs.DescribeService(operation.ServiceName)
+	tasks := ecs.DescribeTasksForService(operation.ServiceName)
 
-	for _, task := range tasks {
-		if task.EniId != "" {
-			eniIds = append(eniIds, task.EniId)
-		}
-	}
-
-	console.KeyValue("Service Name", "%s\n", serviceName)
+	console.KeyValue("Service Name", "%s\n", operation.ServiceName)
 	console.KeyValue("Status", "\n")
 	console.KeyValue("  Desired", "%d\n", service.DesiredCount)
 	console.KeyValue("  Running", "%d\n", service.RunningCount)
@@ -51,8 +53,15 @@ func infoService(serviceName string) {
 	if len(tasks) > 0 {
 		console.Header("== Tasks ==")
 
+		for _, task := range tasks {
+			if task.EniId != "" {
+				eniIds = append(eniIds, task.EniId)
+			}
+		}
+
 		enis := ec2.DescribeNetworkInterfaces(eniIds)
 		w := new(tabwriter.Writer)
+
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
 		fmt.Fprintln(w, "ID\tIMAGE\tSTATUS\tRUNNING\tIP\tCPU\tMEMORY\tDEPLOYMENT\t")
 

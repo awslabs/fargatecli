@@ -6,13 +6,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type ServiceEnvListOperation struct {
+	ServiceName string
+}
+
 var serviceEnvListCmd = &cobra.Command{
 	Use: "list",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		extractEnvVars()
-	},
 	Run: func(cmd *cobra.Command, args []string) {
-		serviceEnvList(args[0])
+		operation := &ServiceEnvListOperation{
+			ServiceName: args[0],
+		}
+
+		serviceEnvList(operation)
 	},
 }
 
@@ -20,9 +25,9 @@ func init() {
 	serviceEnvCmd.AddCommand(serviceEnvListCmd)
 }
 
-func serviceEnvList(serviceName string) {
+func serviceEnvList(operation *ServiceEnvListOperation) {
 	ecs := ECS.New(sess)
-	service := ecs.DescribeService(serviceName)
+	service := ecs.DescribeService(operation.ServiceName)
 	envVars := ecs.GetEnvVarsFromTaskDefinition(service.TaskDefinitionArn)
 
 	for _, envVar := range envVars {
