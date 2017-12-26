@@ -43,12 +43,6 @@ func (l *Listener) String() string {
 	return fmt.Sprintf("%s:%d", l.Protocol, l.Port)
 }
 
-type DirRange []int64
-
-func (a DirRange) Len() int           { return len(a) }
-func (a DirRange) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a DirRange) Less(i, j int) bool { return a[i] < a[j] }
-
 func (input *CreateListenerInput) SetCertificateArns(arns []string) {
 	input.CertificateArns = arns
 }
@@ -194,7 +188,7 @@ func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
 }
 
 func (elbv2 *ELBV2) GetHighestPriorityFromListener(listenerArn string) int64 {
-	priorities := DirRange{}
+	var priorities []int
 
 	resp, err := elbv2.svc.DescribeRules(
 		&awselbv2.DescribeRulesInput{
@@ -207,13 +201,13 @@ func (elbv2 *ELBV2) GetHighestPriorityFromListener(listenerArn string) int64 {
 	}
 
 	for _, rule := range resp.Rules {
-		priority, _ := strconv.ParseInt(*rule.Priority, 10, 64)
+		priority, _ := strconv.Atoi(aws.StringValue(rule.Priority))
 		priorities = append(priorities, priority)
 	}
 
-	sort.Sort(priorities)
+	sort.Ints(priorities)
 
-	return priorities[len(priorities)-1]
+	return int64(priorities[len(priorities)-1])
 }
 
 func (elbv2 *ELBV2) GetListeners(lbArn string) []Listener {
