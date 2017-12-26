@@ -102,7 +102,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	}
 
 	if len(tasks) > 0 {
-		console.Header("== Tasks ==")
+		console.Header("Tasks")
 
 		for _, task := range tasks {
 			if task.EniId != "" {
@@ -133,7 +133,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	}
 
 	if len(service.Deployments) > 0 {
-		console.Header("== Deployments ==")
+		console.Header("Deployments")
 
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
@@ -155,7 +155,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	}
 
 	if len(service.Events) > 0 {
-		console.Header("== Events ==")
+		console.Header("Events")
 
 		for i, event := range service.Events {
 			fmt.Printf("[%s] %s\n", event.CreatedAt, event.Message)
