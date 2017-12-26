@@ -10,6 +10,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type CertificateValidateOperation struct {
+	DomainName string
+}
+
+func (o *CertificateValidateOperation) Validate() {
+	validateDomainName(o.DomainName)
+}
+
 var certificateValidateCmd = &cobra.Command{
 	Use:   "validate <domain name>",
 	Args:  cobra.ExactArgs(1),
@@ -21,11 +29,12 @@ within Amazon Route53 and within the same AWS account. If you're using another
 DNS provider, this command will return the DNS records you must add to your
 domain in order to validate domain ownership to complete the SSL certificate
 request.`,
-	PreRun: func(cmd *cobra.Command, args []string) {
-		validateDomainName(args[0])
-	},
 	Run: func(cmd *cobra.Command, args []string) {
-		validateCertificate(args[0])
+		operation := &CertificateValidateOperation{
+			DomainName: args[0],
+		}
+
+		validateCertificate(operation)
 	},
 }
 
@@ -33,14 +42,14 @@ func init() {
 	certificateCmd.AddCommand(certificateValidateCmd)
 }
 
-func validateCertificate(domainName string) {
-	console.Info("Validating certificate [%s]", domainName)
+func validateCertificate(operation *CertificateValidateOperation) {
+	console.Info("Validating certificate [%s]", operation.DomainName)
 
 	route53 := Route53.New(sess)
 	acm := ACM.New(sess)
 
 	hostedZones := route53.ListHostedZones()
-	certificate := acm.DescribeCertificate(domainName)
+	certificate := acm.DescribeCertificate(operation.DomainName)
 
 	if !certificate.IsPendingValidation() {
 		console.ErrorExit(fmt.Errorf("Certificate status is %s", util.Humanize(certificate.Status)), "Could not validate certificate")
@@ -56,8 +65,8 @@ func validateCertificate(domainName string) {
 		}
 	}
 
-	console.Info("[%s] Record validation could take up to several hours to complete", domainName)
-	console.Info("[%s] To view the status of pending validations, run: `fargate certificate info %s`", domainName, domainName)
+	console.Info("[%s] Record validation could take up to several hours to complete", operation.DomainName)
+	console.Info("[%s] To view the status of pending validations, run: `fargate certificate info %s`", operation.DomainName, operation.DomainName)
 }
 
 func createResourceRecord(v ACM.CertificateValidation, route53 Route53.Route53, hostedZones []Route53.HostedZone) bool {

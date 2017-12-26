@@ -6,12 +6,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	domainName string
-	aliases    []string
-)
+type CertificateRequestOperation struct {
+	DomainName string
+	Aliases    []string
+}
 
-var certificateCreateCmd = &cobra.Command{
+func (o *CertificateRequestOperation) Validate() {
+	validateDomainName(o.DomainName)
+
+	for _, alias := range o.Aliases {
+		err := ACM.ValidateAlias(alias)
+
+		if err != nil {
+			console.ErrorExit(err, "Invalid domain name")
+		}
+	}
+}
+
+var flagCertificateRequestAliases []string
+
+var certificateRequestCmd = &cobra.Command{
 	Use:   "request <domain name>",
 	Short: "Request a new SSL certificate",
 	Long: `Request a new SSL certificate
@@ -21,27 +35,31 @@ is made, domain ownership must be validated via DNS. The convenience command
 _fargate certificate validate_ can be used to create these records if your
 domain is hosted within Amazon Route53 and within the same AWS account.`,
 	Args: cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, args []string) {
-		validateDomainName(args[0])
-	},
 	Run: func(cmd *cobra.Command, args []string) {
-		createCertificate(args[0])
+		operation := &CertificateRequestOperation{
+			DomainName: args[0],
+			Aliases:    flagCertificateRequestAliases,
+		}
+
+		operation.Validate()
+
+		requestCertificate(operation)
 	},
 }
 
 func init() {
-	certificateCreateCmd.Flags().StringSliceVarP(&aliases, "alias", "a", []string{}, "Additional FQDNs to be includes in the Subject Alternative Name extension of the SSL certificate")
+	certificateRequestCmd.Flags().StringSliceVarP(&flagCertificateRequestAliases, "alias", "a", []string{}, "Additional FQDNs to be includes in the Subject Alternative Name extension of the SSL certificate")
 
-	certificateCmd.AddCommand(certificateCreateCmd)
+	certificateCmd.AddCommand(certificateRequestCmd)
 }
 
-func createCertificate(domainName string) {
-	console.Info("Requesting certificate [%s]", domainName)
+func requestCertificate(operation *CertificateRequestOperation) {
+	console.Info("Requesting certificate [%s]", operation.DomainName)
 
 	acm := ACM.New(sess)
-	acm.RequestCertificate(domainName, aliases)
+	acm.RequestCertificate(operation.DomainName, operation.Aliases)
 
-	console.Info("[%s] You must validate ownership of the domain name for the certificate to be issued", domainName)
-	console.Info("[%s] If your domain is hosted in Amazon Route53, you can do this by running: `fargate certificate validate %s`", domainName, domainName)
-	console.Info("[%s] Otherwise you must manually create the DNS records, see: `fargate certificate info %s`", domainName, domainName)
+	console.Info("[%s] You must validate ownership of the domain name for the certificate to be issued", operation.DomainName)
+	console.Info("[%s] If your domain is hosted in Amazon Route53, you can do this by running: `fargate certificate validate %s`", operation.DomainName, operation.DomainName)
+	console.Info("[%s] Otherwise you must manually create the DNS records, see: `fargate certificate info %s`", operation.DomainName, operation.DomainName)
 }

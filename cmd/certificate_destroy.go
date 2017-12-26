@@ -6,12 +6,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type CertificateDestroyOperation struct {
+	DomainName string
+}
+
 var certificateDestroyCmd = &cobra.Command{
 	Use:   "destroy <domain name>",
 	Short: "Deletes an SSL certificate",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		destroyCertificate(args[0])
+		operation := &CertificateDestroyOperation{
+			DomainName: args[0],
+		}
+
+		destroyCertificate(operation)
 	},
 }
 
@@ -19,9 +27,9 @@ func init() {
 	certificateCmd.AddCommand(certificateDestroyCmd)
 }
 
-func destroyCertificate(domainName string) {
-	console.Info("[%s] Destroying certificate", domainName)
+func destroyCertificate(operation *CertificateDestroyOperation) {
+	console.Info("[%s] Destroying certificate", operation.DomainName)
 
 	acm := ACM.New(sess)
-	acm.DeleteCertificate(domainName)
+	acm.DeleteCertificate(operation.DomainName)
 }

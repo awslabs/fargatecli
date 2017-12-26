@@ -11,42 +11,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	certificateFile      string
-	privateKeyFile       string
-	certificateChainFile string
-	certificate          string
-	privateKey           string
-	certificateChain     string
-)
-
-var certificateImportCmd = &cobra.Command{
-	Use: "import --certificate <certificate file> --key <key file>",
-	Run: func(cmd *cobra.Command, args []string) {
-		importCertificate()
-	},
-	Short: "Import an SSL certificate from local files",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		validateCertificateAndKeyFiles()
-	},
+type CertificateImportOperation struct {
+	CertificateFile      string
+	PrivateKeyFile       string
+	CertificateChainFile string
 }
 
-func init() {
-	certificateCmd.AddCommand(certificateImportCmd)
-
-	certificateImportCmd.Flags().StringVarP(&certificateFile, "certificate", "c", "", "A file containing the certificate to import")
-	certificateImportCmd.Flags().StringVarP(&privateKeyFile, "key", "k", "", "A file containing the private key used to generate the certificate")
-	certificateImportCmd.Flags().StringVar(&certificateChainFile, "chain", "", "A file containing intermediate certificates")
-}
-
-func validateCertificateAndKeyFiles() {
+func (o *CertificateImportOperation) Validate() {
 	var msgs []string
 
-	if certificateFile == "" {
+	if o.CertificateFile == "" {
 		msgs = append(msgs, "--certificate is required")
 	}
 
-	if privateKeyFile == "" {
+	if o.PrivateKeyFile == "" {
 		msgs = append(msgs, "--key is required")
 	}
 
@@ -55,31 +33,67 @@ func validateCertificateAndKeyFiles() {
 	}
 }
 
-func importCertificate() {
+var (
+	flagCertificateImportCertificate string
+	flagCertificateImportKey         string
+	flagCertificateImportChain       string
+)
+
+var certificateImportCmd = &cobra.Command{
+	Use:   "import --certificate <certificate file> --key <key file>",
+	Short: "Import an SSL certificate from local files",
+	Run: func(cmd *cobra.Command, args []string) {
+		operation := &CertificateImportOperation{
+			CertificateFile:      flagCertificateImportCertificate,
+			PrivateKeyFile:       flagCertificateImportKey,
+			CertificateChainFile: flagCertificateImportChain,
+		}
+
+		operation.Validate()
+
+		importCertificate(operation)
+	},
+}
+
+func init() {
+	certificateImportCmd.Flags().StringVarP(&flagCertificateImportCertificate, "certificate", "c", "", "A file containing the certificate to import")
+	certificateImportCmd.Flags().StringVarP(&flagCertificateImportKey, "key", "k", "", "A file containing the private key used to generate the certificate")
+	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "", "A file containing intermediate certificates")
+
+	certificateCmd.AddCommand(certificateImportCmd)
+}
+
+func importCertificate(operation *CertificateImportOperation) {
+	var (
+		certificate      string
+		privateKey       string
+		certificateChain string
+	)
+
 	console.Info("Importing certificate")
 
 	acm := ACM.New(sess)
 
-	certificateData, err := ioutil.ReadFile(certificateFile)
+	certificateData, err := ioutil.ReadFile(operation.CertificateFile)
 
 	if err != nil {
-		console.ErrorExit(err, "Could not read certificate from file %s", certificateFile)
+		console.ErrorExit(err, "Could not read certificate from file %s", operation.CertificateFile)
 	}
 
-	privateKeyData, err := ioutil.ReadFile(privateKeyFile)
+	privateKeyData, err := ioutil.ReadFile(operation.PrivateKeyFile)
 
 	if err != nil {
-		console.ErrorExit(err, "Could not read key from file %s", privateKeyFile)
+		console.ErrorExit(err, "Could not read key from file %s", operation.PrivateKeyFile)
 	}
 
 	certificate = base64.StdEncoding.EncodeToString(certificateData)
 	privateKey = base64.StdEncoding.EncodeToString(privateKeyData)
 
-	if certificateChainFile != "" {
-		certificateChainData, err := ioutil.ReadFile(privateKeyFile)
+	if operation.CertificateChainFile != "" {
+		certificateChainData, err := ioutil.ReadFile(operation.CertificateChainFile)
 
 		if err != nil {
-			console.ErrorExit(err, "Could not read certificate chain from file %s", certificateChainFile)
+			console.ErrorExit(err, "Could not read certificate chain from file %s", operation.CertificateChainFile)
 		}
 
 		certificateChain = base64.StdEncoding.EncodeToString(certificateChainData)

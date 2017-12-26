@@ -12,12 +12,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type CertificateInfoOperation struct {
+	DomainName string
+}
+
 var certificateInfoCmd = &cobra.Command{
 	Use:   "info <domain name>",
 	Short: "Display information about an SSL certificate",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		infoCertificate(args[0])
+		operation := &CertificateInfoOperation{
+			DomainName: args[0],
+		}
+
+		getCertificateInfo(operation)
 	},
 }
 
@@ -25,9 +33,9 @@ func init() {
 	certificateCmd.AddCommand(certificateInfoCmd)
 }
 
-func infoCertificate(domainName string) {
+func getCertificateInfo(operation *CertificateInfoOperation) {
 	acm := ACM.New(sess)
-	certificate := acm.DescribeCertificate(domainName)
+	certificate := acm.DescribeCertificate(operation.DomainName)
 
 	console.KeyValue("Domain Name", "%s\n", certificate.DomainName)
 	console.KeyValue("Status", "%s\n", util.Humanize(certificate.Status))

@@ -95,6 +95,22 @@ func ValidateDomainName(domainName string) error {
 	return nil
 }
 
+func ValidateAlias(domainName string) error {
+	if len(domainName) < 1 || len(domainName) > 253 {
+		return fmt.Errorf("The alias domain name must be between 1 and 253 characters in length")
+	}
+
+	if strings.Count(domainName, ".") > 252 {
+		return fmt.Errorf("The alias domain name cannot exceed 253 octets")
+	}
+
+	if strings.Count(domainName, ".") == 0 {
+		return fmt.Errorf("The alias domain name requires at least 2 octets")
+	}
+
+	return nil
+}
+
 func (acm *ACM) RequestCertificate(domainName string, aliases []string) {
 	console.Debug("Requesting ACM certificate")
 
