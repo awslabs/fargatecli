@@ -38,9 +38,9 @@ applications.
 ### Tasks
 
 - fargate task list
-- fargate task start TASKNAME [--count TASKS] [--cpu UNITS] [--memory MiB] [--image DOCKERIMAGE] [--env KEY=VALUE]
-- fargate task stop TASKNAME
-- fargate task logs TASKNAME [--tail] [--num LINES]
+- fargate task run TASKNAME [--count NUM] [--cpu UNITS] [--memory MiB] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate task stop TASKNAME [--task TASKID]
+- fargate task logs TASKNAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION]
 - fargate task ps TASKNAME
 - fargate task info TASKNAME
 
