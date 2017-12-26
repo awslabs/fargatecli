@@ -184,7 +184,6 @@ func createService(operation *ServiceCreateOperation) {
 		repositoryUri = ecr.CreateRepository(operation.ServiceName)
 	}
 
-	clusterName := ecs.CreateCluster()
 	repository := docker.Repository{Uri: repositoryUri}
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
@@ -241,6 +240,7 @@ func createService(operation *ServiceCreateOperation) {
 			LogRegion:        region,
 		},
 	)
+
 	ecs.CreateService(
 		&ECS.CreateServiceInput{
 			Cluster:           clusterName,

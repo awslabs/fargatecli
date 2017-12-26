@@ -95,15 +95,15 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+func Execute() {
+	rootCmd.Version = version
+	rootCmd.Execute()
+}
+
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	rootCmd.PersistentFlags().StringVar(&region, "region", "", "AWS Region (defaults to us-east-1)")
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Suppress colors in output")
-}
-
-func Execute() {
-	rootCmd.Version = version
-	rootCmd.Execute()
 }
 
 func inflatePort(src string) (port Port) {
