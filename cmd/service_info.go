@@ -3,11 +3,13 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/jpignata/fargate/console"
 	EC2 "github.com/jpignata/fargate/ec2"
 	ECS "github.com/jpignata/fargate/ecs"
+	ELBV2 "github.com/jpignata/fargate/elbv2"
 	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
@@ -38,6 +40,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 
 	ecs := ECS.New(sess)
 	ec2 := EC2.New(sess)
+	elbv2 := ELBV2.New(sess)
 	service := ecs.DescribeService(operation.ServiceName)
 	tasks := ecs.DescribeTasksForService(operation.ServiceName)
 
@@ -49,6 +52,33 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	console.KeyValue("Image", "%s\n", service.Image)
 	console.KeyValue("Cpu", "%s\n", service.Cpu)
 	console.KeyValue("Memory", "%s\n", service.Memory)
+
+	if service.TargetGroupArn != "" {
+		loadBalancerArn := elbv2.GetTargetGroupLoadBalancerArn(service.TargetGroupArn)
+		loadBalancer := elbv2.DescribeLoadBalancerByArn(loadBalancerArn)
+		listeners := elbv2.GetListeners(loadBalancerArn)
+
+		if len(listeners) > 0 {
+			var listenerOutput []string
+			var ruleOutput []string
+
+			for _, listener := range listeners {
+				listenerOutput = append(listenerOutput, listener.String())
+
+				for _, rule := range elbv2.DescribeRules(listener.Arn) {
+					if rule.TargetGroupArn == service.TargetGroupArn {
+						ruleOutput = append(ruleOutput, rule.String())
+					}
+				}
+			}
+
+			console.KeyValue("Load Balancer", "\n")
+			console.KeyValue("  Name", "%s\n", loadBalancer.Name)
+			console.KeyValue("  DNS Name", "%s\n", loadBalancer.DNSName)
+			console.KeyValue("  Listeners", "%s\n", strings.Join(listenerOutput, ", "))
+			console.KeyValue("  Rules", "%s\n", strings.Join(ruleOutput, ", "))
+		}
+	}
 
 	if len(tasks) > 0 {
 		console.Header("== Tasks ==")

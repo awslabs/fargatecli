@@ -60,6 +60,20 @@ func (elbv2 *ELBV2) DescribeLoadBalancer(lbName string) LoadBalancer {
 	return loadBalancers[0]
 }
 
+func (elbv2 *ELBV2) DescribeLoadBalancerByArn(lbArn string) LoadBalancer {
+	loadBalancers := elbv2.DescribeLoadBalancers(
+		DescribeLoadBalancersInput{
+			Arns: []string{lbArn},
+		},
+	)
+
+	if len(loadBalancers) == 0 {
+		console.ErrorExit(fmt.Errorf("%s not found", lbArn), "Could not find ELB load balancer")
+	}
+
+	return loadBalancers[0]
+}
+
 func (elbv2 *ELBV2) DeleteLoadBalancer(lbName string) {
 	loadBalancer := elbv2.DescribeLoadBalancer(lbName)
 	_, err := elbv2.svc.DeleteLoadBalancer(

@@ -103,7 +103,7 @@ func (o *ServiceCreateOperation) SetRules(inputRules []string) {
 
 		rules = append(rules,
 			ELBV2.Rule{
-				Type:  splitInputRule[0],
+				Type:  strings.ToUpper(splitInputRule[0]),
 				Value: splitInputRule[1],
 			},
 		)

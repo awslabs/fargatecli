@@ -1,6 +1,7 @@
 package elbv2
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 
@@ -18,8 +19,27 @@ type CreateListenerInput struct {
 }
 
 type Rule struct {
-	Type  string
-	Value string
+	Type           string
+	Value          string
+	TargetGroupArn string
+}
+
+func (r *Rule) String() string {
+	if r.Value != "" {
+		return fmt.Sprintf("%s=%s", r.Type, r.Value)
+	} else {
+		return fmt.Sprintf("%s", r.Type)
+	}
+}
+
+type Listener struct {
+	Arn      string
+	Port     int64
+	Protocol string
+}
+
+func (l *Listener) String() string {
+	return fmt.Sprintf("%s:%d", l.Protocol, l.Port)
 }
 
 type DirRange []int64
@@ -81,7 +101,7 @@ func (elbv2 *ELBV2) ModifyLoadBalancerDefaultAction(lbArn, targetGroupArn string
 	for _, listener := range listeners {
 		elbv2.svc.ModifyListener(
 			&awselbv2.ModifyListenerInput{
-				ListenerArn:    listener.ListenerArn,
+				ListenerArn:    aws.String(listener.Arn),
 				DefaultActions: []*awselbv2.Action{action},
 			},
 		)
@@ -106,7 +126,7 @@ func (elbv2 *ELBV2) AddRule(lbArn, targetGroupArn string, rule Rule) {
 	listeners := elbv2.GetListeners(lbArn)
 
 	for _, listener := range listeners {
-		highestPriority := elbv2.GetHighestPriorityFromListener(*listener.ListenerArn)
+		highestPriority := elbv2.GetHighestPriorityFromListener(listener.Arn)
 		priority := highestPriority + 10
 		action := &awselbv2.Action{
 			TargetGroupArn: aws.String(targetGroupArn),
@@ -116,12 +136,60 @@ func (elbv2 *ELBV2) AddRule(lbArn, targetGroupArn string, rule Rule) {
 		elbv2.svc.CreateRule(
 			&awselbv2.CreateRuleInput{
 				Priority:    aws.Int64(priority),
-				ListenerArn: listener.ListenerArn,
+				ListenerArn: aws.String(listener.Arn),
 				Actions:     []*awselbv2.Action{action},
 				Conditions:  []*awselbv2.RuleCondition{ruleCondition},
 			},
 		)
 	}
+}
+
+func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
+	var rules []Rule
+
+	resp, err := elbv2.svc.DescribeRules(
+		&awselbv2.DescribeRulesInput{
+			ListenerArn: aws.String(listenerArn),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not describe ELB rules")
+	}
+
+	for _, r := range resp.Rules {
+		for _, c := range r.Conditions {
+			var field string
+
+			switch aws.StringValue(c.Field) {
+			case "host-header":
+				field = "HOST"
+			case "path-pattern":
+				field = "PATH"
+			}
+
+			for _, v := range c.Values {
+				rule := Rule{
+					TargetGroupArn: aws.StringValue(r.Actions[0].TargetGroupArn),
+					Type:           field,
+					Value:          aws.StringValue(v),
+				}
+
+				rules = append(rules, rule)
+			}
+		}
+
+		if aws.BoolValue(r.IsDefault) == true {
+			rule := Rule{
+				TargetGroupArn: aws.StringValue(r.Actions[0].TargetGroupArn),
+				Type:           "DEFAULT",
+			}
+
+			rules = append(rules, rule)
+		}
+	}
+
+	return rules
 }
 
 func (elbv2 *ELBV2) GetHighestPriorityFromListener(listenerArn string) int64 {
@@ -147,8 +215,8 @@ func (elbv2 *ELBV2) GetHighestPriorityFromListener(listenerArn string) int64 {
 	return priorities[len(priorities)-1]
 }
 
-func (elbv2 *ELBV2) GetListeners(lbArn string) []*awselbv2.Listener {
-	var listeners []*awselbv2.Listener
+func (elbv2 *ELBV2) GetListeners(lbArn string) []Listener {
+	var listeners []Listener
 
 	input := &awselbv2.DescribeListenersInput{
 		LoadBalancerArn: aws.String(lbArn),
@@ -158,7 +226,14 @@ func (elbv2 *ELBV2) GetListeners(lbArn string) []*awselbv2.Listener {
 		input,
 		func(resp *awselbv2.DescribeListenersOutput, lastPage bool) bool {
 			for _, listener := range resp.Listeners {
-				listeners = append(listeners, listener)
+				listeners = append(
+					listeners,
+					Listener{
+						Arn:      aws.StringValue(listener.ListenerArn),
+						Port:     aws.Int64Value(listener.Port),
+						Protocol: aws.StringValue(listener.Protocol),
+					},
+				)
 			}
 
 			return true

@@ -51,7 +51,7 @@ func listLoadBalancers() {
 		var listeners []string
 
 		for _, listener := range elbv2.GetListeners(loadBalancer.Arn) {
-			listeners = append(listeners, fmt.Sprintf("%s:%d", *listener.Protocol, *listener.Port))
+			listeners = append(listeners, listener.String())
 		}
 
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",

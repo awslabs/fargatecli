@@ -55,10 +55,10 @@ func (elbv2 *ELBV2) DeleteTargetGroup(targetGroupName string) {
 	)
 }
 
-func (elbv2 *ELBV2) GetTargetGroupLoadBalancerArn(targetGroupName string) string {
-	targetGroup := elbv2.describeTargetGroupByName(targetGroupName)
+func (elbv2 *ELBV2) GetTargetGroupLoadBalancerArn(targetGroupArn string) string {
+	targetGroup := elbv2.describeTargetGroupByArn(targetGroupArn)
 
-	if len(targetGroup.LoadBalancerArns) == 0 {
+	if len(targetGroup.LoadBalancerArns) > 0 {
 		return aws.StringValue(targetGroup.LoadBalancerArns[0])
 	} else {
 		return ""
