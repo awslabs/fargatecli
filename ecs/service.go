@@ -31,6 +31,7 @@ type Service struct {
 	RunningCount      int64
 	TargetGroupArn    string
 	TaskDefinitionArn string
+	EnvVars           []EnvVar
 }
 
 type Event struct {
@@ -210,6 +211,16 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 
 		if len(taskDefinition.ContainerDefinitions) > 0 {
 			s.Image = aws.StringValue(taskDefinition.ContainerDefinitions[0].Image)
+
+			for _, env := range taskDefinition.ContainerDefinitions[0].Environment {
+				s.EnvVars = append(
+					s.EnvVars,
+					EnvVar{
+						Key:   aws.StringValue(env.Name),
+						Value: aws.StringValue(env.Value),
+					},
+				)
+			}
 		}
 
 		for _, event := range service.Events {

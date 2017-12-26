@@ -88,7 +88,14 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 			if len(certificateDomains) > 0 {
 				console.KeyValue("  Certificates", "%s\n", strings.Join(util.Uniq(certificateDomains), ", "))
 			}
+		}
 
+		if len(service.EnvVars) > 0 {
+			console.KeyValue("Environment Variables", "\n")
+
+			for _, envVar := range service.EnvVars {
+				fmt.Printf("   %s=%s\n", envVar.Key, envVar.Value)
+			}
 		}
 	}
 
