@@ -61,9 +61,11 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 		listeners := elbv2.GetListeners(loadBalancerArn)
 
 		if len(listeners) > 0 {
-			var listenerOutput []string
-			var ruleOutput []string
-			var certificateDomains []string
+			var (
+				listenerOutput     []string
+				ruleOutput         []string
+				certificateDomains []string
+			)
 
 			for _, listener := range listeners {
 				listenerOutput = append(listenerOutput, listener.String())
