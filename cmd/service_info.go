@@ -83,10 +83,10 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 			console.KeyValue("  Name", "%s\n", loadBalancer.Name)
 			console.KeyValue("  DNS Name", "%s\n", loadBalancer.DNSName)
 			console.KeyValue("  Listeners", "%s\n", strings.Join(listenerOutput, ", "))
-			console.KeyValue("  Rules", "%s\n", strings.Join(ruleOutput, ", "))
+			console.KeyValue("  Rules", "%s\n", strings.Join(util.Uniq(ruleOutput), ", "))
 
 			if len(certificateDomains) > 0 {
-				console.KeyValue("  Certificates", "%s\n", strings.Join(certificateDomains, ", "))
+				console.KeyValue("  Certificates", "%s\n", strings.Join(util.Uniq(certificateDomains), ", "))
 			}
 
 		}
