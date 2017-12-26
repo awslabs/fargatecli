@@ -39,29 +39,29 @@ func listLoadBalancers() {
 	elbv2 := ELBV2.New(sess)
 	loadBalancers := elbv2.DescribeLoadBalancers(ELBV2.DescribeLoadBalancersInput{})
 
-	if len(loadBalancers) > 0 {
-		w := new(tabwriter.Writer)
-		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-		fmt.Fprintln(w, "NAME\tTYPE\tSTATUS\tDNS NAME\tLISTENERS")
+	if len(loadBalancers) == 0 {
+		console.InfoExit("No load balancers found")
+	}
 
-		for _, loadBalancer := range loadBalancers {
-			var listeners []string
+	w := new(tabwriter.Writer)
+	w.Init(os.Stdout, 0, 8, 1, '\t', 0)
+	fmt.Fprintln(w, "NAME\tTYPE\tSTATUS\tDNS NAME\tLISTENERS")
 
-			for _, listener := range elbv2.GetListeners(loadBalancer.Arn) {
-				listeners = append(listeners, fmt.Sprintf("%s:%d", *listener.Protocol, *listener.Port))
-			}
+	for _, loadBalancer := range loadBalancers {
+		var listeners []string
 
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
-				loadBalancer.Name,
-				util.Humanize(loadBalancer.Type),
-				util.Humanize(loadBalancer.State),
-				loadBalancer.DNSName,
-				strings.Join(listeners, ", "),
-			)
+		for _, listener := range elbv2.GetListeners(loadBalancer.Arn) {
+			listeners = append(listeners, fmt.Sprintf("%s:%d", *listener.Protocol, *listener.Port))
 		}
 
-		w.Flush()
-	} else {
-		console.Info("No load balancers found")
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+			loadBalancer.Name,
+			util.Humanize(loadBalancer.Type),
+			util.Humanize(loadBalancer.State),
+			loadBalancer.DNSName,
+			strings.Join(listeners, ", "),
+		)
 	}
+
+	w.Flush()
 }

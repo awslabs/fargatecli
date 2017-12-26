@@ -13,44 +13,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var validProtocols = regexp.MustCompile("^TCP|HTTP(S)?")
-var validTypes = regexp.MustCompile("(?i)^application|network")
-
-var (
-	certificateDomainNames []string
-	certificateArns        []string
-	lbType                 string
-	ports                  []Port
-	portsRaw               []string
-)
-
-var lbCreateCmd = &cobra.Command{
-	Use:  "create <load balancer name>",
-	Args: cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, args []string) {
-		ports = inflatePorts(portsRaw)
-		normalizeFields()
-		getCertificateArns()
-		validatePorts()
-		inferType()
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		createLb(args[0])
-	},
+type LbCreateOperation struct {
+	LoadBalancerName string
+	CertificateArns  []string
+	Ports            []Port
+	Type             string
 }
 
-func init() {
-	lbCreateCmd.Flags().StringSliceVarP(&certificateDomainNames, "certificate", "c", []string{}, "Name of certificate to add (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVarP(&portsRaw, "port", "p", []string{}, "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
+func (o *LbCreateOperation) SetCertificateArns(certificateDomainNames []string) {
+	var certificateArns []string
 
-	lbCmd.AddCommand(lbCreateCmd)
-}
-
-func normalizeFields() {
-	lbType = strings.ToLower(lbType)
-}
-
-func getCertificateArns() {
 	acm := ACM.New(sess)
 
 	for _, certificateDomainName := range certificateDomainNames {
@@ -63,11 +35,16 @@ func getCertificateArns() {
 			console.ErrorExit(err, "Couldn't use certificate %s", certificateDomainName)
 		}
 	}
+
+	o.CertificateArns = certificateArns
 }
 
-func validatePorts() {
+func (o *LbCreateOperation) SetPorts(inputPorts []string) {
 	var msgs []string
 	var protocols []string
+
+	ports := inflatePorts(inputPorts)
+	validProtocols := regexp.MustCompile(validProtocolsPattern)
 
 	for _, port := range ports {
 		if !validProtocols.MatchString(port.Protocol) {
@@ -100,20 +77,50 @@ func validatePorts() {
 
 		protocols = append(protocols, port.Protocol)
 	}
+
+	o.Ports = ports
 }
 
-func inferType() {
-	if ports[0].Protocol == "HTTP" || ports[0].Protocol == "HTTPS" {
-		lbType = "application"
-	} else if ports[0].Protocol == "TCP" {
-		lbType = "network"
+func (o *LbCreateOperation) SetTypeFromPorts() {
+	if o.Ports[0].Protocol == "HTTP" || o.Ports[0].Protocol == "HTTPS" {
+		o.Type = "application"
+	} else if o.Ports[0].Protocol == "TCP" {
+		o.Type = "network"
 	} else {
 		console.ErrorExit(fmt.Errorf("Could not infer type; check port settings"), "Invalid command line flags")
 	}
 }
 
-func createLb(lbName string) {
-	console.Info("Creating load balancer [%s]", lbName)
+var (
+	flagLbCreateCertificates []string
+	flagLbCreatePorts        []string
+)
+
+var lbCreateCmd = &cobra.Command{
+	Use:  "create <load balancer name>",
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		operation := &LbCreateOperation{
+			LoadBalancerName: args[0],
+		}
+
+		operation.SetCertificateArns(flagLbCreateCertificates)
+		operation.SetPorts(flagLbCreatePorts)
+		operation.SetTypeFromPorts()
+
+		createLoadBalancer(operation)
+	},
+}
+
+func init() {
+	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreateCertificates, "certificate", "c", []string{}, "Name of certificate to add (can be specified multiple times)")
+	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreatePorts, "port", "p", []string{}, "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
+
+	lbCmd.AddCommand(lbCreateCmd)
+}
+
+func createLoadBalancer(operation *LbCreateOperation) {
+	console.Info("Creating load balancer [%s]", operation.LoadBalancerName)
 
 	elbv2 := ELBV2.New(sess)
 	ec2 := EC2.New(sess)
@@ -121,33 +128,33 @@ func createLb(lbName string) {
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
 	vpcId := ec2.GetDefaultVpcId()
 
-	lbArn := elbv2.CreateLoadBalancer(
+	loadBalancerArn := elbv2.CreateLoadBalancer(
 		&ELBV2.CreateLoadBalancerInput{
-			Name:      lbName,
+			Name:      operation.LoadBalancerName,
 			SubnetIds: subnetIds,
-			Type:      lbType,
+			Type:      operation.Type,
 		},
 	)
 
 	defaultTargetGroupArn := elbv2.CreateTargetGroup(
 		&ELBV2.CreateTargetGroupInput{
-			Name:     lbName + "-default",
-			Port:     ports[0].Port,
-			Protocol: ports[0].Protocol,
+			Name:     fmt.Sprintf(defaultTargetGroupFormat, operation.LoadBalancerName),
+			Port:     operation.Ports[0].Port,
+			Protocol: operation.Ports[0].Protocol,
 			VpcId:    vpcId,
 		},
 	)
 
-	for _, port := range ports {
+	for _, port := range operation.Ports {
 		input := &ELBV2.CreateListenerInput{
 			Protocol:              port.Protocol,
 			Port:                  port.Port,
-			LoadBalancerArn:       lbArn,
+			LoadBalancerArn:       loadBalancerArn,
 			DefaultTargetGroupArn: defaultTargetGroupArn,
 		}
 
 		if port.Protocol == "HTTPS" {
-			input.SetCertificateArns(certificateArns)
+			input.SetCertificateArns(operation.CertificateArns)
 		}
 
 		elbv2.CreateListener(input)

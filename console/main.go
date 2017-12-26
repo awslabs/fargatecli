@@ -102,6 +102,11 @@ func Error(err error, msg string, a ...interface{}) {
 	}
 }
 
+func InfoExit(msg string, a ...interface{}) {
+	Info(msg, a...)
+	os.Exit(0)
+}
+
 func ErrorExit(err error, msg string, a ...interface{}) {
 	Error(err, msg, a...)
 	os.Exit(1)

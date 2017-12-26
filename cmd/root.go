@@ -15,11 +15,14 @@ import (
 )
 
 const (
-	clusterName         = "fargate"
-	defaultRegion       = "us-east-1"
-	version             = "0.0.1"
+	clusterName   = "fargate"
+	defaultRegion = "us-east-1"
+	version       = "0.0.1"
+
 	mebibytesInGibibyte = 1024
 	cpuUnitsInVCpu      = 1024
+
+	validProtocolsPattern = "(?i)\\ATCP|HTTP(S)?\\z"
 )
 
 var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings

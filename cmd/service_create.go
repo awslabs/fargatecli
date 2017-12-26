@@ -36,6 +36,7 @@ func (o *ServiceCreateOperation) SetPort(inputPort string) {
 	var msgs []string
 
 	port := inflatePort(inputPort)
+	validProtocols := regexp.MustCompile(validProtocolsPattern)
 
 	if !validProtocols.MatchString(port.Protocol) {
 		msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
