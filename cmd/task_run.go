@@ -133,6 +133,7 @@ func runTask(operation *TaskRunOperation) {
 			Name:             operation.TaskName,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
+			Type:             "task",
 		},
 	)
 

@@ -246,6 +246,7 @@ func createService(operation *ServiceCreateOperation) {
 			Port:             operation.Port.Port,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
+			Type:             "service",
 		},
 	)
 

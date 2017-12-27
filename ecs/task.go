@@ -79,10 +79,10 @@ func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
 	)
 }
 
-func (ecs *ECS) DescribeTasksForTask(taskName string) []Task {
+func (ecs *ECS) DescribeTasksForTaskGroup(taskGroupName string) []Task {
 	return ecs.listTasks(
 		&awsecs.ListTasksInput{
-			StartedBy: aws.String(fmt.Sprintf(startedByFormat, taskName)),
+			StartedBy: aws.String(fmt.Sprintf(startedByFormat, taskGroupName)),
 			Cluster:   aws.String(clusterName),
 		},
 	)
@@ -122,6 +122,25 @@ OUTER:
 	}
 
 	return taskGroups
+}
+
+func (ecs *ECS) StopTasks(taskIds []string) {
+	for _, taskId := range taskIds {
+		ecs.StopTask(taskId)
+	}
+}
+
+func (ecs *ECS) StopTask(taskId string) {
+	_, err := ecs.svc.StopTask(
+		&awsecs.StopTaskInput{
+			Cluster: aws.String(clusterName),
+			Task:    aws.String(taskId),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not stop ECS task")
+	}
 }
 
 func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {

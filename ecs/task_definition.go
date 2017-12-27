@@ -1,6 +1,7 @@
 package ecs
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -22,6 +23,7 @@ type CreateTaskDefinitionInput struct {
 	Port             int64
 	LogGroupName     string
 	LogRegion        string
+	Type             string
 }
 
 type EnvVar struct {
@@ -61,7 +63,7 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
 		&awsecs.RegisterTaskDefinitionInput{
-			Family:                  aws.String(input.Name),
+			Family:                  aws.String(fmt.Sprintf("%s_%s", input.Type, input.Name)),
 			RequiresCompatibilities: aws.StringSlice([]string{awsecs.CompatibilityFargate}),
 			ContainerDefinitions:    []*awsecs.ContainerDefinition{containerDefinition},
 			NetworkMode:             aws.String(awsecs.NetworkModeAwsvpc),
@@ -123,10 +125,11 @@ func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) strin
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
 		&awsecs.RegisterTaskDefinitionInput{
-			ContainerDefinitions: taskDefinition.ContainerDefinitions,
-			Cpu:                  taskDefinition.Cpu,
-			ExecutionRoleArn:     taskDefinition.ExecutionRoleArn,
-			Family:               taskDefinition.Family, Memory: taskDefinition.Memory,
+			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
+			Cpu:                     taskDefinition.Cpu,
+			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
+			Family:                  taskDefinition.Family,
+			Memory:                  taskDefinition.Memory,
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
 		},

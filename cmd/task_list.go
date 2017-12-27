@@ -27,7 +27,7 @@ func listTaskGroups() {
 	taskGroups := ecs.ListTaskGroups()
 
 	if len(taskGroups) == 0 {
-		console.InfoExit("No task groups found")
+		console.InfoExit("No tasks running")
 	}
 
 	w := new(tabwriter.Writer)

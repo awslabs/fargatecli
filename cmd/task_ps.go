@@ -38,7 +38,7 @@ func getTaskProcessList(operation *TaskProcessListOperation) {
 
 	ecs := ECS.New(sess)
 	ec2 := EC2.New(sess)
-	tasks := ecs.DescribeTasksForTask(operation.TaskName)
+	tasks := ecs.DescribeTasksForTaskGroup(operation.TaskName)
 
 	for _, task := range tasks {
 		if task.EniId != "" {
