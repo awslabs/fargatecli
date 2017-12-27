@@ -12,7 +12,7 @@ var certificateCmd = &cobra.Command{
 	Long: `Manages SSL certificate for use in load balancers
 
 Creates, imports, and validates SSL certificates in AWS Certificate Mananger
-for use within Elastic Load Balancing load balancers.
+to use to secure traffic to and from your load balancers.
 `,
 }
 

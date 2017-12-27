@@ -18,14 +18,7 @@ var certificateListCmd = &cobra.Command{
 	Long: `List requested and imported certificates
 
 Shows all certificates within AWS Certificate Manager and their attributes
-such as type, status, and subject alternative names.
-
-e.g.:
-
-  $ fargate certificate list
-  CERTIFICATE      TYPE          STATUS              SUBJECT ALTERNATIVE NAMES
-  www.example.com  Amazon Issue  Pending Validation  www.example.com
-`,
+such as type, status, and subject alternative names.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		listCertificates()
 	},

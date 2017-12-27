@@ -43,7 +43,7 @@ func init() {
 }
 
 func validateCertificate(operation *CertificateValidateOperation) {
-	console.Info("Validating certificate [%s]", operation.DomainName)
+	var successfulValidations int
 
 	route53 := Route53.New(sess)
 	acm := ACM.New(sess)
@@ -57,7 +57,9 @@ func validateCertificate(operation *CertificateValidateOperation) {
 
 	for _, certificateValidation := range certificate.Validations {
 		if certificateValidation.IsPendingValidation() {
-			createResourceRecord(certificateValidation, route53, hostedZones)
+			if createResourceRecord(certificateValidation, route53, hostedZones) {
+				successfulValidations++
+			}
 		} else if certificateValidation.IsSuccess() {
 			console.Info("[%s] Domain has been validated", certificateValidation.DomainName)
 		} else if certificateValidation.IsFailed() {
@@ -65,8 +67,10 @@ func validateCertificate(operation *CertificateValidateOperation) {
 		}
 	}
 
-	console.Info("[%s] Record validation could take up to several hours to complete", operation.DomainName)
-	console.Info("[%s] To view the status of pending validations, run: `fargate certificate info %s`", operation.DomainName, operation.DomainName)
+	if successfulValidations > 0 {
+		console.Info("[%s] Record validation could take up to several hours to complete", operation.DomainName)
+		console.Info("[%s] To view the status of pending validations, run: `fargate certificate info %s`", operation.DomainName, operation.DomainName)
+	}
 }
 
 func createResourceRecord(v ACM.CertificateValidation, route53 Route53.Route53, hostedZones []Route53.HostedZone) bool {
@@ -94,8 +98,8 @@ func createResourceRecord(v ACM.CertificateValidation, route53 Route53.Route53, 
 	}
 
 	console.Issue("[%s] Could not find Route53 hosted zone", v.DomainName)
-	console.Info("[%s] If you're hosting this domain elsewhere or in another AWS account, please manually create the validation record:", v.DomainName)
-	console.Info("[%s] Name: %s  Type: %s  Value: %s", v.DomainName, v.ResourceRecord.Name, v.ResourceRecord.Type, v.ResourceRecord.Value)
+	console.Info("[%s]   If you're hosting this domain elsewhere or in another AWS account, please manually create the validation record:", v.DomainName)
+	console.Info("[%s]   %s %s -> %s", v.DomainName, v.ResourceRecord.Type, v.ResourceRecord.Name, v.ResourceRecord.Value)
 
 	return false
 }

@@ -54,12 +54,11 @@ func init() {
 }
 
 func requestCertificate(operation *CertificateRequestOperation) {
-	console.Info("Requesting certificate [%s]", operation.DomainName)
-
 	acm := ACM.New(sess)
 	acm.RequestCertificate(operation.DomainName, operation.Aliases)
 
-	console.Info("[%s] You must validate ownership of the domain name for the certificate to be issued", operation.DomainName)
-	console.Info("[%s] If your domain is hosted in Amazon Route53, you can do this by running: `fargate certificate validate %s`", operation.DomainName, operation.DomainName)
-	console.Info("[%s] Otherwise you must manually create the DNS records, see: `fargate certificate info %s`", operation.DomainName, operation.DomainName)
+	console.Info("Requested certificate for %s", operation.DomainName)
+	console.Info("  You must validate ownership of the domain name for the certificate to be issued")
+	console.Info("  If your domain is hosted in Amazon Route53, you can do this by running: `fargate certificate validate %s`", operation.DomainName)
+	console.Info("  Otherwise you must manually create the DNS record, see: `fargate certificate info %s`", operation.DomainName)
 }
