@@ -39,10 +39,79 @@ type RunTaskInput struct {
 	SubnetIds         []string
 }
 
-func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
-	var tasks []Task
+func (ecs *ECS) RunTask(i *RunTaskInput) {
+	_, err := ecs.svc.RunTask(
+		&awsecs.RunTaskInput{
+			Cluster:        aws.String(i.ClusterName),
+			Count:          aws.Int64(i.Count),
+			TaskDefinition: aws.String(i.TaskDefinitionArn),
+			LaunchType:     aws.String(awsecs.CompatibilityFargate),
+			StartedBy:      aws.String(fmt.Sprintf(startedByFormat, i.TaskName)),
+			NetworkConfiguration: &awsecs.NetworkConfiguration{
+				AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
+					AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
+					Subnets:        aws.StringSlice(i.SubnetIds),
+				},
+			},
+		},
+	)
 
-	taskArns := ecs.ListTasksForService(serviceName)
+	if err != nil {
+		console.ErrorExit(err, "Could not run ECS task")
+	}
+}
+
+func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
+	return ecs.listTasks(
+		&awsecs.ListTasksInput{
+			Cluster:     aws.String(clusterName),
+			LaunchType:  aws.String(awsecs.CompatibilityFargate),
+			ServiceName: aws.String(serviceName),
+		},
+	)
+}
+
+func (ecs *ECS) DescribeTasksForTask(taskName string) []Task {
+	return ecs.listTasks(
+		&awsecs.ListTasksInput{
+			StartedBy: aws.String(fmt.Sprintf(startedByFormat, taskName)),
+			Cluster:   aws.String(clusterName),
+		},
+	)
+}
+
+func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
+	var tasks []Task
+	var taskArnBatches [][]string
+
+	err := ecs.svc.ListTasksPages(
+		input,
+		func(resp *awsecs.ListTasksOutput, lastPage bool) bool {
+			if len(resp.TaskArns) > 0 {
+				taskArnBatches = append(taskArnBatches, aws.StringValueSlice(resp.TaskArns))
+			}
+
+			return true
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not list ECS tasks")
+	}
+
+	if len(taskArnBatches) > 0 {
+		for _, taskArnBatch := range taskArnBatches {
+			for _, task := range ecs.describeTasks(taskArnBatch) {
+				tasks = append(tasks, task)
+			}
+		}
+	}
+
+	return tasks
+}
+
+func (ecs *ECS) describeTasks(taskArns []string) []Task {
+	var tasks []Task
 
 	if len(taskArns) == 0 {
 		return tasks
@@ -90,41 +159,4 @@ func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
 	}
 
 	return tasks
-}
-
-func (ecs *ECS) ListTasksForService(serviceName string) []string {
-	resp, err := ecs.svc.ListTasks(
-		&awsecs.ListTasksInput{
-			Cluster:     aws.String(clusterName),
-			ServiceName: aws.String(serviceName),
-		},
-	)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not list ECS tasks")
-	}
-
-	return aws.StringValueSlice(resp.TaskArns)
-}
-
-func (ecs *ECS) RunTask(i *RunTaskInput) {
-	_, err := ecs.svc.RunTask(
-		&awsecs.RunTaskInput{
-			Cluster:        aws.String(i.ClusterName),
-			Count:          aws.Int64(i.Count),
-			TaskDefinition: aws.String(i.TaskDefinitionArn),
-			LaunchType:     aws.String(awsecs.CompatibilityFargate),
-			StartedBy:      aws.String(fmt.Sprintf(startedByFormat, i.TaskName)),
-			NetworkConfiguration: &awsecs.NetworkConfiguration{
-				AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
-					AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
-					Subnets:        aws.StringSlice(i.SubnetIds),
-				},
-			},
-		},
-	)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not run ECS task")
-	}
 }
