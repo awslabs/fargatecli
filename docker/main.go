@@ -19,7 +19,7 @@ type Repository struct {
 }
 
 func (repository *Repository) Login(username, password string) {
-	console.Info("Logging into Docker repository [%s]", repository.Uri)
+	console.Debug("Logging into Docker repository [%s]", repository.Uri)
 	console.Shell("docker login --username %s --password ******* %s", username, repository.Uri)
 
 	cmd := exec.Command("docker", "login", "--username", username, "--password", password, repository.Uri)
@@ -39,7 +39,7 @@ func (repository *Repository) Login(username, password string) {
 }
 
 func (repository *Repository) Build(tag string) {
-	console.Info("Building Docker image [%s]", repository.UriFor(tag))
+	console.Debug("Building Docker image [%s]", repository.UriFor(tag))
 	console.Shell("docker build --tag %s .", repository.UriFor(tag))
 
 	cmd := exec.Command("docker", "build", "--tag", repository.Uri+":"+tag, ".")
@@ -57,7 +57,7 @@ func (repository *Repository) Build(tag string) {
 }
 
 func (repository *Repository) Push(tag string) {
-	console.Info("Pushing Docker image [%s]", repository.UriFor(tag))
+	console.Debug("Pushing Docker image [%s]", repository.UriFor(tag))
 	console.Shell("docker push %s .", repository.UriFor(tag))
 
 	cmd := exec.Command("docker", "push", repository.UriFor(tag))

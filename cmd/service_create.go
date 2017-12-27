@@ -30,6 +30,7 @@ type ServiceCreateOperation struct {
 	Rules            []ELBV2.Rule
 	Elbv2            ELBV2.ELBV2
 	EnvVars          []ECS.EnvVar
+	Num              int64
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -58,6 +59,10 @@ func (o *ServiceCreateOperation) Validate() {
 
 	if err != nil {
 		console.ErrorExit(err, "Invalid settings: %d CPU units / %d MiB", o.Cpu, o.Memory)
+	}
+
+	if o.Num < 1 {
+		console.ErrorExit(err, "Invalid number of tasks to keep running: %d, num must be > 1", o.Num)
 	}
 }
 
@@ -128,6 +133,7 @@ var (
 	flagServiceCreateMemory  string
 	flagServiceCreatePort    string
 	flagServiceCreateRules   []string
+	flagServiceCreateNum     int64
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -161,6 +167,7 @@ func init() {
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateImage, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateLb, "lb", "l", "", "Name of a load balancer to use")
 	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateRules, "rule", "r", []string{}, "Routing rule for the load balancer [e.g. host=api.example.com, path=/api/*]; if omitted service will be the default route")
+	serviceCreateCmd.Flags().Int64VarP(&flagServiceCreateNum, "num", "n", 1, "Number of tasks instances to keep running (default: 1)")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
@@ -188,7 +195,7 @@ func createService(operation *ServiceCreateOperation) {
 	repository := docker.Repository{Uri: repositoryUri}
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
-	logGroupName := cwl.CreateLogGroup(logGroupFormat, operation.ServiceName)
+	logGroupName := cwl.CreateLogGroup(serviceLogGroupFormat, operation.ServiceName)
 
 	if operation.Image == "" {
 		var tag string

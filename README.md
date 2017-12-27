@@ -22,7 +22,7 @@ applications.
 ### Services
 
 - fargate service list
-- fargate service create SERVICENAME [--cpu UNITS] [--memory MiB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate service create SERVICENAME [--cpu UNITS] [--memory MiB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE] [--num NUM]
 - fargate service deploy SERVICENAME [--image DOCKERIMAGE]
 - fargate service info SERVICENAME
 - fargate service logs SERVICENAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION]

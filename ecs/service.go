@@ -11,8 +11,9 @@ import (
 
 type CreateServiceInput struct {
 	Cluster           string
-	Port              int64
+	DesiredCount      int64
 	Name              string
+	Port              int64
 	SubnetIds         []string
 	TargetGroupArn    string
 	TaskDefinitionArn string
@@ -23,6 +24,7 @@ type Service struct {
 	Cpu               string
 	Deployments       []Deployment
 	DesiredCount      int64
+	EnvVars           []EnvVar
 	Events            []Event
 	Image             string
 	Memory            string
@@ -31,7 +33,6 @@ type Service struct {
 	RunningCount      int64
 	TargetGroupArn    string
 	TaskDefinitionArn string
-	EnvVars           []EnvVar
 }
 
 type Event struct {
@@ -40,13 +41,13 @@ type Event struct {
 }
 
 type Deployment struct {
-	Id           string
-	Status       string
-	DesiredCount int64
-	RunningCount int64
-	PendingCount int64
-	Image        string
 	CreatedAt    time.Time
+	DesiredCount int64
+	Id           string
+	Image        string
+	PendingCount int64
+	RunningCount int64
+	Status       string
 }
 
 func (s *Service) AddEvent(e Event) {
@@ -60,19 +61,15 @@ func (s *Service) AddDeployment(d Deployment) {
 func (ecs *ECS) CreateService(input *CreateServiceInput) {
 	console.Debug("Creating ECS service")
 
-	const desiredCount = 1
-	const launchType = "FARGATE"
-	const assignPublicIp = "ENABLED"
-
 	createServiceInput := &awsecs.CreateServiceInput{
 		Cluster:        aws.String(input.Cluster),
-		DesiredCount:   aws.Int64(desiredCount),
+		DesiredCount:   aws.Int64(input.DesiredCount),
 		ServiceName:    aws.String(input.Name),
 		TaskDefinition: aws.String(input.TaskDefinitionArn),
-		LaunchType:     aws.String(launchType),
+		LaunchType:     aws.String(awsecs.CompatibilityFargate),
 		NetworkConfiguration: &awsecs.NetworkConfiguration{
 			AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
-				AssignPublicIp: aws.String(assignPublicIp),
+				AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
 				Subnets:        aws.StringSlice(input.SubnetIds),
 			},
 		},

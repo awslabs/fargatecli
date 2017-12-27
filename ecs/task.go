@@ -1,6 +1,7 @@
 package ecs
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -9,7 +10,10 @@ import (
 	"github.com/jpignata/fargate/console"
 )
 
-const networkInterfaceId = "networkInterfaceId"
+const (
+	networkInterfaceId = "networkInterfaceId"
+	startedByFormat    = "fargate:%s"
+)
 
 type Task struct {
 	DeploymentId  string
@@ -25,6 +29,14 @@ type Task struct {
 
 func (t *Task) RunningFor() time.Duration {
 	return time.Now().Sub(t.CreatedAt).Truncate(time.Second)
+}
+
+type RunTaskInput struct {
+	ClusterName       string
+	Count             int64
+	TaskDefinitionArn string
+	TaskName          string
+	SubnetIds         []string
 }
 
 func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
@@ -93,4 +105,26 @@ func (ecs *ECS) ListTasksForService(serviceName string) []string {
 	}
 
 	return aws.StringValueSlice(resp.TaskArns)
+}
+
+func (ecs *ECS) RunTask(i *RunTaskInput) {
+	_, err := ecs.svc.RunTask(
+		&awsecs.RunTaskInput{
+			Cluster:        aws.String(i.ClusterName),
+			Count:          aws.Int64(i.Count),
+			TaskDefinition: aws.String(i.TaskDefinitionArn),
+			LaunchType:     aws.String(awsecs.CompatibilityFargate),
+			StartedBy:      aws.String(fmt.Sprintf(startedByFormat, i.TaskName)),
+			NetworkConfiguration: &awsecs.NetworkConfiguration{
+				AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
+					AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
+					Subnets:        aws.StringSlice(i.SubnetIds),
+				},
+			},
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not run ECS task")
+	}
 }

@@ -83,7 +83,7 @@ func (o *GetServiceLogsOperation) SeenEvent(eventId string) bool {
 }
 
 func (o *GetServiceLogsOperation) LogGroupName() string {
-	return fmt.Sprintf(logGroupFormat, o.ServiceName)
+	return fmt.Sprintf(serviceLogGroupFormat, o.ServiceName)
 }
 
 func (o *GetServiceLogsOperation) parseTime(rawTime string) time.Time {
