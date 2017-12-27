@@ -24,21 +24,25 @@ type DescribeLoadBalancersInput struct {
 }
 
 type CreateLoadBalancerInput struct {
-	Name      string
-	SubnetIds []string
-	Type      string
+	Name            string
+	SubnetIds       []string
+	Type            string
+	SecurityGroupId string
 }
 
-func (elbv2 *ELBV2) CreateLoadBalancer(input *CreateLoadBalancerInput) string {
+func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
 	console.Debug("Creating ELB load balancer")
+	input := &awselbv2.CreateLoadBalancerInput{
+		Name:    aws.String(i.Name),
+		Subnets: aws.StringSlice(i.SubnetIds),
+		Type:    aws.String(i.Type),
+	}
 
-	resp, err := elbv2.svc.CreateLoadBalancer(
-		&awselbv2.CreateLoadBalancerInput{
-			Name:    aws.String(input.Name),
-			Subnets: aws.StringSlice(input.SubnetIds),
-			Type:    aws.String(input.Type),
-		},
-	)
+	if i.Type == awselbv2.LoadBalancerTypeEnumApplication {
+		input.SetSecurityGroups(aws.StringSlice([]string{i.SecurityGroupId}))
+	}
+
+	resp, err := elbv2.svc.CreateLoadBalancer(input)
 
 	if err != nil || len(resp.LoadBalancers) != 1 {
 		console.ErrorExit(err, "Could not create ELB load balancer")

@@ -17,6 +17,7 @@ type CreateServiceInput struct {
 	SubnetIds         []string
 	TargetGroupArn    string
 	TaskDefinitionArn string
+	SecurityGroupId   string
 }
 
 type Service struct {
@@ -71,6 +72,7 @@ func (ecs *ECS) CreateService(input *CreateServiceInput) {
 			AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
 				AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
 				Subnets:        aws.StringSlice(input.SubnetIds),
+				SecurityGroups: aws.StringSlice([]string{input.SecurityGroupId}),
 			},
 		},
 	}

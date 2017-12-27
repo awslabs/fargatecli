@@ -128,13 +128,15 @@ func createLoadBalancer(operation *LbCreateOperation) {
 	ec2 := EC2.New(sess)
 
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
+	securityGroupId := ec2.GetDefaultSecurityGroupId()
 	vpcId := ec2.GetDefaultVpcId()
 
 	loadBalancerArn := elbv2.CreateLoadBalancer(
 		&ELBV2.CreateLoadBalancerInput{
-			Name:      operation.LoadBalancerName,
-			SubnetIds: subnetIds,
-			Type:      operation.Type,
+			Name:            operation.LoadBalancerName,
+			SubnetIds:       subnetIds,
+			SecurityGroupId: securityGroupId,
+			Type:            operation.Type,
 		},
 	)
 

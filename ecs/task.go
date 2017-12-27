@@ -46,6 +46,7 @@ type RunTaskInput struct {
 	TaskDefinitionArn string
 	TaskName          string
 	SubnetIds         []string
+	SecurityGroupId   string
 }
 
 func (ecs *ECS) RunTask(i *RunTaskInput) {
@@ -60,6 +61,7 @@ func (ecs *ECS) RunTask(i *RunTaskInput) {
 				AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
 					AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
 					Subnets:        aws.StringSlice(i.SubnetIds),
+					SecurityGroups: aws.StringSlice([]string{i.SecurityGroupId}),
 				},
 			},
 		},

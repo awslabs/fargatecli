@@ -102,6 +102,7 @@ func runTask(operation *TaskRunOperation) {
 
 	repository := docker.Repository{Uri: repositoryUri}
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
+	securityGroupId := ec2.GetDefaultSecurityGroupId()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
 	logGroupName := cwl.CreateLogGroup(taskLogGroupFormat, operation.TaskName)
 
@@ -144,6 +145,7 @@ func runTask(operation *TaskRunOperation) {
 			TaskName:          operation.TaskName,
 			TaskDefinitionArn: taskDefinitionArn,
 			SubnetIds:         subnetIds,
+			SecurityGroupId:   securityGroupId,
 		},
 	)
 

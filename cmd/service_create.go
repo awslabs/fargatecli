@@ -193,6 +193,7 @@ func createService(operation *ServiceCreateOperation) {
 
 	repository := docker.Repository{Uri: repositoryUri}
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
+	securityGroupId := ec2.GetDefaultSecurityGroupId()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
 	logGroupName := cwl.CreateLogGroup(serviceLogGroupFormat, operation.ServiceName)
 
@@ -258,6 +259,7 @@ func createService(operation *ServiceCreateOperation) {
 			TargetGroupArn:    targetGroupArn,
 			TaskDefinitionArn: taskDefinitionArn,
 			DesiredCount:      operation.Num,
+			SecurityGroupId:   securityGroupId,
 		},
 	)
 
