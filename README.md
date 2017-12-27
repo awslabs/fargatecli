@@ -42,7 +42,7 @@ applications.
 - fargate task stop TASKNAME [--task TASKID]
 - fargate task logs TASKNAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION]
 - fargate task ps TASKNAME
-- fargate task info TASKNAME
+- fargate task info TASKNAME [--task TASKID]
 
 ### Certificates
 
