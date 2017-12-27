@@ -52,6 +52,34 @@ func (route53 *Route53) CreateResourceRecord(h HostedZone, Type, Name, Value str
 	}
 }
 
+func (route53 *Route53) CreateAlias(h HostedZone, recordType, name, target, targetHostedZone string) {
+	change := &awsroute53.Change{
+		Action: aws.String(awsroute53.ChangeActionUpsert),
+		ResourceRecordSet: &awsroute53.ResourceRecordSet{
+			Name: aws.String(name),
+			Type: aws.String(recordType),
+			AliasTarget: &awsroute53.AliasTarget{
+				DNSName:              aws.String(target),
+				EvaluateTargetHealth: aws.Bool(false),
+				HostedZoneId:         aws.String(targetHostedZone),
+			},
+		},
+	}
+
+	_, err := route53.svc.ChangeResourceRecordSets(
+		&awsroute53.ChangeResourceRecordSetsInput{
+			HostedZoneId: aws.String(h.Id),
+			ChangeBatch: &awsroute53.ChangeBatch{
+				Changes: []*awsroute53.Change{change},
+			},
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not create Route53 resource record")
+	}
+}
+
 func (route53 *Route53) ListHostedZones() []HostedZone {
 	console.Debug("Listing Route53 hosted zones")
 

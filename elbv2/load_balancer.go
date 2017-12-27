@@ -9,12 +9,13 @@ import (
 )
 
 type LoadBalancer struct {
-	DNSName     string
-	Name        string
-	State       string
-	StateReason string
-	Arn         string
-	Type        string
+	DNSName      string
+	Name         string
+	State        string
+	StateReason  string
+	Arn          string
+	Type         string
+	HostedZoneId string
 }
 
 type DescribeLoadBalancersInput struct {
@@ -106,12 +107,13 @@ func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBa
 			for _, loadBalancer := range resp.LoadBalancers {
 				loadBalancers = append(loadBalancers,
 					LoadBalancer{
-						Name:        aws.StringValue(loadBalancer.LoadBalancerName),
-						DNSName:     aws.StringValue(loadBalancer.DNSName),
-						State:       aws.StringValue(loadBalancer.State.Code),
-						StateReason: aws.StringValue(loadBalancer.State.Reason),
-						Arn:         aws.StringValue(loadBalancer.LoadBalancerArn),
-						Type:        aws.StringValue(loadBalancer.Type),
+						Name:         aws.StringValue(loadBalancer.LoadBalancerName),
+						DNSName:      aws.StringValue(loadBalancer.DNSName),
+						State:        aws.StringValue(loadBalancer.State.Code),
+						StateReason:  aws.StringValue(loadBalancer.State.Reason),
+						Arn:          aws.StringValue(loadBalancer.LoadBalancerArn),
+						Type:         aws.StringValue(loadBalancer.Type),
+						HostedZoneId: aws.StringValue(loadBalancer.CanonicalHostedZoneId),
 					},
 				)
 			}
