@@ -1,25 +1,23 @@
 # Fargate CLI
 
-## Status
+![](doc/media/fargate.png)
 
-Experimental; very much a work in progress.
+Deploy serverless containers onto the cloud from your command line
 
-## Objective
+## Usage
 
-Dead simple deployment and management of highly available container-based
-applications.
+### Commands
 
-### How?
+#### Tasks
 
-The Fargate CLI provides a set of commands to allow users to quickly deploy and
-monitor applications on top of AWS Fargate. It abstracts the details of Amazon
-ECS, task definitions, target groups, services, Amazon VPC, security groups, and
-a host of other nouns so developers can focus on what matters: their
-applications.
+- fargate task list
+- fargate task run TASKGROUPNAME [--count NUM] [--cpu UNITS] [--memory MiB] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate task stop TASKGROUPNAME [--task TASKID]
+- fargate task logs TASKGROUPNAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION] [--task TASKID]
+- fargate task ps TASKGROUPNAME
+- fargate task info TASKGROUPNAME [--task TASKID]
 
-## Commands
-
-### Services
+#### Services
 
 - fargate service list
 - fargate service create SERVICENAME [--cpu UNITS] [--memory MiB] [--port PORTEXPRESSION] [--lb LBNAME] [--rule RULEEXPRESSION] [--image DOCKERIMAGE] [--env KEY=VALUE] [--num NUM]
@@ -35,16 +33,7 @@ applications.
 - fargate service restart SERVICENAME
 - fargate service destroy SERVICENAME
 
-### Tasks
-
-- fargate task list
-- fargate task run TASKGROUPNAME [--count NUM] [--cpu UNITS] [--memory MiB] [--image DOCKERIMAGE] [--env KEY=VALUE]
-- fargate task stop TASKGROUPNAME [--task TASKID]
-- fargate task logs TASKGROUPNAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION] [--task TASKID]
-- fargate task ps TASKGROUPNAME
-- fargate task info TASKGROUPNAME [--task TASKID]
-
-### Certificates
+#### Certificates
 
 - fargate certificate list
 - fargate certificate import DOMAINNAME --certificate FILE --key FILE [--chain FILE]
@@ -53,7 +42,7 @@ applications.
 - fargate certificate validate DOMAINNAME
 - fargate certificate destroy DOMAINNAME
 
-## Load Balancers
+### Load Balancers
 
 - fargate lb list
 - fargate lb create LBNAME --port PORTEXPRESSION [--certificate DOMAINNAME]
