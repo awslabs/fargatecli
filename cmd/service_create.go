@@ -58,7 +58,7 @@ func (o *ServiceCreateOperation) Validate() {
 	err := validateCpuAndMemory(o.Cpu, o.Memory)
 
 	if err != nil {
-		console.ErrorExit(err, "Invalid settings: %d CPU units / %d MiB", o.Cpu, o.Memory)
+		console.ErrorExit(err, "Invalid settings: %s CPU units / %s MiB", o.Cpu, o.Memory)
 	}
 
 	if o.Num < 1 {

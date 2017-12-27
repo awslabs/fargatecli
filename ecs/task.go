@@ -28,6 +28,7 @@ type Task struct {
 	Memory        string
 	EniId         string
 	StartedBy     string
+	EnvVars       []EnvVar
 }
 
 func (t *Task) RunningFor() time.Duration {
@@ -164,7 +165,7 @@ func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
 
 	if len(taskArnBatches) > 0 {
 		for _, taskArnBatch := range taskArnBatches {
-			for _, task := range ecs.describeTasks(taskArnBatch) {
+			for _, task := range ecs.DescribeTasks(taskArnBatch) {
 				tasks = append(tasks, task)
 			}
 		}
@@ -173,17 +174,17 @@ func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
 	return tasks
 }
 
-func (ecs *ECS) describeTasks(taskArns []string) []Task {
+func (ecs *ECS) DescribeTasks(taskIds []string) []Task {
 	var tasks []Task
 
-	if len(taskArns) == 0 {
+	if len(taskIds) == 0 {
 		return tasks
 	}
 
 	resp, err := ecs.svc.DescribeTasks(
 		&awsecs.DescribeTasksInput{
 			Cluster: aws.String(clusterName),
-			Tasks:   aws.StringSlice(taskArns),
+			Tasks:   aws.StringSlice(taskIds),
 		},
 	)
 
@@ -209,6 +210,16 @@ func (ecs *ECS) describeTasks(taskArns []string) []Task {
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(t.TaskDefinitionArn))
 		task.Image = aws.StringValue(taskDefinition.ContainerDefinitions[0].Image)
+
+		for _, environment := range taskDefinition.ContainerDefinitions[0].Environment {
+			task.EnvVars = append(
+				task.EnvVars,
+				EnvVar{
+					Key:   aws.StringValue(environment.Name),
+					Value: aws.StringValue(environment.Value),
+				},
+			)
+		}
 
 		if len(t.Attachments) == 1 {
 			for _, detail := range t.Attachments[0].Details {
