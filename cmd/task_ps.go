@@ -47,7 +47,7 @@ func getTaskProcessList(operation *TaskProcessListOperation) {
 	}
 
 	if len(tasks) == 0 {
-		console.Info("No tasks found")
+		console.InfoExit("No tasks found")
 	}
 
 	enis := ec2.DescribeNetworkInterfaces(eniIds)

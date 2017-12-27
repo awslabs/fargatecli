@@ -38,11 +38,11 @@ applications.
 ### Tasks
 
 - fargate task list
-- fargate task run TASKNAME [--count NUM] [--cpu UNITS] [--memory MiB] [--image DOCKERIMAGE] [--env KEY=VALUE]
-- fargate task stop TASKNAME [--task TASKID]
-- fargate task logs TASKNAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION]
-- fargate task ps TASKNAME
-- fargate task info TASKNAME [--task TASKID]
+- fargate task run TASKGROUPNAME [--count NUM] [--cpu UNITS] [--memory MiB] [--image DOCKERIMAGE] [--env KEY=VALUE]
+- fargate task stop TASKGROUPNAME [--task TASKID]
+- fargate task logs TASKGROUPNAME [--follow] [--start TIMEEXPRESSION] [--end TIMEEXPRESSION] [--filter FILTEREXPRESSION]
+- fargate task ps TASKGROUPNAME
+- fargate task info TASKGROUPNAME [--task TASKID]
 
 ### Certificates
 

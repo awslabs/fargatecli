@@ -2,6 +2,7 @@ package ecs
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -11,8 +12,9 @@ import (
 )
 
 const (
-	networkInterfaceId = "networkInterfaceId"
-	startedByFormat    = "fargate:%s"
+	networkInterfaceId        = "networkInterfaceId"
+	startedByFormat           = "fargate:%s"
+	taskGroupStartedByPattern = "fargate:(.*)"
 )
 
 type Task struct {
@@ -25,10 +27,16 @@ type Task struct {
 	LastStatus    string
 	Memory        string
 	EniId         string
+	StartedBy     string
 }
 
 func (t *Task) RunningFor() time.Duration {
 	return time.Now().Sub(t.CreatedAt).Truncate(time.Second)
+}
+
+type TaskGroup struct {
+	TaskGroupName string
+	Instances     int64
 }
 
 type RunTaskInput struct {
@@ -78,6 +86,42 @@ func (ecs *ECS) DescribeTasksForTask(taskName string) []Task {
 			Cluster:   aws.String(clusterName),
 		},
 	)
+}
+
+func (ecs *ECS) ListTaskGroups() []*TaskGroup {
+	var taskGroups []*TaskGroup
+
+	taskGroupStartedByRegexp := regexp.MustCompile(taskGroupStartedByPattern)
+
+	input := &awsecs.ListTasksInput{
+		Cluster: aws.String(clusterName),
+	}
+
+OUTER:
+	for _, task := range ecs.listTasks(input) {
+		matches := taskGroupStartedByRegexp.FindStringSubmatch(task.StartedBy)
+
+		if len(matches) == 2 {
+			taskGroupName := matches[1]
+
+			for _, taskGroup := range taskGroups {
+				if taskGroup.TaskGroupName == taskGroupName {
+					taskGroup.Instances++
+					continue OUTER
+				}
+			}
+
+			taskGroups = append(
+				taskGroups,
+				&TaskGroup{
+					TaskGroupName: taskGroupName,
+					Instances:     1,
+				},
+			)
+		}
+	}
+
+	return taskGroups
 }
 
 func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
@@ -141,6 +185,7 @@ func (ecs *ECS) describeTasks(taskArns []string) []Task {
 			LastStatus:    aws.StringValue(t.LastStatus),
 			Memory:        aws.StringValue(t.Memory),
 			TaskId:        taskId,
+			StartedBy:     aws.StringValue(t.StartedBy),
 		}
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(t.TaskDefinitionArn))
