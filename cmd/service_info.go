@@ -60,35 +60,29 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 		loadBalancer := elbv2.DescribeLoadBalancerByArn(loadBalancerArn)
 		listeners := elbv2.GetListeners(loadBalancerArn)
 
+		console.KeyValue("Load Balancer", "\n")
+		console.KeyValue("  Name", "%s\n", loadBalancer.Name)
+		console.KeyValue("  DNS Name", "%s\n", loadBalancer.DNSName)
+
 		if len(listeners) > 0 {
-			var (
-				listenerOutput     []string
-				ruleOutput         []string
-				certificateDomains []string
-			)
+			console.KeyValue("  Listeners", "\n")
+		}
 
-			for _, listener := range listeners {
-				listenerOutput = append(listenerOutput, listener.String())
+		for _, listener := range listeners {
+			var ruleOutput []string
 
-				for _, rule := range elbv2.DescribeRules(listener.Arn) {
-					if rule.TargetGroupArn == service.TargetGroupArn {
-						ruleOutput = append(ruleOutput, rule.String())
-					}
-				}
-
-				if len(listener.CertificateArns) > 0 {
-					certificateDomains = acm.ListCertificateDomainNames(listener.CertificateArns)
+			for _, rule := range elbv2.DescribeRules(listener.Arn) {
+				if rule.TargetGroupArn == service.TargetGroupArn {
+					ruleOutput = append(ruleOutput, rule.String())
 				}
 			}
 
-			console.KeyValue("Load Balancer", "\n")
-			console.KeyValue("  Name", "%s\n", loadBalancer.Name)
-			console.KeyValue("  DNS Name", "%s\n", loadBalancer.DNSName)
-			console.KeyValue("  Listeners", "%s\n", strings.Join(listenerOutput, ", "))
-			console.KeyValue("  Rules", "%s\n", strings.Join(util.Uniq(ruleOutput), ", "))
+			console.KeyValue("    "+listener.String(), "\n")
+			console.KeyValue("      Rules", "%s\n", strings.Join(ruleOutput, ", "))
 
-			if len(certificateDomains) > 0 {
-				console.KeyValue("  Certificates", "%s\n", strings.Join(util.Uniq(certificateDomains), ", "))
+			if len(listener.CertificateArns) > 0 {
+				certificateDomains := acm.ListCertificateDomainNames(listener.CertificateArns)
+				console.KeyValue("      Certificates", "%s\n", strings.Join(certificateDomains, ", "))
 			}
 		}
 

@@ -62,7 +62,7 @@ func (o *ServiceCreateOperation) Validate() {
 }
 
 func (o *ServiceCreateOperation) SetLoadBalancer(lb string) {
-	loadBalancer := o.Elbv2.DescribeLoadBalancer(o.LoadBalancerName)
+	loadBalancer := o.Elbv2.DescribeLoadBalancer(lb)
 
 	if loadBalancer.Type == "network" {
 		if o.Port.Protocol != "TCP" {

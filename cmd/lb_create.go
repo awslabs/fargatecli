@@ -46,6 +46,10 @@ func (o *LbCreateOperation) SetPorts(inputPorts []string) {
 	ports := inflatePorts(inputPorts)
 	validProtocols := regexp.MustCompile(validProtocolsPattern)
 
+	if len(inputPorts) == 0 {
+		msgs = append(msgs, fmt.Sprintf("at least one --port must be specified"))
+	}
+
 	for _, port := range ports {
 		if !validProtocols.MatchString(port.Protocol) {
 			msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
@@ -71,11 +75,11 @@ func (o *LbCreateOperation) SetPorts(inputPorts []string) {
 			}
 		}
 
-		if len(msgs) > 0 {
-			console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
-		}
-
 		protocols = append(protocols, port.Protocol)
+	}
+
+	if len(msgs) > 0 {
+		console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
 	}
 
 	o.Ports = ports

@@ -22,6 +22,7 @@ type Rule struct {
 	Type           string
 	Value          string
 	TargetGroupArn string
+	Priority       string
 }
 
 func (r *Rule) String() string {
@@ -37,6 +38,7 @@ type Listener struct {
 	Port            int64
 	Protocol        string
 	CertificateArns []string
+	Rules           []Rule
 }
 
 func (l *Listener) String() string {
@@ -168,6 +170,7 @@ func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
 					TargetGroupArn: aws.StringValue(r.Actions[0].TargetGroupArn),
 					Type:           field,
 					Value:          aws.StringValue(v),
+					Priority:       aws.StringValue(r.Priority),
 				}
 
 				rules = append(rules, rule)
