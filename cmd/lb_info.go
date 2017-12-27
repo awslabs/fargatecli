@@ -53,6 +53,11 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 
 		console.KeyValue("  "+listener.String(), "\n")
 
+		if len(listener.CertificateArns) > 0 {
+			certificateDomains := acm.ListCertificateDomainNames(listener.CertificateArns)
+			console.KeyValue("    Certificates", "%s\n", strings.Join(certificateDomains, ", "))
+		}
+
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 4, 2, 2, ' ', 0)
 
@@ -89,11 +94,6 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 		}
 
 		w.Flush()
-
-		if len(listener.CertificateArns) > 0 {
-			certificateDomains := acm.ListCertificateDomainNames(listener.CertificateArns)
-			console.KeyValue("    Certificates", "%s\n", strings.Join(certificateDomains, ", "))
-		}
 	}
 
 }

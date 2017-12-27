@@ -124,8 +124,6 @@ func init() {
 }
 
 func createLoadBalancer(operation *LbCreateOperation) {
-	console.Info("Creating load balancer [%s]", operation.LoadBalancerName)
-
 	elbv2 := ELBV2.New(sess)
 	ec2 := EC2.New(sess)
 
@@ -163,4 +161,7 @@ func createLoadBalancer(operation *LbCreateOperation) {
 
 		elbv2.CreateListener(input)
 	}
+
+	console.Info("Created load balancer %s", operation.LoadBalancerName)
+
 }

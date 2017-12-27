@@ -142,11 +142,12 @@ var serviceCreateCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceCreateOperation{
-			ServiceName: args[0],
 			Cpu:         flagServiceCreateCpu,
-			Memory:      flagServiceCreateMemory,
-			Image:       flagServiceCreateImage,
 			Elbv2:       ELBV2.New(sess),
+			Image:       flagServiceCreateImage,
+			Memory:      flagServiceCreateMemory,
+			Num:         flagServiceCreateNum,
+			ServiceName: args[0],
 		}
 
 		operation.Validate()
@@ -173,8 +174,6 @@ func init() {
 }
 
 func createService(operation *ServiceCreateOperation) {
-	console.Info("Creating %s", operation.ServiceName)
-
 	cwl := CWL.New(sess)
 	ec2 := EC2.New(sess)
 	ecr := ECR.New(sess)
@@ -258,6 +257,9 @@ func createService(operation *ServiceCreateOperation) {
 			SubnetIds:         subnetIds,
 			TargetGroupArn:    targetGroupArn,
 			TaskDefinitionArn: taskDefinitionArn,
+			DesiredCount:      operation.Num,
 		},
 	)
+
+	console.Info("Creating service %s", operation.ServiceName)
 }
