@@ -45,10 +45,25 @@ var (
 )
 
 var serviceUpdateCmd = &cobra.Command{
-	Use:   "update <service name>",
-	Short: "Update cpu and/or memory settings",
-	Long:  "Update cpu and/or memory settings",
-	Args:  cobra.ExactArgs(1),
+	Use:   "update <service-name> --cpu <cpu-units> | --memory <MiB>",
+	Short: "Update service configuration",
+	Long: `Update service configuration
+
+CPU and memory settings are specified as CPU units and mebibytes respectively
+using the --cpu and --memory flags. Every 1024 CPU units is equivilent to a
+single vCPU. AWS Fargate only supports certain combinations of CPU and memory
+configurations:
+
+| CPU (CPU Units) | Memory (MiB)                          |
+| --------------- | ------------------------------------- |
+| 256             | 512, 1024, or 2048                    |
+| 512             | 1024 through 4096 in 1GiB increments  |
+| 1024            | 2048 through 8192 in 1GiB increments  |
+| 2048            | 4096 through 16384 in 1GiB increments |
+| 4096            | 8192 through 30720 in 1GiB increments |
+
+At least one of --cpu or --memory must be specified.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceUpdateOperation{
 			ServiceName: args[0],

@@ -17,8 +17,8 @@ type ServiceProcessListOperation struct {
 }
 
 var servicePsCmd = &cobra.Command{
-	Use:   "ps <service name>",
-	Short: "List running tasks in a service",
+	Use:   "ps <service-name>",
+	Short: "List running tasks for a service",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceProcessListOperation{

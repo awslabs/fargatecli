@@ -11,9 +11,13 @@ type ServiceDestroyOperation struct {
 }
 
 var serviceDestroyCmd = &cobra.Command{
-	Use:   "destroy <service name>",
-	Short: "Delete a service",
-	Args:  cobra.ExactArgs(1),
+	Use:   "destroy <service-name>",
+	Short: "Destroy a service",
+	Long: `Destroy service
+
+Deletes a service. In order to destroy a service, it must first be scaled to 0
+running.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceDestroyOperation{
 			ServiceName: args[0],

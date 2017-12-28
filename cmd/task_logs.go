@@ -21,11 +21,13 @@ var taskLogsCmd = &cobra.Command{
 
 Return either a specific segment of task logs or tail logs in real-time using
 the --follow option. Logs are prefixed by their log stream name which is in the
-format of "fargate/<task-group-name>/<task-id>." If --follow is passed --end
-cannot be specified.
+format of "fargate/<task-group-name>/<task-id>."
 
-Logs can be returned for specific tasks within a task group by passing a task ID
-via the --task flag. Pass --task with a task ID multiple times in order to
+Follow will continue to run and return logs until interrupted by Control-C. If
+--follow is passed --end cannot be specified.
+
+Logs can be returned for specific tasks within a task group by passing a task
+ID via the --task flag. Pass --task with a task ID multiple times in order to
 retrieve logs from multiple specific tasks.
 
 A specific window of logs can be requested by passing --start and --end options
@@ -39,9 +41,7 @@ timestamp:
 
 You can filter logs for specific term by passing a filter expression via the
 --filter flag. Pass a single term to search for that term, pass multiple terms
-to search for log messages that include all terms. See
-http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events
-for more details.`,
+to search for log messages that include all terms.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &GetLogsOperation{

@@ -55,7 +55,7 @@ subsequent commands to view logs, stop and inspect tasks. Task group names do
 not have to be unique -- multiple configurations of task instances can be
 started with the same task group.
 
-Multiple instances of a task can be run by specifying a number in the --count
+Multiple instances of a task can be run by specifying a number in the --num
 flag. If no number is specified, a single task instance will be run.
 
 CPU and memory settings can be optionally specified as CPU units and mebibytes

@@ -20,9 +20,17 @@ type ServiceInfoOperation struct {
 }
 
 var serviceInfoCmd = &cobra.Command{
-	Use:   "info <service name>",
-	Short: "Display information about a service",
-	Args:  cobra.ExactArgs(1),
+	Use:   "info <service-name>",
+	Short: "Inspect service",
+	Long: `Inspect service
+
+Show extended information for a service including load balancer configuration,
+active deployments, and environment variables.
+
+Deployments show active versions of your service that are running. Multiple
+deployments are shown if a service is transitioning due to a deployment or
+update to configuration such a CPU, memory, or environment variables.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceInfoOperation{
 			ServiceName: args[0],

@@ -137,9 +137,52 @@ var (
 )
 
 var serviceCreateCmd = &cobra.Command{
-	Use:   "create <service name>",
-	Short: "Create and deploy and new service",
-	Args:  cobra.ExactArgs(1),
+	Use:   "create <service-name>",
+	Short: "Create a new service",
+	Long: `Create a new service
+
+CPU and memory settings can be optionally specified as CPU units and mebibytes
+respectively using the --cpu and --memory flags. Every 1024 CPU units is
+equivilent to a single vCPU. AWS Fargate only supports certain combinations of
+CPU and memory configurations:
+
+| CPU (CPU Units) | Memory (MiB)                          |
+| --------------- | ------------------------------------- |
+| 256             | 512, 1024, or 2048                    |
+| 512             | 1024 through 4096 in 1GiB increments  |
+| 1024            | 2048 through 8192 in 1GiB increments  |
+| 2048            | 4096 through 16384 in 1GiB increments |
+| 4096            | 8192 through 30720 in 1GiB increments |
+
+If not specified, fargate will launch minimally sized tasks at 0.25 vCPU (256
+CPU units) and 0.5GB (512 MiB) of memory.
+
+The Docker container image to use in the service can be optionally specified
+via the --image flag. If not specified, fargate will build a new Docker
+container image from the current working directory and push it to Amazon ECR in
+a repository named for the task group. If the current working directory is a
+git repository, the container image will be tagged with the short ref of the
+HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
+
+Services can optionally be configured to use a load balancer. To put a load
+balancer in front a service, pass the --lb flag with the name of a load
+balancer. If you specify a load balancer, you must also specify a port via the
+--port flag to which the load balancer should forward requests. Optionally,
+Application Load Balancers can be configured to route HTTP/HTTPS traffic to the
+service based upon a rule. Rules are configured by passing one or more rules by
+specifying the --rule flag along with a rule expression. Rule expressions are
+in the format of TYPE=VALUE. Type can either be PATH or HOST. PATH matches the
+PATH of the request and HOST matches the requested hostname in the HTTP
+request. Both PATH and HOST types can include up to three wildcard characters:
+* to match multiple characters and ? to match a single character.
+
+Environment variables can be specified via the --env flag. Specify --env with a
+key=value parameter multiple times to add multiple variables.
+
+Specify the desired count of tasks the service should maintain by passing the
+--num flag with a number. If you omit this flag, fargate will configure a
+service with a desired number of tasks of 1.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceCreateOperation{
 			Cpu:         flagServiceCreateCpu,
@@ -163,12 +206,12 @@ var serviceCreateCmd = &cobra.Command{
 func init() {
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateCpu, "cpu", "c", "256", "Amount of cpu units to allocate for each task")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateMemory, "memory", "m", "512", "Amount of MiB to allocate for each task")
-	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateEnvVars, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
+	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateEnvVars, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value] (can be specified multiple times)")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreatePort, "port", "p", "", "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935]")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateImage, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateLb, "lb", "l", "", "Name of a load balancer to use")
 	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateRules, "rule", "r", []string{}, "Routing rule for the load balancer [e.g. host=api.example.com, path=/api/*]; if omitted service will be the default route")
-	serviceCreateCmd.Flags().Int64VarP(&flagServiceCreateNum, "num", "n", 1, "Number of tasks instances to keep running (default: 1)")
+	serviceCreateCmd.Flags().Int64VarP(&flagServiceCreateNum, "num", "n", 1, "Number of tasks instances to keep running")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }

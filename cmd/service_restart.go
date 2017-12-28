@@ -11,12 +11,13 @@ type ServiceRestartOperation struct {
 }
 
 var serviceRestartCmd = &cobra.Command{
-	Use:   "restart <service name>",
-	Short: "Restart all tasks within a service",
-	Long: `Restart all tasks within a service
+	Use:   "restart <service-name>",
+	Short: "Restart service",
+	Long: `Restart service
 
-	Begins a deployment and restarts all tasks within a service. This is useful
-	if you have some external data source cached that you need to refresh.`,
+Creates a new set of tasks for the service and stops the previous tasks. This
+is useful if your service needs to reload data cached from an external source,
+for example.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceRestartOperation{

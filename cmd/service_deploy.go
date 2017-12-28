@@ -17,9 +17,17 @@ type ServiceDeployOperation struct {
 var flagServiceDeployImage string
 
 var serviceDeployCmd = &cobra.Command{
-	Use:   "deploy <service name>",
-	Short: "Deploy a service from an image or local Dockerfile",
-	Args:  cobra.ExactArgs(1),
+	Use:   "deploy <service-name>",
+	Short: "Deploy new image to service",
+	Long: `Deploy new image to service
+
+The Docker container image to use in the service can be optionally specified
+via the --image flag. If not specified, fargate will build a new Docker
+container image from the current working directory and push it to Amazon ECR in
+a repository named for the task group. If the current working directory is a
+git repository, the container image will be tagged with the short ref of the
+HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceDeployOperation{
 			ServiceName: args[0],

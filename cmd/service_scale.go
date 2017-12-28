@@ -46,13 +46,13 @@ func (o *ScaleServiceOperation) SetScale(scaleExpression string) {
 }
 
 var serviceScaleCmd = &cobra.Command{
-	Use:   "scale <service name> <scalei expression>",
+	Use:   "scale <service-name> <scale-expression>",
 	Short: "Changes the number of tasks running for the service",
-	Long: `Changes the number of tasks running for the service
+	Long: `Scale number of tasks in a service
 
-For scale expression, specify either an absolute number e.g. 5 or a delta such
-as +2 or -4.  The desired count will be changed to reflect the new scale of the
-service. The new desired count must be above zero.`,
+Changes the number of desired tasks to be run in a service by the given scale
+expression. A scale expression can either be an absolute number or a delta
+specified with a sign such as +5 or -2.`,
 	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ScaleServiceOperation{
