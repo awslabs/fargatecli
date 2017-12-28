@@ -46,15 +46,15 @@ func init() {
 }
 
 func serviceEnvUnset(operation *ServiceEnvUnsetOperation) {
-	console.Info("Unsetting %s environment variables:", operation.ServiceName)
-
-	for _, key := range operation.Keys {
-		console.Info("- %s", key)
-	}
-
 	ecs := ECS.New(sess)
 	service := ecs.DescribeService(operation.ServiceName)
 	taskDefinitionArn := ecs.RemoveEnvVarsFromTaskDefinition(service.TaskDefinitionArn, operation.Keys)
 
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
+
+	console.Info("Unset %s environment variables:", operation.ServiceName)
+
+	for _, key := range operation.Keys {
+		console.Info("- %s", key)
+	}
 }

@@ -44,15 +44,16 @@ func init() {
 }
 
 func serviceEnvSet(operation *ServiceEnvSetOperation) {
-	console.Info("Setting %s environment variables:", operation.ServiceName)
-
-	for _, envVar := range operation.EnvVars {
-		console.Info("- %s=%s", envVar.Key, envVar.Value)
-	}
-
 	ecs := ECS.New(sess)
 	service := ecs.DescribeService(operation.ServiceName)
 	taskDefinitionArn := ecs.AddEnvVarsToTaskDefinition(service.TaskDefinitionArn, operation.EnvVars)
 
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
+
+	console.Info("Set %s environment variables:", operation.ServiceName)
+
+	for _, envVar := range operation.EnvVars {
+		console.Info("- %s=%s", envVar.Key, envVar.Value)
+	}
+
 }

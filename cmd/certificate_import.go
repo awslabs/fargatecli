@@ -70,8 +70,6 @@ func importCertificate(operation *CertificateImportOperation) {
 		certificateChain string
 	)
 
-	console.Info("Importing certificate")
-
 	acm := ACM.New(sess)
 
 	certificateData, err := ioutil.ReadFile(operation.CertificateFile)
@@ -100,4 +98,5 @@ func importCertificate(operation *CertificateImportOperation) {
 	}
 
 	acm.ImportCertificate([]byte(certificate), []byte(privateKey), []byte(certificateChain))
+	console.Info("Imported certificate from %s", operation.CertificateFile)
 }

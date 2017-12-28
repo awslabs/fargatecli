@@ -49,8 +49,8 @@ func createAliasRecord(operation *LbAliasOperation) {
 
 	for _, hostedZone := range hostedZones {
 		if hostedZone.IsSuperDomainOf(operation.AliasDomain) {
-			console.Info("Creating Alias Record [%s -> %s]", operation.AliasDomain, loadBalancer.DNSName)
 			route53.CreateAlias(hostedZone, "A", operation.AliasDomain, loadBalancer.DNSName, loadBalancer.HostedZoneId)
+			console.Info("Created alias record (%s -> %s)", operation.AliasDomain, loadBalancer.DNSName)
 
 			return
 		}

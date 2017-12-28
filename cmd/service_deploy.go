@@ -37,8 +37,6 @@ func init() {
 }
 
 func deployService(operation *ServiceDeployOperation) {
-	console.Info("Deploying %s", operation.ServiceName)
-
 	ecs := ECS.New(sess)
 	service := ecs.DescribeService(operation.ServiceName)
 
@@ -65,4 +63,5 @@ func deployService(operation *ServiceDeployOperation) {
 
 	taskDefinitionArn := ecs.UpdateTaskDefinitionImage(service.TaskDefinitionArn, operation.Image)
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
+	console.Info("Deployed %s to service %s", operation.Image, operation.ServiceName)
 }

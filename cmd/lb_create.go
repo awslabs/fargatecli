@@ -165,5 +165,4 @@ func createLoadBalancer(operation *LbCreateOperation) {
 	}
 
 	console.Info("Created load balancer %s", operation.LoadBalancerName)
-
 }

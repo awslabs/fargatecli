@@ -28,8 +28,7 @@ func init() {
 }
 
 func destroyService(operation *ServiceDestroyOperation) {
-	console.Info("[%s] Destroying service", operation.ServiceName)
-
 	ecs := ECS.New(sess)
 	ecs.DestroyService(operation.ServiceName)
+	console.Info("Destroyed service %s", operation.ServiceName)
 }

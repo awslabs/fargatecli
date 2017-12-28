@@ -71,6 +71,6 @@ func init() {
 }
 
 func scaleService(operation *ScaleServiceOperation) {
-	console.Info("Scaling service %s to %d", operation.ServiceName, operation.DesiredCount)
 	operation.Ecs.SetDesiredCount(operation.ServiceName, operation.DesiredCount)
+	console.Info("Scaled service %s to %d", operation.ServiceName, operation.DesiredCount)
 }

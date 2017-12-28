@@ -30,9 +30,9 @@ func init() {
 }
 
 func destroyLoadBalancer(operation *LoadBalancerDestroyOperation) {
-	console.Info("[%s] Destroying load balancer", operation.LoadBalancerName)
-
 	elbv2 := ELBV2.New(sess)
+
 	elbv2.DeleteLoadBalancer(operation.LoadBalancerName)
 	elbv2.DeleteTargetGroup(fmt.Sprintf(defaultTargetGroupFormat, operation.LoadBalancerName))
+	console.Info("Destroyed load balancer %s", operation.LoadBalancerName)
 }

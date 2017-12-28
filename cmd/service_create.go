@@ -263,5 +263,5 @@ func createService(operation *ServiceCreateOperation) {
 		},
 	)
 
-	console.Info("Creating service %s", operation.ServiceName)
+	console.Info("Created service %s", operation.ServiceName)
 }

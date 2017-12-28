@@ -68,8 +68,6 @@ func init() {
 }
 
 func updateService(operation *ServiceUpdateOperation) {
-	console.Info("Updating service %s to %d CPU units / %d MiB", operation.ServiceName, operation.Cpu, operation.Memory)
-
 	newTaskDefinitionArn := operation.Ecs.UpdateTaskDefinitionCpuAndMemory(
 		operation.Service.TaskDefinitionArn,
 		operation.Cpu,
@@ -77,4 +75,6 @@ func updateService(operation *ServiceUpdateOperation) {
 	)
 
 	operation.Ecs.UpdateServiceTaskDefinition(operation.ServiceName, newTaskDefinitionArn)
+	console.Info("Updated service %s to %d CPU units / %d MiB", operation.ServiceName, operation.Cpu, operation.Memory)
+
 }
