@@ -56,6 +56,10 @@ type Port struct {
 var rootCmd = &cobra.Command{
 	Use: "fargate",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if cmd.Parent().Name() == "fargate" {
+			return
+		}
+
 		envAwsDefaultRegion := os.Getenv("AWS_DEFAULT_REGION")
 		envAwsRegion := os.Getenv("AWS_REGION")
 
