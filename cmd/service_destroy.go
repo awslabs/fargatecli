@@ -15,8 +15,7 @@ var serviceDestroyCmd = &cobra.Command{
 	Short: "Destroy a service",
 	Long: `Destroy service
 
-Deletes a service. In order to destroy a service, it must first be scaled to 0
-running.`,
+In order to destroy a service, it must first be scaled to 0 running tasks.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceDestroyOperation{

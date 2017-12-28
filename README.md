@@ -304,8 +304,7 @@ for example.
 
 Destroy service
 
-Deletes a service. In order to destroy a service, it must first be scaled to 0
-running.
+In order to destroy a service, it must first be scaled to 0 running tasks.
 
 #### Certificates
 
