@@ -54,7 +54,16 @@ type Port struct {
 }
 
 var rootCmd = &cobra.Command{
-	Use: "fargate",
+	Use:   "fargate",
+	Short: "Deploy serverless containers onto the cloud from your command line",
+	Long: `Deploy serverless containers onto the cloud from your command line
+
+fargate is a command-line interface to deploy containers to AWS Fargate that
+makes it easy to run containers in AWS as one-off tasks or managed, highly
+available services secured by free TLS certificates. It bundles the power of AWS
+including Amazon Elastic Container Service (ECS), Amazon Elastic Container
+Registry (ECR), Elastic Load Balancing, AWS Certificate Manager, Amazon
+CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if cmd.Parent().Name() == "fargate" {
 			return
