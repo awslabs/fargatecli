@@ -16,8 +16,33 @@ var (
 
 var taskLogsCmd = &cobra.Command{
 	Use:   "logs <task name>",
-	Short: "View logs from a task group",
-	Args:  cobra.ExactArgs(1),
+	Short: "Show logs from tasks",
+	Long: `Show logs from tasks
+
+Return either a specific segment of task logs or tail logs in real-time using
+the --follow option. Logs are prefixed by their log stream name which is in the
+format of "fargate/<task-group-name>/<task-id>." If --follow is passed --end
+cannot be specified.
+
+Logs can be returned for specific tasks within a task group by passing a task ID
+via the --task flag. Pass --task with a task ID multiple times in order to
+retrieve logs from multiple specific tasks.
+
+A specific window of logs can be requested by passing --start and --end options
+with a time expression. The time expression can be either a duration or a
+timestamp:
+
+  - Duration (e.g. -1h [one hour ago], -1h10m30s [one hour, ten minutes, and
+    thirty seconds ago], 2h [two hours from now])
+  - Timestamp with optional timezone in the format of YYYY-MM-DD HH:MM:SS [TZ];
+    timezone will default to UTC if omitted (e.g. 2017-12-22 15:10:03 EST)
+
+You can filter logs for specific term by passing a filter expression via the
+--filter flag. Pass a single term to search for that term, pass multiple terms
+to search for log messages that include all terms. See
+http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events
+for more details.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &GetLogsOperation{
 			LogGroupName: fmt.Sprintf(taskLogGroupFormat, args[0]),

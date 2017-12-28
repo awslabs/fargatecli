@@ -18,7 +18,7 @@ type TaskProcessListOperation struct {
 
 var taskPsCmd = &cobra.Command{
 	Use:   "ps <task name>",
-	Short: "List running instances for a task",
+	Short: "List running tasks",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &TaskProcessListOperation{

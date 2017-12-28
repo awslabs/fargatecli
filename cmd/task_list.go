@@ -12,7 +12,7 @@ import (
 
 var taskListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List task groups",
+	Short: "List running task groups",
 	Run: func(cmd *cobra.Command, args []string) {
 		listTaskGroups()
 	},

@@ -19,8 +19,15 @@ var flagTaskInfoTasks []string
 
 var taskInfoCmd = &cobra.Command{
 	Use:   "info <task group name>",
-	Short: "Display configuration information about tasks instances",
-	Args:  cobra.ExactArgs(1),
+	Short: "Inspect tasks",
+	Long: `Inspect tasks
+
+Shows extended information for each running task within a task group or for
+specific tasks specified with the --task flag. Information includes environment
+variables which could differ between tasks in a task group. To inspect multiple
+specific tasks within a task group specific --task with a task ID multiple
+times.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &TaskInfoOperation{
 			TaskGroupName: args[0],

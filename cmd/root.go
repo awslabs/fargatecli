@@ -31,10 +31,10 @@ var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings
 CPU (CPU Units)    Memory (MiB)
 ---------------    ------------
 256                512, 1024, or 2048
-512                1024 through 4096 in 1GB increments
-1024               2048 through 8192 in 1GB increments
-2048               4096 through 16384 in 1GB increments
-4096               8192 through 30720 in 1GB increments
+512                1024 through 4096 in 1GiB increments
+1024               2048 through 8192 in 1GiB increments
+2048               4096 through 16384 in 1GiB increments
+4096               8192 through 30720 in 1GiB increments
 `)
 
 var validRegions = []string{"us-east-1"}

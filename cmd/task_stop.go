@@ -17,8 +17,13 @@ var (
 
 var taskStopCmd = &cobra.Command{
 	Use:   "stop <task group name>",
-	Short: "Stop task instances",
-	Args:  cobra.ExactArgs(1),
+	Short: "Stop tasks",
+	Long: `Stop tasks
+
+  Stops all tasks within a task group if run with only a task group name or stops
+  individual tasks if one or more tasks are passed via the --task flag. Specify
+  --task with a task ID parameter multiple times to stop multiple specific tasks.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &TaskStopOperation{
 			TaskGroupName: args[0],
