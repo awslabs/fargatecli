@@ -92,3 +92,13 @@ img.icon {
     text-align: center;
   }
 }
+
+@media (max-width: 575.99px) {
+  .card {
+    margin: 0 20px;
+  }
+
+  .header {
+    margin-left: 0px;
+  }
+}
