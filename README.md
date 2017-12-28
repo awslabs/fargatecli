@@ -45,7 +45,7 @@ Console, or `fargate task stop`, or until they are interrupted for any reason.
 
 List running task groups
 
-##### fargate task run <task-group-name> [--count <num>] [--cpu <cpu-units>] [--memory <MiB>] [--image <docker-image>] [--env <key=value>]
+##### fargate task run \<task-group-name> [--count \<num>] [--cpu \<cpu-units>] [--memory \<MiB>] [--image \<docker-image>] [--env \<key=value>]
 
 Run new tasks
 
@@ -83,7 +83,7 @@ commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 Environment variables can be specified via the --env flag. Specify --env with a
 key=value parameter multiple times to add multiple variables.
 
-##### fargate task info <task-group-name> [--task <task-id>]
+##### fargate task info \<task-group-name> [--task \<task-id>]
 
 Inspect tasks
 
@@ -93,17 +93,17 @@ variables which could differ between tasks in a task group. To inspect multiple
 specific tasks within a task group specific --task with a task ID multiple
 times.
 
-##### fargate task ps <task-group-name>
+##### fargate task ps \<task-group-name>
 
 List running tasks
 
-##### fargate task logs <task-group-name> [--follow] [--start <time-expression>] [--end <time-expression>] [--filter <filter-expression>] [--task <task-id>]
+##### fargate task logs \<task-group-name> [--follow] [--start \<time-expression>] [--end \<time-expression>] [--filter \<filter-expression>] [--task \<task-id>]
 
 Show logs from tasks
 
 Return either a specific segment of task logs or tail logs in real-time using
 the --follow option. Logs are prefixed by their log stream name which is in the
-format of "fargate/<task-group-name>/<task-id>." If --follow is passed --end
+format of "fargate/\<task-group-name>/\<task-id>." If --follow is passed --end
 cannot be specified.
 
 Logs can be returned for specific tasks within a task group by passing a task ID
@@ -124,7 +124,7 @@ You can filter logs for specific term by passing a filter expression via the
 to search for log messages that include all terms. See the [CloudWatch Logs
 documentation][cwl-filter-expression] for more details.
 
-##### fargate task stop <task-group-name> [--task <task-id>]
+##### fargate task stop \<task-group-name> [--task \<task-id>]
 
 Stop tasks
 
