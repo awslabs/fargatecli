@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>fargate :: A CLI for AWS Fargate</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300i,400,900">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="jumbotron">
+          <div class="hed">
+            <h1 class="display-1">fargate</h1>
+            <p class="lead">Deploy serverless containers onto the cloud from your command line</p>
+          </div>
+
+          <div class="hed-image">
+            <img src="fargate.png">
+          </div>
+
+          <div class="intro">
+            <p><i>fargate</i> is a command-line interface to deploy containers to
+            <a href="https://aws.amazon.com/fargate/">AWS Fargate</a>. Using
+            <i>fargate</i>, developers can easily run containers as one-off tasks
+            or managed, highly available services secured by free TLS certificates. It bundles the power of AWS including <a href="https://aws.amazon.com/ecs/">Amazon Elastic Container Service (ECS)</a>, <a href="https://aws.amazon.com/ecr/">Amazon Elastic Container Registry (ECR)</a>, <a href="https://aws.amazon.com/elasticloadbalancing/">Elastic Load Balancing</a>, <a href="https://aws.amazon.com/certificate-manager/">AWS Certificate Manager</a>, <a href="https://aws.amazon.com/cloudwatch/details/">Amazon CloudWatch Logs</a>, and <a href="https://aws.amazon.com/route53/">Amazon Route 53</a> into an easy-to-use CLI.</p>
+          </div>
+
+          <hr class="my-4">
+
+          <p class="lead actions">
+            <a class="btn btn-primary btn-lg" href="#download" role="button">
+              <span class="display-5">Get Started</span>
+            </a>
+
+            <a class="btn btn-secondary btn-lg" href="https://github.com/jpignata/fargate" role="button">
+              <img src="github.png" class="icon">
+              <span class="display-5">jpignata/fargate</span>
+            </a>
+          </p>
+
+        </div>
+      </div>
+
+      <div class="row examples">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Run a Task from a Public Image</h4>
+            <p class="card-text">Tasks are one-time executions of your
+            container. You can run a task with a public IP address from an
+            image on  Docker Hub in a single command:</p>
+
+            <p><pre>$ fargate task run web --image nginx:latest
+[<span class="blue">i</span>] Running task web
+
+$ fargate task ps web
+ID                                    IMAGE         STATUS   RUNNING  IP              CPU  MEMORY
+8c35747a-7c1c-4efe-b55a-8dfbc1108d82  nginx:latest  Running  35s      34.228.17.157   256  512
+
+$ curl -s http://34.228.17.157 | grep title
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Run a Task from a Local
+              <i>Dockerfile</i></h4>
+            <p class="card-text">If you omit the <i>image</i> flag,
+            <i>fargate</i> will build and push the application in the current
+            working directory to Amazon ECR:</p>
+
+            <p><pre>$ fargate task run web
+[<span class="green">&gt;</span>] docker login --username AWS --password ******* 123456789012.dkr.ecr.us-east-1.amazonaws.com/web
+[<span class="green">&gt;</span>] docker build --tag 123456789012.dkr.ecr.us-east-1.amazonaws.com/web:20171227050818 .
+[<span class="green">&gt;</span>] docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/web:20171227050818 .
+l<span class="blue">i</span>] Running task web</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Run a Service</h4>
+            <p class="card-text">Services are managed containers that are
+            restarted if a failure occurs. Like a task, you can deploy a service
+            using either a pre-existing Docker container or build and push it
+            using <i>fargate</i>.</p>
+
+            <p><pre>$ fargate service create myapp
+[<span class="blue">i</span>] Created service myapp</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Run a Load Balanced Service</h4>
+            <p class="card-text">Services can be placed behind either an HTTP/HTTPS
+            or TCP load balancer to serve requests to multiple instances of
+            your container from a single URL.</p>
+
+            <p><pre>$ fargate lb create mylb --port 80
+[<span class="blue">i</span>] Created load balancer mylb
+
+$ fargate service create myapp --lb mylb --port 80
+[<span class="blue">i</span>] Created service myapp</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Deploy a New Image To a Service</h4>
+            <p class="card-text">Use <i>fargate</i> to either push images built
+            separately via continuous integration by using the <i>--image</i>
+            flag or build and push directly from your computer.</p>
+
+            <p><pre>$ fargate service deploy myapp
+...
+[<span class="blue">i</span>] Deployed 123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp:abcd1234 to service myapp</pre></p>
+          </div>
+        </div>
+
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Scale Vertically</h4>
+            <p class="card-text">Containers running using AWS Fargate can range
+            from a quarter of a vCPU to 4 vCPUs and from 0.5GB of RAM to 30GB.
+            This command scales our containers to a single vCPU and 4GB of
+            RAM:</p>
+
+            <p><pre>$ fargate service update myapp --cpu 1024 --memory 4096
+[<span class="blue">i</span>] Updated service myapp to 1024 CPU / 4096 MiB</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Scale Horizontally</h4>
+            <p class="card-text">Services can scale to any number of instances
+            with a single command.</p>
+
+            <p><pre>$ fargate service scale web +2
+[<span class="blue">i</span>] Scaled service web to 3
+
+$ fargate service ps web
+ID                                    IMAGE         STATUS   RUNNING  IP             CPU  MEMORY  DEPLOYMENT
+8c35747a-7c1c-4efe-b55a-8dfbc1108d82  nginx:latest  Running  56s      34.228.17.157  256  512     1
+0487456c-8dbe-49ff-b7e7-d772eee447af  nginx:latest  Running  56s      34.229.59.235  256  512     1
+8c35747a-7c1c-4efe-b55a-8dfbc1108d82  nginx:latest  Running  2h57m1s  34.228.17.157  256  512     1</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Secure a Load Balancer with a TLS Certificate</h4>
+            <p class="card-text">Load balancers can use HTTPS ports secured by
+            a TLS certificate for your domain or domains. Domains hosted in
+            Amazon Route 53 can be automatically validated from <i>fargate</i>.</p>
+
+            <p><pre>$ fargate certificate request *.somanymachines.com
+$ fargate certificate validate *.somanymachines.com
+$ fargate lb create mylb --port 443 --certificate *.somanymachines.com
+$ fargate service create myapp --lb mylb --port 80</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Multiple Services to a Load Balancer</h4>
+            <p class="card-text">HTTP/HTTPS load balancers can support
+            multiple services and will route to them based upon defined rules
+            that match either the path or hostname of the request. This allows you
+            to run a single service or a dozen microservices behind a single load
+            balancer.</p>
+
+            <p><pre>$ fargate lb create mylb --port 80
+$ fargate service create myapp --lb mylb --port 80
+$ fargate service create myservice --lb mylb --port 80 --rule PATH=/myservice/*
+$ fargate service create myotherservice --lb mylb --port 80 --rule PATH=/myotherservice/*</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">View Logs from a Running Task or
+              Service</h4>
+            <p class="card-text"><i>fargate</i> configures containers to log to
+            Amazon CloudWatch Logs which allow you to view or follow a log in
+            real-time. Tail logs using <i>--follow</i> or select a range of logs
+            using start and end times expressed as durations (e.g. <i>-1h</i>,
+            <i>-1m30s</i> or timestamps (e.g. <i>2017-12-12 15:00 EST</i>)</p>
+
+            <p><pre>$ fargate task logs myapp --follow --start "-15m" --filter "curl"
+<span class="green">fargate/web/0487456c-8dbe-49ff-b7e7-d772eee447af</span> 172.31.41.97 - - [27/Dec/2017:05:32:17 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.21.3 (i386-portbld-freebsd8.1) libcurl/7.21.3 OpenSSL/0.9.8n zlib/1.2.3" "199.233.217.27"
+<span class="blue">fargate/web/358c439f-0613-4d69-abe8-fe8b7a25f64e</span> 172.31.4.10 - - [27/Dec/2017:05:32:19 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.21.3 (i386-portbld-freebsd8.1) libcurl/7.21.3 OpenSSL/0.9.8n zlib/1.2.3" "199.233.217.27"
+<span class="red">fargate/web/8c35747a-7c1c-4efe-b55a-8dfbc1108d82</span> 172.31.53.143 - - [27/Dec/2017:05:32:18 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.21.3 (i386-portbld-freebsd8.1) libcurl/7.21.3 OpenSSL/0.9.8n zlib/1.2.3" "199.233.217.27"</pre></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Create an Alias Record to a Load Balancer</h4>
+            <p class="card-text">If you're hosting your domain using Amazon
+            Route 53, you can create an alias record to your load balancer in
+            a single command:</p>
+
+            <p><pre>$ fargate lb alias mylb app.somanymachines.com
+[<span class="blue">i</span>] Created alias record [app.somanymachines.com -> mylb-518172311.us-east-1.elb.amazonaws.com]</pre></p>
+          </div>
+        </div>
+
+      </div>
+
+      <a name="download"></a>
+      <div class="row header">
+        <h3>Get Started</h3>
+      </div>
+
+      <div class="row">
+        <div class="card-deck w-100">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title"><img class="icon" src="apple.png"> macOS</h4>
+              <p class="card-text">
+                <a href="https://github.com/jpignata/fargate/releases/download/v0.1.0/fargate-0.1.0-darwin-amd64.zip">64 bit</a>
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title"><img class="icon" src="linux.png"> Linux</h4>
+              <p class="card-text">
+                <a href="https://github.com/jpignata/fargate/releases/download/v0.1.0/fargate-0.1.0-linux-amd64.zip">64 bit</a> |
+                <a href="https://github.com/jpignata/fargate/releases/download/v0.1.0/fargate-0.1.0-linux-386.zip">32 bit</a> |
+                <a href="https://github.com/jpignata/fargate/releases/download/v0.1.0/fargate-0.1.0-linux-arm.zip">ARM</a>
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title"><img class="icon" src="github.png"> Source</h4>
+              <p class="card-text">
+                <a href="https://github.com/jpignata/fargate">jpignata/fargate</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
