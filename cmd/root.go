@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/jpignata/fargate/console"
 	ECS "github.com/jpignata/fargate/ecs"
@@ -85,7 +86,21 @@ var rootCmd = &cobra.Command{
 		)
 
 		ecs := ECS.New(sess)
-		ecs.CreateCluster()
+		err := ecs.CreateCluster()
+
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "NoCredentialProviders":
+				console.Issue("Could not find your AWS credentials")
+				console.Info("Your AWS credentials could not be found. Please configure your environment with your access key")
+				console.Info("   ID and secret access key using either the shared configuration file or environment variables.")
+				console.Info("   See http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials")
+				console.Info("   for more details.")
+				console.Exit(1)
+			default:
+				console.ErrorExit(err, "Could not create ECS cluster")
+			}
+		}
 
 		if verbose {
 			verbose = true

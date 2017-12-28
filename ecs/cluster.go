@@ -8,7 +8,7 @@ import (
 
 const clusterName = "fargate"
 
-func (ecs *ECS) CreateCluster() string {
+func (ecs *ECS) CreateCluster() error {
 	console.Debug("Creating ECS cluster")
 
 	_, err := ecs.svc.CreateCluster(
@@ -18,10 +18,10 @@ func (ecs *ECS) CreateCluster() string {
 	)
 
 	if err != nil {
-		console.ErrorExit(err, "Couldn't create ECS cluster")
+		return err
 	}
 
-	console.Debug("Created ECS cluster [%s]", clusterName)
+	console.Debug("Created ECS cluster %s", clusterName)
 
-	return clusterName
+	return nil
 }
