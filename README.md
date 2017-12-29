@@ -35,17 +35,38 @@ the AWS SDK for Go documentation.
 
 ### Commands
 
+- [Tasks](#tasks)
+- [Services](#services)
+- [Load Balancers](#load-balancers)
+- [Certificates](#certificates)
+
 #### Tasks
 
 Tasks are one-time executions of your container. Instances of your task are run
 until you manually stop them either through AWS APIs, the AWS Management
 Console, or `fargate task stop`, or until they are interrupted for any reason.
 
+- [list](#fargate-task-list)
+- [run](#fargate-task-run)
+- [info](#fargate-task-info)
+- [ps](#fargate-task-ps)
+- [logs](#fargate-task-logs)
+- [stop](#fargate-task-stop)
+
 ##### fargate task list
+
+```console
+fargate task list
+```
 
 List running task groups
 
-##### fargate task run \<task-group-name> [--num \<count>] [--cpu \<cpu-units>] [--memory \<MiB>] [--image \<docker-image>] [--env \<key=value>]
+##### fargate task run
+
+```console
+fargate task run <task-group-name> [--num <count>] [--cpu <cpu-units>] [--memory <MiB>]
+                                   [--image <docker-image>] [--env <key=value>]
+```
 
 Run new tasks
 
@@ -83,7 +104,11 @@ commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 Environment variables can be specified via the --env flag. Specify --env with a
 key=value parameter multiple times to add multiple variables.
 
-##### fargate task info \<task-group-name> [--task \<task-id>]
+##### fargate task info
+
+```console
+fargate task info <task-group-name> [--task <task-id>]
+```
 
 Inspect tasks
 
@@ -93,11 +118,20 @@ variables which could differ between tasks in a task group. To inspect multiple
 specific tasks within a task group specific --task with a task ID multiple
 times.
 
-##### fargate task ps \<task-group-name>
+##### fargate task ps
+
+```console
+fargate task ps <task-group-name>
+```
 
 List running tasks
 
-##### fargate task logs \<task-group-name> [--follow] [--start \<time-expression>] [--end \<time-expression>] [--filter \<filter-expression>] [--task \<task-id>]
+##### fargate task logs
+
+```console
+fargate task logs <task-group-name> [--follow] [--start <time-expression>] [--end <time-expression>]
+                                    [--filter <filter-expression>] [--task <task-id>]
+```
 
 Show logs from tasks
 
@@ -126,7 +160,11 @@ You can filter logs for specific term by passing a filter expression via the
 to search for log messages that include all terms. See the [CloudWatch Logs
 documentation][cwl-filter-expression] for more details.
 
-##### fargate task stop \<task-group-name> [--task \<task-id>]
+##### fargate task stop
+
+```console
+fargate task stop <task-group-name> [--task <task-id>]
+```
 
 Stop tasks
 
@@ -142,11 +180,35 @@ restart your containers and ensure your service has the desired number of
 tasks running. Services can be used in concert with a load balancer to
 distribute traffic amongst the tasks in your service.
 
+- [list](#fargate-service-list)
+- [create](#fargate-service-create)
+- [deploy](#fargate-service-deploy)
+- [info](#fargate-service-info)
+- [logs](#fargate-service-logs)
+- [ps](#fargate-service-ps)
+- [scale](#fargate-service-scale)
+- [env set](#fargate-service-env-set)
+- [env unset](#fargate-service-env-unset)
+- [env list](#fargate-service-env-list)
+- [update](#fargate-service-update)
+- [restart](#fargate-service-restart)
+- [destroy](#fargate-service-destroy)
+
 ##### fargate service list
+
+```console
+fargate service list
+```
 
 List services
 
-##### fargate service create \<service name> [--cpu \<cpu units>] [--memory \<MiB>] [--port \<port-expression>] [--lb \<load-balancer-name>] [--rule \<rule-expression>] [--image \<docker-image>] [--env \<key=value>] [--num \<count>]
+##### fargate service create
+
+```console
+fargate service create <service name> [--cpu <cpu units>] [--memory <MiB>] [--port <port-expression>]
+                                      [--lb <load-balancer-name>] [--rule <rule-expression>]
+                                      [--image <docker-image>] [--env <key=value>] [--num <count>]
+```
 
 Create a new service
 
@@ -192,7 +254,11 @@ Specify the desired count of tasks the service should maintain by passing the
 --num flag with a number. If you omit this flag, fargate will configure a
 service with a desired number of tasks of 1.
 
-##### fargate service deploy \<service-name> [--image \<docker-image>]
+##### fargate service deploy
+
+```console
+fargate service deploy <service-name> [--image <docker-image>]
+```
 
 Deploy new image to service
 
@@ -203,7 +269,11 @@ a repository named for the task group. If the current working directory is a
 git repository, the container image will be tagged with the short ref of the
 HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 
-##### fargate service info \<service-name>
+##### fargate service info
+
+```console
+fargate service info <service-name>
+```
 
 Inspect service
 
@@ -214,7 +284,12 @@ Deployments show active versions of your service that are running. Multiple
 deployments are shown if a service is transitioning due to a deployment or
 update to configuration such a CPU, memory, or environment variables. 
 
-##### fargate service logs \<service-name> [--follow] [--start \<time-expression>] [--end \<time-expression>] [--filter \<filter-expression>] [--task \<task-id>]
+##### fargate service logs
+
+```console
+fargate service logs <service-name> [--follow] [--start <time-expression>] [--end <time-expression>]
+                                    [--filter <filter-expression>] [--task <task-id>]
+```
 
 Show logs from tasks in a service
 
@@ -243,11 +318,19 @@ You can filter logs for specific term by passing a filter expression via the
 to search for log messages that include all terms. See the [CloudWatch Logs
 documentation][cwl-filter-expression] for more details.
 
-##### fargate service ps \<service-name>
+##### fargate service ps
+
+```console
+fargate service ps <service-name>
+```
 
 List running tasks for a service
 
-##### fargate service scale \<service-name> \<scale-expression>
+##### fargate service scale
+
+```console
+fargate service scale <service-name> <scale-expression>
+```
 
 Scale number of tasks in a service
 
@@ -255,25 +338,41 @@ Changes the number of desired tasks to be run in a service by the given scale
 expression. A scale expression can either be an absolute number or a delta
 specified with a sign such as +5 or -2.
 
-##### fargate service env set \<service-name> --env \<key=value>
+##### fargate service env set
+
+```console
+fargate service env set <service-name> --env <key=value>
+```
 
 Set environment variables
 
 At least one environment variable must be specified via the --env flag. Specify
 --env with a key=value parameter multiple times to add multiple variables.
 
-##### fargate service env unset \<service-name> --key \<key-name>
+##### fargate service env unset
+
+```console
+fargate service env unset <service-name> --key <key-name>
+```
 
 Unset environment variables
 
 Unsets the environment variable specified via the --key flag. Specify --key with
 a key name multiple times to unset multiple variables.
 
-##### fargate service env list \<service-name>
+##### fargate service env list
+
+```console
+fargate service env list <service-name>
+```
 
 Show environment variables
 
-##### fargate service update \<service-name> [--cpu \<cpu-units>] [--memory \<MiB>]
+##### fargate service update
+
+```console
+fargate service update <service-name> [--cpu <cpu-units>] [--memory <MiB>]
+```
 
 Update service configuration
 
@@ -294,76 +393,25 @@ At least one of --cpu or --memory must be specified.
 
 ##### fargate service restart \<service-name>
 
+```console
+fargate service restart <service-name>
+```
+
 Restart service
 
 Creates a new set of tasks for the service and stops the previous tasks. This
 is useful if your service needs to reload data cached from an external source,
 for example.
 
-##### fargate service destroy \<service-name>
+##### fargate service destroy
+
+```console
+fargate service destroy <service-name>
+```
 
 Destroy service
 
 In order to destroy a service, it must first be scaled to 0 running tasks.
-
-#### Certificates
-
-Certificates are TLS certificates issued by or imported into AWS Certificate
-Manager for use in securing traffic between load balancers and end users. ACM
-provides TLS certificates free of charge for use within AWS resources.
-
-##### fargate certificate list
-
-List certificates
-
-##### fargate certificate import \<domain-name> --certificate \<filename> --key \<filename> [--chain \<filename>]
-
-Import a certificate
-
-Upload a certificate from a certificate file, a private key file, an optionally
-an intermediate certificate chain file. The files must be PEM-encoded and the
-private key must not be encrypted or protected by a passphrase. See the
-[AWS Certificate Manager documentation][acm-import-cert] for more details.
-
-##### fargate certificate request \<domain-name> [--alias \<domain-name>]
-
-Request a certificate
-
-Certificates can be for a fully qualified domain name (e.g. www.example.com) or
-a wildcard domain name (e.g. *.example.com). You can add aliases to a
-certificate by specifying additional domain names via the --alias flag. To add
-multiple aliases, pass --alias multiple times. By default, AWS Certificate
-Manager has a limit of 10 domain names per certificate, but this limit can be
-raised by AWS support.
-
-##### fargate certificate info \<domain-name>
-
-Inspect certificate
-
-Show extended information for a certificate including each validation for the
-certificate including any DNS records which must be created to validate
-domain ownership.
-
-##### fargate certificate validate \<domain-name>
-
-Validate certificate ownership
-
-fargate will automatically create DNS validation record to verify ownership for
-any domain names that are hosted within Amazon Route 53. If your certificate
-has aliases, a validation record will be attempted per alias. Any records whose
-domains are hosted in other DNS hosting providers or in other DNS accounts
-and cannot be automatically validated will have the necessary records output.
-These records are also available in `fargate certificate info \<domain-name>`.
-
-AWS Certificate Manager may take up to several hours after the DNS records are
-created to complete validation and issue the certificate.
-
-##### fargate certificate destroy DOMAINNAME
-
-Destroy certificate
-
-In order to destroy a service, it must not be in use by any load balancers or
-any other AWS resources.
 
 #### Load Balancers
 
@@ -371,11 +419,25 @@ Load balancers distribute incoming traffic between the tasks within a service
 for HTTP/HTTPS and TCP applications. HTTP/HTTPS load balancers can route to
 multiple services based upon rules you specify when you create a new service.
 
+- [list](#fargate-lb-list)
+- [create](#fargate-lb-create)
+- [destroy](#fargate-lb-destroy)
+- [alias](#fargate-lb-alias)
+- [info](#fargate-lb-info)
+
 ##### fargate lb list
+
+```console
+fargate lb list
+```
 
 List load balancers
 
-##### fargate lb create \<load-balancer-name> --port \<port-expression> [--certificate \<certificate-name>]
+##### fargate lb create
+
+```console
+fargate lb create <load-balancer-name> --port <port-expression> [--certificate <certificate-name>]
+```
 
 Create a load balancer
 
@@ -391,11 +453,19 @@ multiple times to add additional certificates to a single load balancer which
 uses Service Name Identification (SNI) to select the appropriate certificate
 for the request.
 
-##### fargate lb destroy \<load-balancer-name>
+##### fargate lb destroy
+
+```console
+fargate lb destroy <load-balancer-name>
+```
 
 Destroy load balancer
 
-##### fargate lb alias \<load-balancer-name> \<hostname>
+##### fargate lb alias
+
+```console
+fargate lb alias <load-balancer-name> <hostname>
+```
 
 Create a load balancer alias record 
 
@@ -404,12 +474,107 @@ Amazon Route 53 and within the same AWS account. If you're using another DNS
 provider or host your domains in a differnt account, you will need to manually
 create this record.
 
-##### fargate lb info \<load-balancer-name>
+##### fargate lb info
+
+```console
+fargate lb info <load-balancer-name>
+```
 
 Inspect load balancer
 
 Returns extended information about a load balancer including a list of
 listeners, rules, and certificates in use by the load balancer.
+
+
+#### Certificates
+
+Certificates are TLS certificates issued by or imported into AWS Certificate
+Manager for use in securing traffic between load balancers and end users. ACM
+provides TLS certificates free of charge for use within AWS resources.
+
+- [list](#fargate-certificate-list)
+- [import](#fargate-certificate-import)
+- [request](#fargate-certificate-request)
+- [info](#fargate-certificate-info)
+- [validate](#fargate-certificate-validate)
+- [destroy](#fargate-certificate-destroy)
+
+##### fargate certificate list
+
+```console
+fargate certificate list
+```
+
+List certificates
+
+##### fargate certificate import
+
+```console
+fargate certificate import <domain-name> --certificate <filename> --key <filename> [--chain <filename>]
+```
+
+Import a certificate
+
+Upload a certificate from a certificate file, a private key file, an optionally
+an intermediate certificate chain file. The files must be PEM-encoded and the
+private key must not be encrypted or protected by a passphrase. See the
+[AWS Certificate Manager documentation][acm-import-cert] for more details.
+
+##### fargate certificate request
+
+```console
+fargate certificate request <domain-name> [--alias <domain-name>]
+```
+
+Request a certificate
+
+Certificates can be for a fully qualified domain name (e.g. www.example.com) or
+a wildcard domain name (e.g. *.example.com). You can add aliases to a
+certificate by specifying additional domain names via the --alias flag. To add
+multiple aliases, pass --alias multiple times. By default, AWS Certificate
+Manager has a limit of 10 domain names per certificate, but this limit can be
+raised by AWS support.
+
+##### fargate certificate info
+
+```console
+fargate certificate info <domain-name>
+```
+
+Inspect certificate
+
+Show extended information for a certificate including each validation for the
+certificate including any DNS records which must be created to validate
+domain ownership.
+
+##### fargate certificate validate
+
+```console
+fargate certificate validate <domain-name>
+```
+
+Validate certificate ownership
+
+fargate will automatically create DNS validation record to verify ownership for
+any domain names that are hosted within Amazon Route 53. If your certificate
+has aliases, a validation record will be attempted per alias. Any records whose
+domains are hosted in other DNS hosting providers or in other DNS accounts
+and cannot be automatically validated will have the necessary records output.
+These records are also available in `fargate certificate info \<domain-name>`.
+
+AWS Certificate Manager may take up to several hours after the DNS records are
+created to complete validation and issue the certificate.
+
+##### fargate certificate destroy
+
+```console
+fargate certificate destroy <domain-name>
+```
+
+Destroy certificate
+
+In order to destroy a service, it must not be in use by any load balancers or
+any other AWS resources.
 
 [region-table]: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
 [go-sdk]: https://aws.amazon.com/documentation/sdk-for-go/
