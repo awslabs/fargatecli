@@ -193,12 +193,23 @@ service with a desired number of tasks of 1.`,
 			ServiceName: args[0],
 		}
 
-		operation.Validate()
-		operation.SetPort(flagServiceCreatePort)
-		operation.SetLoadBalancer(flagServiceCreateLb)
-		operation.SetRules(flagServiceCreateRules)
-		operation.SetEnvVars(flagServiceCreateEnvVars)
+		if flagServiceCreatePort != "" {
+			operation.SetPort(flagServiceCreatePort)
+		}
 
+		if flagServiceCreateLb != "" {
+			operation.SetLoadBalancer(flagServiceCreateLb)
+		}
+
+		if len(flagServiceCreateRules) > 0 {
+			operation.SetRules(flagServiceCreateRules)
+		}
+
+		if len(flagServiceCreateEnvVars) > 0 {
+			operation.SetEnvVars(flagServiceCreateEnvVars)
+		}
+
+		operation.Validate()
 		createService(operation)
 	},
 }
