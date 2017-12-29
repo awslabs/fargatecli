@@ -391,7 +391,7 @@ configurations:
 
 At least one of --cpu or --memory must be specified.
 
-##### fargate service restart \<service-name>
+##### fargate service restart
 
 ```console
 fargate service restart <service-name>
