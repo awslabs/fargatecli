@@ -19,7 +19,7 @@ func (o *CertificateValidateOperation) Validate() {
 }
 
 var certificateValidateCmd = &cobra.Command{
-	Use:   "validate <domain name>",
+	Use:   "validate <domain-name>",
 	Args:  cobra.ExactArgs(1),
 	Short: "Validate certificate ownership",
 	Long: `Validate certificate ownership

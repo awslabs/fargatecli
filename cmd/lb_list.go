@@ -14,18 +14,7 @@ import (
 
 var lbListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List requested and imported lbs",
-	Long: `List requested and imported lbs
-
-Shows all load balancers within Elastic Load Balancing and their attributes
-such as type, status, and DNS name.
-
-e.g.:
-
-  $ fargate lb list
-  NAME   TYPE          STATUS  DNS NAME                                    LISTENERS
-  web    Application   Active  web-1186393493.us-east-1.elb.amazonaws.com  HTTP:80
-`,
+	Short: "List load balancers",
 	Run: func(cmd *cobra.Command, args []string) {
 		listLoadBalancers()
 	},

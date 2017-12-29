@@ -26,7 +26,7 @@ func (o *CertificateRequestOperation) Validate() {
 var flagCertificateRequestAliases []string
 
 var certificateRequestCmd = &cobra.Command{
-	Use:   "request <domain name>",
+	Use:   "request <domain-name>",
 	Short: "Request a certificate",
 	Long: `Request a certificate
 
@@ -50,7 +50,7 @@ raised by AWS support.`,
 }
 
 func init() {
-	certificateRequestCmd.Flags().StringSliceVarP(&flagCertificateRequestAliases, "alias", "a", []string{}, "Additional FQDNs to be includes in the Subject Alternative Name extension of the SSL certificate")
+	certificateRequestCmd.Flags().StringSliceVarP(&flagCertificateRequestAliases, "alias", "a", []string{}, "Additional domain names to be included in the certificate (can be specified multiple times)")
 
 	certificateCmd.AddCommand(certificateRequestCmd)
 }

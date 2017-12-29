@@ -101,7 +101,7 @@ var (
 )
 
 var lbCreateCmd = &cobra.Command{
-	Use:  "create <load balancer name>",
+	Use:  "create <load-balancer-name> --port <port-expression> [--port <port-expression> ...]",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &LbCreateOperation{

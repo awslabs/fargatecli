@@ -11,7 +11,7 @@ type CertificateDestroyOperation struct {
 }
 
 var certificateDestroyCmd = &cobra.Command{
-	Use:   "destroy <domain name>",
+	Use:   "destroy <domain-name>",
 	Short: "Destroy certificate",
 	Long: `Destroy certificate
 

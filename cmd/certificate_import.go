@@ -40,7 +40,7 @@ var (
 )
 
 var certificateImportCmd = &cobra.Command{
-	Use:   "import --certificate <certificate file> --key <key file>",
+	Use:   "import --certificate <certificate-file> --key <key-file> [--chain <chain-file>]",
 	Short: "Import a certificate",
 	Long: `Import a certificate
 
@@ -63,9 +63,9 @@ for more details.`,
 }
 
 func init() {
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportCertificate, "certificate", "c", "", "A file containing the certificate to import")
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportKey, "key", "k", "", "A file containing the private key used to generate the certificate")
-	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "", "A file containing intermediate certificates")
+	certificateImportCmd.Flags().StringVarP(&flagCertificateImportCertificate, "certificate", "c", "", "Filename of the certificate to import")
+	certificateImportCmd.Flags().StringVarP(&flagCertificateImportKey, "key", "k", "", "Filename of the private key used to generate the certificate")
+	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "", "Filename of intermediate certificate chain")
 
 	certificateCmd.AddCommand(certificateImportCmd)
 }

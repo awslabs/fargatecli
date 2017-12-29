@@ -192,7 +192,7 @@ Specify the desired count of tasks the service should maintain by passing the
 --num flag with a number. If you omit this flag, fargate will configure a
 service with a desired number of tasks of 1.
 
-##### fargate service deploy SERVICENAME [--image DOCKERIMAGE]
+##### fargate service deploy \<service-name> [--image \<docker-image>]
 
 Deploy new image to service
 
@@ -203,7 +203,7 @@ a repository named for the task group. If the current working directory is a
 git repository, the container image will be tagged with the short ref of the
 HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 
-##### fargate service info SERVICENAME
+##### fargate service info \<service-name>
 
 Inspect service
 
@@ -367,11 +367,49 @@ any other AWS resources.
 
 #### Load Balancers
 
-- fargate lb list
-- fargate lb create LBNAME --port PORTEXPRESSION [--certificate DOMAINNAME]
-- fargate lb destroy LBNAME
-- fargate lb alias LBNAME HOSTNAME
-- fargate lb info LBNAME
+Load balancers distribute incoming traffic between the tasks within a service
+for HTTP/HTTPS and TCP applications. HTTP/HTTPS load balancers can route to
+multiple services based upon rules you specify when you create a new service.
+
+##### fargate lb list
+
+List load balancers
+
+##### fargate lb create \<load-balancer-name> --port \<port-expression> [--certificate \<certificate-name>]
+
+Create a load balancer
+
+At least one port must be specified for the load balancer listener via the
+--port flag and a port expression of protocol:port-number. For example, if you
+wanted an HTTP load balancer to listen on port 80, you would specify HTTP:80.
+Valid protocols are HTTP, HTTPS, and TCP. You cannot mix TCP ports with
+HTTP/HTTPS ports on a single load balancer.
+
+You can optionally include certificates to secure HTTPS ports by passed the
+--certificate flag along with a certificate name. This option can be specified
+multiple times to add additional certificates to a single load balancer which
+uses Service Name Identification (SNI) to select the appropriate certificate
+for the request.
+
+##### fargate lb destroy \<load-balancer-name>
+
+Destroy load balancer
+
+##### fargate lb alias \<load-balancer-name> \<hostname>
+
+Create a load balancer alias record 
+
+Create an alias record to the load balancer for domains that are hosted within
+Amazon Route 53 and within the same AWS account. If you're using another DNS
+provider or host your domains in a differnt account, you will need to manually
+create this record.
+
+##### fargate lb info \<load-balancer-name>
+
+Inspect load balancer
+
+Returns extended information about a load balancer including a list of
+listeners, rules, and certificates in use by the load balancer.
 
 [region-table]: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
 [go-sdk]: https://aws.amazon.com/documentation/sdk-for-go/

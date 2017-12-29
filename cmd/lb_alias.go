@@ -13,19 +13,15 @@ type LbAliasOperation struct {
 }
 
 var lbAliasCmd = &cobra.Command{
-	Use:   "alias <load balancer name> <domain name>",
+	Use:   "alias <load-balancer-name> <domain-name>",
 	Args:  cobra.ExactArgs(2),
-	Short: "Creates the specified alias record to the load balancer",
-	Long: `Creates the specified alias record to the load balancer
+	Short: "Create a load balancer alias record",
+	Long: `Create a load balancer alias record 
 
-Creates an alias record to the load balancer for domains that are hosted
-within Amazon Route53 and within the same AWS account. If you're using
-another DNS provider or host your domains in a differnt account, you will
-need to manually create this record.
-
-  $ fargate lb alias web www.example.com
-  [i] Creating Alias Record [www.example.com -> web-1720686715.us-east-1.elb.amazonaws.com]
-`,
+Create an alias record to the load balancer for domains that are hosted within
+Amazon Route 53 and within the same AWS account. If you're using another DNS
+provider or host your domains in a differnt account, you will need to manually
+create this record.  `,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &LbAliasOperation{
 			LoadBalancerName: args[0],

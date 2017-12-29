@@ -17,7 +17,7 @@ type CertificateInfoOperation struct {
 }
 
 var certificateInfoCmd = &cobra.Command{
-	Use:   "info <domain name>",
+	Use:   "info <domain-name>",
 	Short: "Inspect certificate",
 	Long: `Inspect certificate
 

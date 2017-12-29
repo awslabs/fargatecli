@@ -13,8 +13,8 @@ type LoadBalancerDestroyOperation struct {
 }
 
 var loadBalancerDestroyCmd = &cobra.Command{
-	Use:   "destroy <load balancer name>",
-	Short: "Deletes an SSL load balancer",
+	Use:   "destroy <load-balancer-name>",
+	Short: "Destroy load balancer",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &LoadBalancerDestroyOperation{

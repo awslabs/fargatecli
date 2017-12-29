@@ -19,8 +19,8 @@ type LbInfoOperation struct {
 }
 
 var lbInfoCmd = &cobra.Command{
-	Use:   "info <load balancer name>",
-	Short: "Display information about a load balancer",
+	Use:   "info <load-balancer-name>",
+	Short: "Inspect load balancer",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &LbInfoOperation{
