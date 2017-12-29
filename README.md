@@ -183,7 +183,7 @@ specifying the --rule flag along with a rule expression. Rule expressions are
 in the format of TYPE=VALUE. Type can either be PATH or HOST. PATH matches the
 PATH of the request and HOST matches the requested hostname in the HTTP
 request. Both PATH and HOST types can include up to three wildcard characters:
-* to match multiple characters and ? to match a single character.
+\* to match multiple characters and ? to match a single character.
 
 Environment variables can be specified via the --env flag. Specify --env with a
 key=value parameter multiple times to add multiple variables.
