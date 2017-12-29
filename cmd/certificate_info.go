@@ -58,11 +58,7 @@ func getCertificateInfo(operation *CertificateInfoOperation) {
 			fmt.Fprintf(w, "%s\t%s\t%s\n",
 				v.DomainName,
 				util.Humanize(v.Status),
-				fmt.Sprintf("%s %s -> %s",
-					v.ResourceRecord.Type,
-					v.ResourceRecord.Name,
-					v.ResourceRecord.Value,
-				),
+				v.ResourceRecordString(),
 			)
 		}
 

@@ -31,17 +31,20 @@ func (c *Certificate) Inflate(d *awsacm.CertificateDetail) *Certificate {
 	c.Type = aws.StringValue(d.Type)
 
 	for _, domainValidation := range d.DomainValidationOptions {
-		c.AddValidation(
-			CertificateValidation{
-				Status:     aws.StringValue(domainValidation.ValidationStatus),
-				DomainName: aws.StringValue(domainValidation.DomainName),
-				ResourceRecord: CertificateResourceRecord{
-					Type:  aws.StringValue(domainValidation.ResourceRecord.Type),
-					Name:  aws.StringValue(domainValidation.ResourceRecord.Name),
-					Value: aws.StringValue(domainValidation.ResourceRecord.Value),
-				},
-			},
-		)
+		validation := CertificateValidation{
+			Status:     aws.StringValue(domainValidation.ValidationStatus),
+			DomainName: aws.StringValue(domainValidation.DomainName),
+		}
+
+		if domainValidation.ResourceRecord != nil {
+			validation.ResourceRecord = CertificateResourceRecord{
+				Type:  aws.StringValue(domainValidation.ResourceRecord.Type),
+				Name:  aws.StringValue(domainValidation.ResourceRecord.Name),
+				Value: aws.StringValue(domainValidation.ResourceRecord.Value),
+			}
+		}
+
+		c.AddValidation(validation)
 	}
 
 	return c
@@ -67,6 +70,18 @@ func (v *CertificateValidation) IsSuccess() bool {
 
 func (v *CertificateValidation) IsFailed() bool {
 	return v.Status == awsacm.DomainStatusFailed
+}
+
+func (v *CertificateValidation) ResourceRecordString() string {
+	if v.ResourceRecord.Type == "" {
+		return ""
+	}
+
+	return fmt.Sprintf("%s %s -> %s",
+		v.ResourceRecord.Type,
+		v.ResourceRecord.Name,
+		v.ResourceRecord.Value,
+	)
 }
 
 type CertificateResourceRecord struct {
