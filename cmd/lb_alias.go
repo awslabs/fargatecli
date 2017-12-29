@@ -16,7 +16,7 @@ var lbAliasCmd = &cobra.Command{
 	Use:   "alias <load-balancer-name> <domain-name>",
 	Args:  cobra.ExactArgs(2),
 	Short: "Create a load balancer alias record",
-	Long: `Create a load balancer alias record 
+	Long: `Create a load balancer alias record
 
 Create an alias record to the load balancer for domains that are hosted within
 Amazon Route 53 and within the same AWS account. If you're using another DNS

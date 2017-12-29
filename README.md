@@ -282,7 +282,7 @@ active deployments, and environment variables.
 
 Deployments show active versions of your service that are running. Multiple
 deployments are shown if a service is transitioning due to a deployment or
-update to configuration such a CPU, memory, or environment variables. 
+update to configuration such a CPU, memory, or environment variables.
 
 ##### fargate service logs
 
@@ -467,7 +467,7 @@ Destroy load balancer
 fargate lb alias <load-balancer-name> <hostname>
 ```
 
-Create a load balancer alias record 
+Create a load balancer alias record
 
 Create an alias record to the load balancer for domains that are hosted within
 Amazon Route 53 and within the same AWS account. If you're using another DNS

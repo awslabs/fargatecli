@@ -47,7 +47,7 @@ var certificateImportCmd = &cobra.Command{
 Upload a certificate from a certificate file, a private key file, an optionally
 an intermediate certificate chain file. The files must be PEM-encoded and the
 private key must not be encrypted or protected by a passphrase. See
-http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html 
+http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html
 for more details.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &CertificateImportOperation{
