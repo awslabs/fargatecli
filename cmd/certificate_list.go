@@ -14,11 +14,7 @@ import (
 
 var certificateListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List requested and imported certificates",
-	Long: `List requested and imported certificates
-
-Shows all certificates within AWS Certificate Manager and their attributes
-such as type, status, and subject alternative names.`,
+	Short: "List certificates",
 	Run: func(cmd *cobra.Command, args []string) {
 		listCertificates()
 	},

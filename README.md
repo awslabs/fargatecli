@@ -308,12 +308,62 @@ In order to destroy a service, it must first be scaled to 0 running tasks.
 
 #### Certificates
 
-- fargate certificate list
-- fargate certificate import DOMAINNAME --certificate FILE --key FILE [--chain FILE]
-- fargate certificate request DOMAINNAME
-- fargate certificate info DOMAINNAME
-- fargate certificate validate DOMAINNAME
-- fargate certificate destroy DOMAINNAME
+Certificates are TLS certificates issued by or imported into AWS Certificate
+Manager for use in securing traffic between load balancers and end users. ACM
+provides TLS certificates free of charge for use within AWS resources.
+
+##### fargate certificate list
+
+List certificates
+
+##### fargate certificate import \<domain-name> --certificate \<filename> --key \<filename> [--chain \<filename>]
+
+Import a certificate
+
+Upload a certificate from a certificate file, a private key file, an optionally
+an intermediate certificate chain file. The files must be PEM-encoded and the
+private key must not be encrypted or protected by a passphrase. See the
+[AWS Certificate Manager documentation][acm-import-cert] for more details.
+
+##### fargate certificate request \<domain-name> [--alias \<domain-name>]
+
+Request a certificate
+
+Certificates can be for a fully qualified domain name (e.g. www.example.com) or
+a wildcard domain name (e.g. *.example.com). You can add aliases to a
+certificate by specifying additional domain names via the --alias flag. To add
+multiple aliases, pass --alias multiple times. By default, AWS Certificate
+Manager has a limit of 10 domain names per certificate, but this limit can be
+raised by AWS support.
+
+##### fargate certificate info \<domain-name>
+
+Inspect certificate
+
+Show extended information for a certificate including each validation for the
+certificate including any DNS records which must be created to validate
+domain ownership.
+
+##### fargate certificate validate \<domain-name>
+
+Validate certificate ownership
+
+fargate will automatically create DNS validation record to verify ownership for
+any domain names that are hosted within Amazon Route 53. If your certificate
+has aliases, a validation record will be attempted per alias. Any records whose
+domains are hosted in other DNS hosting providers or in other DNS accounts
+and cannot be automatically validated will have the necessary records output.
+These records are also available in `fargate certificate info \<domain-name>`.
+
+AWS Certificate Manager may take up to several hours after the DNS records are
+created to complete validation and issue the certificate.
+
+##### fargate certificate destroy DOMAINNAME
+
+Destroy certificate
+
+In order to destroy a service, it must not be in use by any load balancers or
+any other AWS resources.
 
 #### Load Balancers
 
@@ -330,3 +380,4 @@ In order to destroy a service, it must first be scaled to 0 running tasks.
 [go-iam-roles-for-ec2-instances]: http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#iam-roles-for-ec2-instances
 [go-specifying-credentials]: http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 [cwl-filter-expression]: http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events
+[acm-import-cert]: http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html 

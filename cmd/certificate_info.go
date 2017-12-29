@@ -18,8 +18,13 @@ type CertificateInfoOperation struct {
 
 var certificateInfoCmd = &cobra.Command{
 	Use:   "info <domain name>",
-	Short: "Display information about an SSL certificate",
-	Args:  cobra.ExactArgs(1),
+	Short: "Inspect certificate",
+	Long: `Inspect certificate
+
+Show extended information for a certificate including each validation for the
+certificate including any DNS records which must be created to validate
+domain ownership.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &CertificateInfoOperation{
 			DomainName: args[0],

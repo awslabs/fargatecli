@@ -8,11 +8,12 @@ import (
 
 var certificateCmd = &cobra.Command{
 	Use:   "certificate",
-	Short: "Manage SSL certificates",
-	Long: `Manages SSL certificate for use in load balancers
+	Short: "Manage certificates",
+	Long: `Manages certificate
 
-Creates, imports, and validates SSL certificates in AWS Certificate Mananger
-to use to secure traffic to and from your load balancers.`,
+Certificates are TLS certificates issued by or imported into AWS Certificate
+Manager for use in securing traffic between load balancers and end users. ACM
+provides TLS certificates free of charge for use within AWS resources.`,
 }
 
 func init() {

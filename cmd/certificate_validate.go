@@ -21,14 +21,18 @@ func (o *CertificateValidateOperation) Validate() {
 var certificateValidateCmd = &cobra.Command{
 	Use:   "validate <domain name>",
 	Args:  cobra.ExactArgs(1),
-	Short: "Validate an SSL certificate request",
-	Long: `Validate an SSL certificate request
+	Short: "Validate certificate ownership",
+	Long: `Validate certificate ownership
 
-Creates a validation record for domains pending validation that are hosted
-within Amazon Route53 and within the same AWS account. If you're using another
-DNS provider, this command will return the DNS records you must add to your
-domain in order to validate domain ownership to complete the SSL certificate
-request.`,
+fargate will automatically create DNS validation record to verify ownership for
+any domain names that are hosted within Amazon Route 53. If your certificate
+has aliases, a validation record will be attempted per alias. Any records whose
+domains are hosted in other DNS hosting providers or in other DNS accounts
+and cannot be automatically validated will have the necessary records output.
+These records are also available in fargate certificate info \<domain-name>.
+
+AWS Certificate Manager may take up to several hours after the DNS records are
+created to complete validation and issue the certificate.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &CertificateValidateOperation{
 			DomainName: args[0],

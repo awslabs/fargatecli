@@ -41,7 +41,14 @@ var (
 
 var certificateImportCmd = &cobra.Command{
 	Use:   "import --certificate <certificate file> --key <key file>",
-	Short: "Import an SSL certificate from local files",
+	Short: "Import a certificate",
+	Long: `Import a certificate
+
+Upload a certificate from a certificate file, a private key file, an optionally
+an intermediate certificate chain file. The files must be PEM-encoded and the
+private key must not be encrypted or protected by a passphrase. See
+http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html 
+for more details.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &CertificateImportOperation{
 			CertificateFile:      flagCertificateImportCertificate,
