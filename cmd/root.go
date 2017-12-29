@@ -18,7 +18,7 @@ import (
 const (
 	clusterName   = "fargate"
 	defaultRegion = "us-east-1"
-	version       = "0.1.1"
+	version       = "0.1.2"
 
 	mebibytesInGibibyte = 1024
 	cpuUnitsInVCpu      = 1024
