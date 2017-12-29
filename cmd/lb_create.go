@@ -101,8 +101,23 @@ var (
 )
 
 var lbCreateCmd = &cobra.Command{
-	Use:  "create <load-balancer-name> --port <port-expression> [--port <port-expression> ...]",
-	Args: cobra.ExactArgs(1),
+	Use:   "create <load-balancer-name> --port <port-expression>",
+	Args:  cobra.ExactArgs(1),
+	Short: "Create a load balancer",
+	Long: `Create a load balancer
+
+At least one port must be specified for the load balancer listener via the
+--port flag and a port expression of protocol:port-number. For example, if you
+wanted an HTTP load balancer to listen on port 80, you would specify HTTP:80.
+Valid protocols are HTTP, HTTPS, and TCP. You can specify multiple listeners by
+passing the --port flag with a port expression multiple times. You cannot mix
+TCP ports with HTTP/HTTPS ports on a single load balancer.
+
+You can optionally include certificates to secure HTTPS ports by passed the
+--certificate flag along with a certificate name. This option can be specified
+multiple times to add additional certificates to a single load balancer which
+uses Service Name Identification (SNI) to select the appropriate certificate
+for the request.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &LbCreateOperation{
 			LoadBalancerName: args[0],

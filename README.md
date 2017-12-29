@@ -444,8 +444,9 @@ Create a load balancer
 At least one port must be specified for the load balancer listener via the
 --port flag and a port expression of protocol:port-number. For example, if you
 wanted an HTTP load balancer to listen on port 80, you would specify HTTP:80.
-Valid protocols are HTTP, HTTPS, and TCP. You cannot mix TCP ports with
-HTTP/HTTPS ports on a single load balancer.
+Valid protocols are HTTP, HTTPS, and TCP. You can specify multiple listeners by
+passing the --port flag with a port expression multiple times. You cannot mix
+TCP ports with HTTP/HTTPS ports on a single load balancer.
 
 You can optionally include certificates to secure HTTPS ports by passed the
 --certificate flag along with a certificate name. This option can be specified
