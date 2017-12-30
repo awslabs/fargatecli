@@ -17,6 +17,7 @@ type LoadBalancer struct {
 	Type             string
 	HostedZoneId     string
 	SecurityGroupIds []string
+	SubnetIds        []string
 }
 
 type DescribeLoadBalancersInput struct {
@@ -110,6 +111,12 @@ func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBa
 		input,
 		func(resp *awselbv2.DescribeLoadBalancersOutput, lastPage bool) bool {
 			for _, loadBalancer := range resp.LoadBalancers {
+				var subnetIds []string
+
+				for _, availabilityZone := range loadBalancer.AvailabilityZones {
+					subnetIds = append(subnetIds, aws.StringValue(availabilityZone.SubnetId))
+				}
+
 				loadBalancers = append(loadBalancers,
 					LoadBalancer{
 						Arn:              aws.StringValue(loadBalancer.LoadBalancerArn),
@@ -119,6 +126,7 @@ func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBa
 						SecurityGroupIds: aws.StringValueSlice(loadBalancer.SecurityGroups),
 						State:            aws.StringValue(loadBalancer.State.Code),
 						StateReason:      aws.StringValue(loadBalancer.State.Reason),
+						SubnetIds:        subnetIds,
 						Type:             aws.StringValue(loadBalancer.Type),
 					},
 				)
