@@ -446,6 +446,7 @@ List load balancers
 
 ```console
 fargate lb create <load-balancer-name> --port <port-expression> [--certificate <certificate-name>]
+                                       [--security-group-id <security-group-id>]
 ```
 
 Create a load balancer
@@ -462,6 +463,12 @@ You can optionally include certificates to secure HTTPS ports by passed the
 multiple times to add additional certificates to a single load balancer which
 uses Service Name Identification (SNI) to select the appropriate certificate
 for the request.
+
+Security groups can optionally be specified for HTTP/HTTPS load balancers by
+passing the --security-group-id flag with a security group ID. To add multiple
+security groups, pass --security-group-id with a security group ID multiple
+times. If --security-group-id is omitted, a permissive security group will be
+applied to the load balancer.
 
 ##### fargate lb destroy
 

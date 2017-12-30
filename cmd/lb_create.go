@@ -13,11 +13,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	typeApplication string = "application"
+	typeNetwork     string = "network"
+	protocolHttp    string = "HTTP"
+	protocolHttps   string = "HTTPS"
+	protocolTcp     string = "TCP"
+	minPort         int64  = 1
+	maxPort         int64  = 65535
+)
+
 type LbCreateOperation struct {
 	LoadBalancerName string
 	CertificateArns  []string
 	Ports            []Port
 	Type             string
+	SecurityGroupIds []string
 }
 
 func (o *LbCreateOperation) SetCertificateArns(certificateDomainNames []string) {
@@ -55,21 +66,21 @@ func (o *LbCreateOperation) SetPorts(inputPorts []string) {
 			msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
 		}
 
-		if port.Port < 1 || port.Port > 65535 {
+		if port.Port < minPort || port.Port > maxPort {
 			msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
 		}
 
-		if port.Protocol == "TCP" {
+		if port.Protocol == protocolTcp {
 			for _, protocol := range protocols {
-				if protocol == "HTTP" || protocol == "HTTPS" {
+				if protocol == protocolHttp || protocol == protocolHttps {
 					msgs = append(msgs, "load balancers do not support comingled groups of TCP and HTTP/HTTPS ports")
 				}
 			}
 		}
 
-		if port.Protocol == "HTTP" || port.Protocol == "HTTPS" {
+		if port.Protocol == protocolHttp || port.Protocol == protocolHttps {
 			for _, protocol := range protocols {
-				if protocol == "TCP" {
+				if protocol == protocolTcp {
 					msgs = append(msgs, "load balancers do not support comingled groups of TCP and HTTP/HTTPS ports")
 				}
 			}
@@ -86,18 +97,27 @@ func (o *LbCreateOperation) SetPorts(inputPorts []string) {
 }
 
 func (o *LbCreateOperation) SetTypeFromPorts() {
-	if o.Ports[0].Protocol == "HTTP" || o.Ports[0].Protocol == "HTTPS" {
-		o.Type = "application"
-	} else if o.Ports[0].Protocol == "TCP" {
-		o.Type = "network"
+	if o.Ports[0].Protocol == protocolHttp || o.Ports[0].Protocol == protocolHttps {
+		o.Type = typeApplication
+	} else if o.Ports[0].Protocol == protocolTcp {
+		o.Type = typeNetwork
 	} else {
 		console.ErrorExit(fmt.Errorf("Could not infer type; check port settings"), "Invalid command line flags")
 	}
 }
 
+func (o *LbCreateOperation) SetSecurityGroupIds(securityGroupIds []string) {
+	if o.Type != typeApplication {
+		console.IssueExit("Security groups can only be specified for HTTP/HTTPS load balancers")
+	}
+
+	o.SecurityGroupIds = securityGroupIds
+}
+
 var (
-	flagLbCreateCertificates []string
-	flagLbCreatePorts        []string
+	flagLbCreateCertificates     []string
+	flagLbCreatePorts            []string
+	flagLbCreateSecurityGroupIds []string
 )
 
 var lbCreateCmd = &cobra.Command{
@@ -117,7 +137,13 @@ You can optionally include certificates to secure HTTPS ports by passed the
 --certificate flag along with a certificate name. This option can be specified
 multiple times to add additional certificates to a single load balancer which
 uses Service Name Identification (SNI) to select the appropriate certificate
-for the request.`,
+for the request.
+
+Security groups can optionally be specified for HTTP/HTTPS load balancers by
+passing the --security-group-id flag with a security group ID. To add multiple
+security groups, pass --security-group-id with a security group ID multiple
+times. If --security-group-id is omitted, a permissive security group will be
+applied to the load balancer.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &LbCreateOperation{
 			LoadBalancerName: args[0],
@@ -126,6 +152,7 @@ for the request.`,
 		operation.SetCertificateArns(flagLbCreateCertificates)
 		operation.SetPorts(flagLbCreatePorts)
 		operation.SetTypeFromPorts()
+		operation.SetSecurityGroupIds(flagLbCreateSecurityGroupIds)
 
 		createLoadBalancer(operation)
 	},
@@ -134,6 +161,7 @@ for the request.`,
 func init() {
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreateCertificates, "certificate", "c", []string{}, "Name of certificate to add (can be specified multiple times)")
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreatePorts, "port", "p", []string{}, "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
+	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the load balancer (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)
 }
@@ -143,15 +171,18 @@ func createLoadBalancer(operation *LbCreateOperation) {
 	ec2 := EC2.New(sess)
 
 	subnetIds := ec2.GetDefaultVpcSubnetIds()
-	securityGroupId := ec2.GetDefaultSecurityGroupId()
 	vpcId := ec2.GetDefaultVpcId()
+
+	if len(operation.SecurityGroupIds) == 0 {
+		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
+	}
 
 	loadBalancerArn := elbv2.CreateLoadBalancer(
 		&ELBV2.CreateLoadBalancerInput{
-			Name:            operation.LoadBalancerName,
-			SubnetIds:       subnetIds,
-			SecurityGroupId: securityGroupId,
-			Type:            operation.Type,
+			Name:             operation.LoadBalancerName,
+			SecurityGroupIds: operation.SecurityGroupIds,
+			SubnetIds:        subnetIds,
+			Type:             operation.Type,
 		},
 	)
 
@@ -172,7 +203,7 @@ func createLoadBalancer(operation *LbCreateOperation) {
 			DefaultTargetGroupArn: defaultTargetGroupArn,
 		}
 
-		if port.Protocol == "HTTPS" {
+		if port.Protocol == protocolHttps {
 			input.SetCertificateArns(operation.CertificateArns)
 		}
 

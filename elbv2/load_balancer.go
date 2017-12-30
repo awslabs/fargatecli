@@ -24,10 +24,10 @@ type DescribeLoadBalancersInput struct {
 }
 
 type CreateLoadBalancerInput struct {
-	Name            string
-	SubnetIds       []string
-	Type            string
-	SecurityGroupId string
+	Name             string
+	SubnetIds        []string
+	Type             string
+	SecurityGroupIds []string
 }
 
 func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
@@ -39,7 +39,7 @@ func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
 	}
 
 	if i.Type == awselbv2.LoadBalancerTypeEnumApplication {
-		input.SetSecurityGroups(aws.StringSlice([]string{i.SecurityGroupId}))
+		input.SetSecurityGroups(aws.StringSlice(i.SecurityGroupIds))
 	}
 
 	resp, err := elbv2.svc.CreateLoadBalancer(input)
