@@ -33,7 +33,6 @@ At least one environment variable must be specified via the --env flag. Specify
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceEnvSetOperation{
 			ServiceName: args[0],
-			EnvVars:     envVars,
 		}
 
 		operation.SetEnvVars(flagServiceEnvSetEnvVars)
@@ -49,7 +48,7 @@ func init() {
 }
 
 func serviceEnvSet(operation *ServiceEnvSetOperation) {
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	service := ecs.DescribeService(operation.ServiceName)
 	taskDefinitionArn := ecs.AddEnvVarsToTaskDefinition(service.TaskDefinitionArn, operation.EnvVars)
 

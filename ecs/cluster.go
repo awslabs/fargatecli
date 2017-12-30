@@ -6,14 +6,12 @@ import (
 	"github.com/jpignata/fargate/console"
 )
 
-const clusterName = "fargate"
-
 func (ecs *ECS) CreateCluster() error {
 	console.Debug("Creating ECS cluster")
 
 	_, err := ecs.svc.CreateCluster(
 		&awsecs.CreateClusterInput{
-			ClusterName: aws.String(clusterName),
+			ClusterName: aws.String(ecs.ClusterName),
 		},
 	)
 
@@ -21,7 +19,7 @@ func (ecs *ECS) CreateCluster() error {
 		return err
 	}
 
-	console.Debug("Created ECS cluster %s", clusterName)
+	console.Debug("Created ECS cluster %s", ecs.ClusterName)
 
 	return nil
 }

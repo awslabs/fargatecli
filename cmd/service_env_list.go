@@ -27,7 +27,7 @@ func init() {
 }
 
 func serviceEnvList(operation *ServiceEnvListOperation) {
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	service := ecs.DescribeService(operation.ServiceName)
 	envVars := ecs.GetEnvVarsFromTaskDefinition(service.TaskDefinitionArn)
 

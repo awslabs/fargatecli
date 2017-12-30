@@ -118,7 +118,7 @@ func (ecs *ECS) GetDesiredCount(serviceName string) int64 {
 func (ecs *ECS) SetDesiredCount(serviceName string, desiredCount int64) {
 	_, err := ecs.svc.UpdateService(
 		&awsecs.UpdateServiceInput{
-			Cluster:      aws.String(clusterName),
+			Cluster:      aws.String(ecs.ClusterName),
 			Service:      aws.String(serviceName),
 			DesiredCount: aws.Int64(desiredCount),
 		},
@@ -132,7 +132,7 @@ func (ecs *ECS) SetDesiredCount(serviceName string, desiredCount int64) {
 func (ecs *ECS) DestroyService(serviceName string) {
 	_, err := ecs.svc.DeleteService(
 		&awsecs.DeleteServiceInput{
-			Cluster: aws.String(clusterName),
+			Cluster: aws.String(ecs.ClusterName),
 			Service: aws.String(serviceName),
 		},
 	)
@@ -148,7 +148,7 @@ func (ecs *ECS) ListServices() []Service {
 
 	err := ecs.svc.ListServicesPages(
 		&awsecs.ListServicesInput{
-			Cluster:    aws.String(clusterName),
+			Cluster:    aws.String(ecs.ClusterName),
 			LaunchType: aws.String(awsecs.CompatibilityFargate),
 		},
 
@@ -181,7 +181,7 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 
 	resp, err := ecs.svc.DescribeServices(
 		&awsecs.DescribeServicesInput{
-			Cluster:  aws.String(clusterName),
+			Cluster:  aws.String(ecs.ClusterName),
 			Services: aws.StringSlice(serviceArns),
 		},
 	)
@@ -256,7 +256,7 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 func (ecs *ECS) UpdateServiceTaskDefinition(serviceName, taskDefinitionArn string) {
 	_, err := ecs.svc.UpdateService(
 		&awsecs.UpdateServiceInput{
-			Cluster:        aws.String(clusterName),
+			Cluster:        aws.String(ecs.ClusterName),
 			Service:        aws.String(serviceName),
 			TaskDefinition: aws.String(taskDefinitionArn),
 		},

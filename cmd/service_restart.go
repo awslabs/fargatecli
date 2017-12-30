@@ -33,7 +33,7 @@ func init() {
 }
 
 func restartService(operation *ServiceRestartOperation) {
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	service := ecs.DescribeService(operation.ServiceName)
 	taskDefinitionArn := ecs.IncrementTaskDefinition(service.TaskDefinitionArn)
 

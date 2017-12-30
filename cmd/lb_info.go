@@ -38,7 +38,7 @@ func init() {
 func getLoadBalancerInfo(operation *LbInfoOperation) {
 	elbv2 := ELBV2.New(sess)
 	acm := ACM.New(sess)
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	loadBalancer := elbv2.DescribeLoadBalancer(operation.LoadBalancerName)
 	services := ecs.ListServices()
 

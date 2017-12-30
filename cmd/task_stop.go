@@ -43,7 +43,7 @@ func init() {
 func stopTasks(operation *TaskStopOperation) {
 	var taskCount int
 
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 
 	if len(operation.TaskIds) > 0 {
 		taskCount = len(operation.TaskIds)

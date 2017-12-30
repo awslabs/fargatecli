@@ -15,10 +15,10 @@ const validScalePattern = "[-\\+]?[0-9]+"
 type ScaleServiceOperation struct {
 	ServiceName  string
 	DesiredCount int64
-	Ecs          ECS.ECS
 }
 
 func (o *ScaleServiceOperation) SetScale(scaleExpression string) {
+	ecs := ECS.New(sess, clusterName)
 	validScale := regexp.MustCompile(validScalePattern)
 
 	if !validScale.MatchString(scaleExpression) {
@@ -27,7 +27,7 @@ func (o *ScaleServiceOperation) SetScale(scaleExpression string) {
 
 	if scaleExpression[0] == '+' || scaleExpression[0] == '-' {
 		if s, err := strconv.ParseInt(scaleExpression[1:len(scaleExpression)], 10, 64); err == nil {
-			currentDesiredCount := o.Ecs.GetDesiredCount(o.ServiceName)
+			currentDesiredCount := ecs.GetDesiredCount(o.ServiceName)
 			if scaleExpression[0] == '+' {
 				o.DesiredCount = currentDesiredCount + s
 			} else if scaleExpression[0] == '-' {
@@ -57,7 +57,6 @@ specified with a sign such as +5 or -2.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ScaleServiceOperation{
 			ServiceName: args[0],
-			Ecs:         ECS.New(sess),
 		}
 
 		operation.SetScale(args[1])
@@ -71,6 +70,8 @@ func init() {
 }
 
 func scaleService(operation *ScaleServiceOperation) {
-	operation.Ecs.SetDesiredCount(operation.ServiceName, operation.DesiredCount)
+	ecs := ECS.New(sess, clusterName)
+
+	ecs.SetDesiredCount(operation.ServiceName, operation.DesiredCount)
 	console.Info("Scaled service %s to %d", operation.ServiceName, operation.DesiredCount)
 }

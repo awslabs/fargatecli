@@ -16,13 +16,13 @@ import (
 )
 
 const (
-	clusterName   = "fargate"
-	defaultRegion = "us-east-1"
-	version       = "0.1.2"
+	version = "0.1.2"
 
-	mebibytesInGibibyte = 1024
-	cpuUnitsInVCpu      = 1024
+	defaultClusterName = "fargate"
+	defaultRegion      = "us-east-1"
 
+	cpuUnitsInVCpu        = 1024
+	mebibytesInGibibyte   = 1024
 	validProtocolsPattern = "(?i)\\ATCP|HTTP(S)?\\z"
 )
 
@@ -40,12 +40,11 @@ CPU (CPU Units)    Memory (MiB)
 var validRegions = []string{"us-east-1"}
 
 var (
-	region     string
-	verbose    bool
-	sess       *session.Session
-	envVars    []ECS.EnvVar
-	envVarsRaw []string
-	noColor    bool
+	clusterName string
+	noColor     bool
+	region      string
+	sess        *session.Session
+	verbose     bool
 )
 
 type Port struct {
@@ -67,6 +66,15 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if cmd.Parent().Name() == "fargate" {
 			return
+		}
+
+		if verbose {
+			verbose = true
+			console.Verbose = true
+		}
+
+		if noColor || !terminal.IsTerminal(int(os.Stdout.Fd())) {
+			console.Color = false
 		}
 
 		envAwsDefaultRegion := os.Getenv("AWS_DEFAULT_REGION")
@@ -98,8 +106,7 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			),
 		)
 
-		ecs := ECS.New(sess)
-		err := ecs.CreateCluster()
+		_, err := sess.Config.Credentials.Get()
 
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
@@ -115,13 +122,11 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			}
 		}
 
-		if verbose {
-			verbose = true
-			console.Verbose = true
-		}
+		if clusterName == "" {
+			clusterName = defaultClusterName
+			ecs := ECS.New(sess, clusterName)
 
-		if noColor || !terminal.IsTerminal(int(os.Stdout.Fd())) {
-			console.Color = false
+			ecs.CreateCluster()
 		}
 	},
 }
@@ -133,8 +138,9 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
-	rootCmd.PersistentFlags().StringVar(&region, "region", "", "AWS Region (default: us-east-1)")
+	rootCmd.PersistentFlags().StringVar(&region, "region", "", `AWS Region (default "us-east-1")`)
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Suppress colors in output")
+	rootCmd.PersistentFlags().StringVar(&clusterName, "cluster", "", `ECS cluster name (default "fargate")`)
 }
 
 func inflatePort(src string) (port Port) {

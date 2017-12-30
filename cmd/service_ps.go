@@ -36,7 +36,7 @@ func init() {
 func getServiceProcessList(operation *ServiceProcessListOperation) {
 	var eniIds []string
 
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	ec2 := EC2.New(sess)
 	tasks := ecs.DescribeTasksForService(operation.ServiceName)
 

@@ -6,12 +6,13 @@ import (
 )
 
 type ECS struct {
-	svc  *ecs.ECS
-	sess *session.Session
+	svc         *ecs.ECS
+	ClusterName string
 }
 
-func New(sess *session.Session) ECS {
+func New(sess *session.Session, clusterName string) ECS {
 	return ECS{
-		svc: ecs.New(sess),
+		ClusterName: clusterName,
+		svc:         ecs.New(sess),
 	}
 }

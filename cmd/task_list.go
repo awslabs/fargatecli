@@ -23,7 +23,7 @@ func init() {
 }
 
 func listTaskGroups() {
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	taskGroups := ecs.ListTaskGroups()
 
 	if len(taskGroups) == 0 {

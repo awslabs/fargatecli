@@ -231,7 +231,7 @@ func createService(operation *ServiceCreateOperation) {
 	cwl := CWL.New(sess)
 	ec2 := EC2.New(sess)
 	ecr := ECR.New(sess)
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	iam := IAM.New(sess)
 
 	var (

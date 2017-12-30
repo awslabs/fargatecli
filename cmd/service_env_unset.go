@@ -51,7 +51,7 @@ func init() {
 }
 
 func serviceEnvUnset(operation *ServiceEnvUnsetOperation) {
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	service := ecs.DescribeService(operation.ServiceName)
 	taskDefinitionArn := ecs.RemoveEnvVarsFromTaskDefinition(service.TaskDefinitionArn, operation.Keys)
 
