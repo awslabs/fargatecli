@@ -10,14 +10,14 @@ Deploy serverless containers onto the cloud from your command line
 
 #### Region
 
-By default, fargate uses *us-east-1* as this is the single Region where AWS
+By default, fargate uses *us-east-1* as this is the single region where AWS
 Fargate is available. The CLI accepts a --region parameter for future use and
 will honor *AWS_REGION* and *AWS_DEFAULT_REGION* environment settings. Note that
-specifying a Region where all required services aren't available will return an
+specifying a region where all required services aren't available will return an
 error.
 
 See the [Region Table][region-table] for a breakdown of what services are
-available in which Regions.
+available in which regions.
 
 #### Credentials
 
@@ -44,10 +44,10 @@ the AWS SDK for Go documentation.
 
 | Flag | Default | Description |
 | --- | --- | --- |
-| --cluster | fargate | ECS cluster to use for tasks and services. If omitted, a cluster named "fargate" will be created. |
-| --region | us-east-1 | AWS Region to run commands against. The only valid Region is currently us-east-1. |
-| --no-color | false | Disable ANSI color output. |
-| --verbose | false | Enable debugging output. |
+| --cluster | fargate | ECS cluster name (default "fargate") |
+| --region | us-east-1 | AWS region (default "us-east-1") |
+| --no-color | false | Disable color output |
+| --verbose | false | Verbose output |
 
 #### Tasks
 

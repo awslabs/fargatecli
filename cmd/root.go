@@ -118,7 +118,7 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 				console.Info("   for more details.")
 				console.Exit(1)
 			default:
-				console.ErrorExit(err, "Could not create ECS cluster")
+				console.ErrorExit(err, "Could not create create AWS session")
 			}
 		}
 
@@ -138,8 +138,8 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
-	rootCmd.PersistentFlags().StringVar(&region, "region", "", `AWS Region (default "us-east-1")`)
-	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Suppress colors in output")
+	rootCmd.PersistentFlags().StringVar(&region, "region", "", `AWS region (default "us-east-1")`)
+	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Disable color output")
 	rootCmd.PersistentFlags().StringVar(&clusterName, "cluster", "", `ECS cluster name (default "fargate")`)
 }
 
