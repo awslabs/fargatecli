@@ -15,11 +15,6 @@ const (
 func (ec2 *EC2) GetDefaultVpcSubnetIds() []string {
 	var subnetIds []string
 
-	vpcFilter := &awsec2.Filter{
-		Name:   aws.String("vpc-id"),
-		Values: aws.StringSlice([]string{ec2.GetDefaultVpcId()}),
-	}
-
 	defaultFilter := &awsec2.Filter{
 		Name:   aws.String("default-for-az"),
 		Values: aws.StringSlice([]string{"true"}),
@@ -27,7 +22,7 @@ func (ec2 *EC2) GetDefaultVpcSubnetIds() []string {
 
 	resp, err := ec2.svc.DescribeSubnets(
 		&awsec2.DescribeSubnetsInput{
-			Filters: []*awsec2.Filter{vpcFilter, defaultFilter},
+			Filters: []*awsec2.Filter{defaultFilter},
 		},
 	)
 
@@ -44,6 +39,51 @@ func (ec2 *EC2) GetDefaultVpcSubnetIds() []string {
 
 func (ec2 *EC2) GetDefaultVpcId() string {
 	return *ec2.getDefaultVpc().VpcId
+}
+
+func (ec2 *EC2) GetDefaultSecurityGroupId() string {
+	resp, err := ec2.svc.DescribeSecurityGroups(
+		&awsec2.DescribeSecurityGroupsInput{
+			GroupNames: aws.StringSlice([]string{defaultSecurityGroupName}),
+		},
+	)
+
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "InvalidGroup.NotFound":
+				return ec2.createDefaultSecurityGroup()
+			default:
+				console.ErrorExit(err, "Could not find EC2 security group")
+			}
+		}
+	}
+
+	return aws.StringValue(resp.SecurityGroups[0].GroupId)
+}
+
+func (ec2 *EC2) GetSubnetVpcId(subnetId string) string {
+	subnets := ec2.describeSubnets([]string{subnetId})
+
+	if len(subnets) != 1 {
+		console.IssueExit("Subnet ID %s not found", subnetId)
+	}
+
+	return aws.StringValue(subnets[0].VpcId)
+}
+
+func (ec2 *EC2) describeSubnets(subnetIds []string) []*awsec2.Subnet {
+	resp, err := ec2.svc.DescribeSubnets(
+		&awsec2.DescribeSubnetsInput{
+			SubnetIds: aws.StringSlice(subnetIds),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not describe EC2 security groups")
+	}
+
+	return resp.Subnets
 }
 
 func (ec2 *EC2) getDefaultVpc() *awsec2.Vpc {
@@ -72,27 +112,6 @@ func (ec2 *EC2) describeVpcs(filters []*awsec2.Filter) []*awsec2.Vpc {
 	}
 
 	return resp.Vpcs
-}
-
-func (ec2 *EC2) GetDefaultSecurityGroupId() string {
-	resp, err := ec2.svc.DescribeSecurityGroups(
-		&awsec2.DescribeSecurityGroupsInput{
-			GroupNames: aws.StringSlice([]string{defaultSecurityGroupName}),
-		},
-	)
-
-	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			switch aerr.Code() {
-			case "InvalidGroup.NotFound":
-				return ec2.createDefaultSecurityGroup()
-			default:
-				console.ErrorExit(err, "Could not find EC2 security group")
-			}
-		}
-	}
-
-	return aws.StringValue(resp.SecurityGroups[0].GroupId)
 }
 
 func (ec2 *EC2) createDefaultSecurityGroup() string {

@@ -446,7 +446,7 @@ List load balancers
 
 ```console
 fargate lb create <load-balancer-name> --port <port-expression> [--certificate <certificate-name>]
-                                       [--security-group-id <security-group-id>]
+                                       [--subnet-id <subnet-id>] [--security-group-id <security-group-id>]
 ```
 
 Create a load balancer
@@ -463,6 +463,13 @@ You can optionally include certificates to secure HTTPS ports by passed the
 multiple times to add additional certificates to a single load balancer which
 uses Service Name Identification (SNI) to select the appropriate certificate
 for the request.
+
+By default, the load balancer will be created in the default VPC and attached
+to the default VPC subnets for each availability zone. You can override this by
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
+HTTP/HTTPS load balancers require at least two subnets attached while a TCP
+load balancer requires only one. You may only specify a single subnet from each
+availability zone.
 
 Security groups can optionally be specified for HTTP/HTTPS load balancers by
 passing the --security-group-id flag with a security group ID. To add multiple

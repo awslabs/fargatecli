@@ -29,6 +29,7 @@ type LbCreateOperation struct {
 	Ports            []Port
 	Type             string
 	SecurityGroupIds []string
+	SubnetIds        []string
 }
 
 func (o *LbCreateOperation) SetCertificateArns(certificateDomainNames []string) {
@@ -114,10 +115,19 @@ func (o *LbCreateOperation) SetSecurityGroupIds(securityGroupIds []string) {
 	o.SecurityGroupIds = securityGroupIds
 }
 
+func (o *LbCreateOperation) SetSubnetIds(subnetIds []string) {
+	if o.Type == typeApplication && len(subnetIds) < 2 {
+		console.IssueExit("HTTP/HTTPS load balancers require two subnet IDs from unique availability zones")
+	}
+
+	o.SubnetIds = subnetIds
+}
+
 var (
 	flagLbCreateCertificates     []string
 	flagLbCreatePorts            []string
 	flagLbCreateSecurityGroupIds []string
+	flagLbCreateSubnetIds        []string
 )
 
 var lbCreateCmd = &cobra.Command{
@@ -139,6 +149,13 @@ multiple times to add additional certificates to a single load balancer which
 uses Service Name Identification (SNI) to select the appropriate certificate
 for the request.
 
+By default, the load balancer will be created in the default VPC and attached
+to the default VPC subnets for each availability zone. You can override this by
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
+HTTP/HTTPS load balancers require at least two subnets attached while a TCP
+load balancer requires only one. You may only specify a single subnet from each
+availability zone.
+
 Security groups can optionally be specified for HTTP/HTTPS load balancers by
 passing the --security-group-id flag with a security group ID. To add multiple
 security groups, pass --security-group-id with a security group ID multiple
@@ -149,10 +166,20 @@ applied to the load balancer.`,
 			LoadBalancerName: args[0],
 		}
 
-		operation.SetCertificateArns(flagLbCreateCertificates)
+		if len(flagLbCreateCertificates) > 0 {
+			operation.SetCertificateArns(flagLbCreateCertificates)
+		}
+
 		operation.SetPorts(flagLbCreatePorts)
 		operation.SetTypeFromPorts()
-		operation.SetSecurityGroupIds(flagLbCreateSecurityGroupIds)
+
+		if len(flagLbCreateSecurityGroupIds) > 0 {
+			operation.SetSecurityGroupIds(flagLbCreateSecurityGroupIds)
+		}
+
+		if len(flagLbCreateSubnetIds) > 0 {
+			operation.SetSubnetIds(flagLbCreateSubnetIds)
+		}
 
 		createLoadBalancer(operation)
 	},
@@ -162,6 +189,7 @@ func init() {
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreateCertificates, "certificate", "c", []string{}, "Name of certificate to add (can be specified multiple times)")
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreatePorts, "port", "p", []string{}, "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
 	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the load balancer (can be specified multiple times)")
+	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet to attach to the load balancer (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)
 }
@@ -170,22 +198,23 @@ func createLoadBalancer(operation *LbCreateOperation) {
 	elbv2 := ELBV2.New(sess)
 	ec2 := EC2.New(sess)
 
-	subnetIds := ec2.GetDefaultVpcSubnetIds()
-	vpcId := ec2.GetDefaultVpcId()
-
 	if len(operation.SecurityGroupIds) == 0 {
 		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
 	}
 
+	if len(operation.SubnetIds) == 0 {
+		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
+	}
+
+	vpcId := ec2.GetSubnetVpcId(operation.SubnetIds[0])
 	loadBalancerArn := elbv2.CreateLoadBalancer(
 		&ELBV2.CreateLoadBalancerInput{
 			Name:             operation.LoadBalancerName,
 			SecurityGroupIds: operation.SecurityGroupIds,
-			SubnetIds:        subnetIds,
+			SubnetIds:        operation.SubnetIds,
 			Type:             operation.Type,
 		},
 	)
-
 	defaultTargetGroupArn := elbv2.CreateTargetGroup(
 		&ELBV2.CreateTargetGroupInput{
 			Name:     fmt.Sprintf(defaultTargetGroupFormat, operation.LoadBalancerName),
