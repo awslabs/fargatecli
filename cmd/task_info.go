@@ -48,7 +48,7 @@ func getTaskInfo(operation *TaskInfoOperation) {
 	var tasks []ECS.Task
 	var eniIds []string
 
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	ec2 := EC2.New(sess)
 
 	if len(operation.TaskIds) > 0 {

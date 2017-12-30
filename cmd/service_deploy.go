@@ -45,7 +45,7 @@ func init() {
 }
 
 func deployService(operation *ServiceDeployOperation) {
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	service := ecs.DescribeService(operation.ServiceName)
 
 	if operation.Image == "" {

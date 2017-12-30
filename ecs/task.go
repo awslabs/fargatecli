@@ -75,7 +75,7 @@ func (ecs *ECS) RunTask(i *RunTaskInput) {
 func (ecs *ECS) DescribeTasksForService(serviceName string) []Task {
 	return ecs.listTasks(
 		&awsecs.ListTasksInput{
-			Cluster:     aws.String(clusterName),
+			Cluster:     aws.String(ecs.ClusterName),
 			LaunchType:  aws.String(awsecs.CompatibilityFargate),
 			ServiceName: aws.String(serviceName),
 		},
@@ -86,7 +86,7 @@ func (ecs *ECS) DescribeTasksForTaskGroup(taskGroupName string) []Task {
 	return ecs.listTasks(
 		&awsecs.ListTasksInput{
 			StartedBy: aws.String(fmt.Sprintf(startedByFormat, taskGroupName)),
-			Cluster:   aws.String(clusterName),
+			Cluster:   aws.String(ecs.ClusterName),
 		},
 	)
 }
@@ -97,7 +97,7 @@ func (ecs *ECS) ListTaskGroups() []*TaskGroup {
 	taskGroupStartedByRegexp := regexp.MustCompile(taskGroupStartedByPattern)
 
 	input := &awsecs.ListTasksInput{
-		Cluster: aws.String(clusterName),
+		Cluster: aws.String(ecs.ClusterName),
 	}
 
 OUTER:
@@ -136,7 +136,7 @@ func (ecs *ECS) StopTasks(taskIds []string) {
 func (ecs *ECS) StopTask(taskId string) {
 	_, err := ecs.svc.StopTask(
 		&awsecs.StopTaskInput{
-			Cluster: aws.String(clusterName),
+			Cluster: aws.String(ecs.ClusterName),
 			Task:    aws.String(taskId),
 		},
 	)
@@ -185,7 +185,7 @@ func (ecs *ECS) DescribeTasks(taskIds []string) []Task {
 
 	resp, err := ecs.svc.DescribeTasks(
 		&awsecs.DescribeTasksInput{
-			Cluster: aws.String(clusterName),
+			Cluster: aws.String(ecs.ClusterName),
 			Tasks:   aws.StringSlice(taskIds),
 		},
 	)

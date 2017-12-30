@@ -40,6 +40,15 @@ the AWS SDK for Go documentation.
 - [Load Balancers](#load-balancers)
 - [Certificates](#certificates)
 
+#### Global Flags
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| --cluster | fargate | ECS cluster to use for tasks and services. If omitted, a cluster named "fargate" will be created. |
+| --region | us-east-1 | AWS Region to run commands against. The only valid Region is currently us-east-1. |
+| --no-color | false | Disable ANSI color output. |
+| --verbose | false | Enable debugging output. |
+
 #### Tasks
 
 Tasks are one-time executions of your container. Instances of your task are run

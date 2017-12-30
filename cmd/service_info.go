@@ -48,7 +48,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	var eniIds []string
 
 	acm := ACM.New(sess)
-	ecs := ECS.New(sess)
+	ecs := ECS.New(sess, clusterName)
 	ec2 := EC2.New(sess)
 	elbv2 := ELBV2.New(sess)
 	service := ecs.DescribeService(operation.ServiceName)
