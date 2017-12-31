@@ -7,8 +7,9 @@ import (
 )
 
 type Eni struct {
-	PublicIpAddress string
-	EniId           string
+	PublicIpAddress  string
+	EniId            string
+	SecurityGroupIds []string
 }
 
 func (ec2 *EC2) DescribeNetworkInterfaces(eniIds []string) map[string]Eni {
@@ -25,10 +26,17 @@ func (ec2 *EC2) DescribeNetworkInterfaces(eniIds []string) map[string]Eni {
 	}
 
 	for _, e := range resp.NetworkInterfaces {
+		var securityGroupIds []*string
+
+		for _, group := range e.Groups {
+			securityGroupIds = append(securityGroupIds, group.GroupId)
+		}
+
 		if e.Association != nil {
 			eni := Eni{
-				EniId:           aws.StringValue(e.NetworkInterfaceId),
-				PublicIpAddress: aws.StringValue(e.Association.PublicIp),
+				EniId:            aws.StringValue(e.NetworkInterfaceId),
+				PublicIpAddress:  aws.StringValue(e.Association.PublicIp),
+				SecurityGroupIds: aws.StringValueSlice(securityGroupIds),
 			}
 
 			enis[eni.EniId] = eni

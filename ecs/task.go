@@ -12,23 +12,26 @@ import (
 )
 
 const (
-	networkInterfaceId        = "networkInterfaceId"
+	detailNetworkInterfaceId  = "networkInterfaceId"
+	detailSubnetId            = "subnetId"
 	startedByFormat           = "fargate:%s"
 	taskGroupStartedByPattern = "fargate:(.*)"
 )
 
 type Task struct {
-	DeploymentId  string
-	TaskId        string
-	Cpu           string
-	CreatedAt     time.Time
-	DesiredStatus string
-	Image         string
-	LastStatus    string
-	Memory        string
-	EniId         string
-	StartedBy     string
-	EnvVars       []EnvVar
+	DeploymentId     string
+	TaskId           string
+	Cpu              string
+	CreatedAt        time.Time
+	DesiredStatus    string
+	Image            string
+	LastStatus       string
+	Memory           string
+	EniId            string
+	StartedBy        string
+	EnvVars          []EnvVar
+	SecurityGroupIds []string
+	SubnetId         string
 }
 
 func (t *Task) RunningFor() time.Duration {
@@ -43,10 +46,10 @@ type TaskGroup struct {
 type RunTaskInput struct {
 	ClusterName       string
 	Count             int64
+	SecurityGroupIds  []string
+	SubnetIds         []string
 	TaskDefinitionArn string
 	TaskName          string
-	SubnetIds         []string
-	SecurityGroupId   string
 }
 
 func (ecs *ECS) RunTask(i *RunTaskInput) {
@@ -61,7 +64,7 @@ func (ecs *ECS) RunTask(i *RunTaskInput) {
 				AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
 					AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
 					Subnets:        aws.StringSlice(i.SubnetIds),
-					SecurityGroups: aws.StringSlice([]string{i.SecurityGroupId}),
+					SecurityGroups: aws.StringSlice(i.SecurityGroupIds),
 				},
 			},
 		},
@@ -225,9 +228,11 @@ func (ecs *ECS) DescribeTasks(taskIds []string) []Task {
 
 		if len(t.Attachments) == 1 {
 			for _, detail := range t.Attachments[0].Details {
-				if aws.StringValue(detail.Name) == networkInterfaceId {
+				switch aws.StringValue(detail.Name) {
+				case detailNetworkInterfaceId:
 					task.EniId = aws.StringValue(detail.Value)
-					break
+				case detailSubnetId:
+					task.SubnetId = aws.StringValue(detail.Value)
 				}
 			}
 		}

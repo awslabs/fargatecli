@@ -14,10 +14,10 @@ type CreateServiceInput struct {
 	DesiredCount      int64
 	Name              string
 	Port              int64
+	SecurityGroupIds  []string
 	SubnetIds         []string
 	TargetGroupArn    string
 	TaskDefinitionArn string
-	SecurityGroupId   string
 }
 
 type Service struct {
@@ -32,8 +32,10 @@ type Service struct {
 	Name              string
 	PendingCount      int64
 	RunningCount      int64
+	SecurityGroupIds  []string
 	TargetGroupArn    string
 	TaskDefinitionArn string
+	SubnetIds         []string
 }
 
 type Event struct {
@@ -72,7 +74,7 @@ func (ecs *ECS) CreateService(input *CreateServiceInput) {
 			AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
 				AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
 				Subnets:        aws.StringSlice(input.SubnetIds),
-				SecurityGroups: aws.StringSlice([]string{input.SecurityGroupId}),
+				SecurityGroups: aws.StringSlice(input.SecurityGroupIds),
 			},
 		},
 	}
@@ -191,12 +193,21 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 	}
 
 	for _, service := range resp.Services {
+		var securityGroupIds, subnetIds []*string
+
+		if config := service.NetworkConfiguration.AwsvpcConfiguration; config != nil {
+			securityGroupIds = config.SecurityGroups
+			subnetIds = config.Subnets
+		}
+
 		s := Service{
 			Name:              aws.StringValue(service.ServiceName),
 			DesiredCount:      aws.Int64Value(service.DesiredCount),
 			PendingCount:      aws.Int64Value(service.PendingCount),
 			RunningCount:      aws.Int64Value(service.RunningCount),
 			TaskDefinitionArn: aws.StringValue(service.TaskDefinition),
+			SecurityGroupIds:  aws.StringValueSlice(securityGroupIds),
+			SubnetIds:         aws.StringValueSlice(subnetIds),
 		}
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))

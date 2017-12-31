@@ -14,13 +14,8 @@ import (
 )
 
 const (
-	typeApplication string = "application"
-	typeNetwork     string = "network"
-	protocolHttp    string = "HTTP"
-	protocolHttps   string = "HTTPS"
-	protocolTcp     string = "TCP"
-	minPort         int64  = 1
-	maxPort         int64  = 65535
+	minPort int64 = 1
+	maxPort int64 = 65535
 )
 
 type LbCreateOperation struct {
@@ -189,7 +184,7 @@ func init() {
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreateCertificates, "certificate", "c", []string{}, "Name of certificate to add (can be specified multiple times)")
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreatePorts, "port", "p", []string{}, "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
 	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the load balancer (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet to attach to the load balancer (can be specified multiple times)")
+	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet to place the load balancer (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)
 }
