@@ -44,8 +44,8 @@ the AWS SDK for Go documentation.
 
 | Flag | Default | Description |
 | --- | --- | --- |
-| --cluster | fargate | ECS cluster name (default "fargate") |
-| --region | us-east-1 | AWS region (default "us-east-1") |
+| --cluster | fargate | ECS cluster name |
+| --region | us-east-1 | AWS region |
 | --no-color | false | Disable color output |
 | --verbose | false | Verbose output |
 
