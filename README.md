@@ -75,6 +75,7 @@ List running task groups
 ```console
 fargate task run <task-group-name> [--num <count>] [--cpu <cpu-units>] [--memory <MiB>]
                                    [--image <docker-image>] [--env <key=value>]
+                                   [--subnet-id <subnet-id>] [--security-group-id <security-group-id>]
 ```
 
 Run new tasks
@@ -227,6 +228,7 @@ List services
 fargate service create <service name> [--cpu <cpu units>] [--memory <MiB>] [--port <port-expression>]
                                       [--lb <load-balancer-name>] [--rule <rule-expression>]
                                       [--image <docker-image>] [--env <key=value>] [--num <count>]
+                                      [--security-group-id <security-group-id>] [--subnet-id <subnet-id]
 ```
 
 Create a new service
