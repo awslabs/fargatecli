@@ -12,13 +12,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const typeTask string = "task"
+
 type TaskRunOperation struct {
-	Num      int64
-	Cpu      string
-	EnvVars  []ECS.EnvVar
-	Image    string
-	Memory   string
-	TaskName string
+	Cpu              string
+	EnvVars          []ECS.EnvVar
+	Image            string
+	Memory           string
+	Num              int64
+	SecurityGroupIds []string
+	SubnetIds        []string
+	TaskName         string
 }
 
 func (o *TaskRunOperation) Validate() {
@@ -38,11 +42,13 @@ func (o *TaskRunOperation) SetEnvVars(inputEnvVars []string) {
 }
 
 var (
-	flagTaskRunNum     int64
-	flagTaskRunCpu     string
-	flagTaskRunEnvVars []string
-	flagTaskRunImage   string
-	flagTaskRunMemory  string
+	flagTaskRunNum              int64
+	flagTaskRunCpu              string
+	flagTaskRunEnvVars          []string
+	flagTaskRunImage            string
+	flagTaskRunMemory           string
+	flagTaskRunSecurityGroupIds []string
+	flagTaskRunSubnetIds        []string
 )
 
 var taskRunCmd = &cobra.Command{
@@ -82,15 +88,27 @@ repository, the container image will be tagged with the short ref of the HEAD
 commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 
 Environment variables can be specified via the --env flag. Specify --env with a
-key=value parameter multiple times to add multiple variables.`,
+key=value parameter multiple times to add multiple variables.
+
+Security groups can optionally be specified for the task by passing the
+--security-group-id flag with a security group ID. To add multiple security
+groups, pass --security-group-id with a security group ID multiple times. If
+--security-group-id is omitted, a permissive security group will be applied to
+the task.
+
+By default, the task will be created in the default VPC and attached to the
+default VPC subnets for each availability zone. You can override this by
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &TaskRunOperation{
-			Num:      flagTaskRunNum,
-			Cpu:      flagTaskRunCpu,
-			Image:    flagTaskRunImage,
-			Memory:   flagTaskRunMemory,
-			TaskName: args[0],
+			Cpu:              flagTaskRunCpu,
+			Image:            flagTaskRunImage,
+			Memory:           flagTaskRunMemory,
+			Num:              flagTaskRunNum,
+			SecurityGroupIds: flagTaskRunSecurityGroupIds,
+			SubnetIds:        flagTaskRunSubnetIds,
+			TaskName:         args[0],
 		}
 
 		operation.SetEnvVars(flagTaskRunEnvVars)
@@ -106,6 +124,8 @@ func init() {
 	taskRunCmd.Flags().StringVarP(&flagTaskRunCpu, "cpu", "c", "256", "Amount of cpu units to allocate for each task")
 	taskRunCmd.Flags().StringVarP(&flagTaskRunImage, "image", "i", "", "Docker image to run; if omitted Fargate will build an image from the Dockerfile in the current directory")
 	taskRunCmd.Flags().StringVarP(&flagTaskRunMemory, "memory", "m", "512", "Amount of MiB to allocate for each task")
+	taskRunCmd.Flags().StringSliceVar(&flagTaskRunSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the task (can be specified multiple times)")
+	taskRunCmd.Flags().StringSliceVar(&flagTaskRunSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the task (can be specified multiple times)")
 
 	taskCmd.AddCommand(taskRunCmd)
 }
@@ -125,9 +145,15 @@ func runTask(operation *TaskRunOperation) {
 		repositoryUri = ecr.CreateRepository(operation.TaskName)
 	}
 
+	if len(operation.SecurityGroupIds) == 0 {
+		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
+	}
+
+	if len(operation.SubnetIds) == 0 {
+		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
+	}
+
 	repository := docker.Repository{Uri: repositoryUri}
-	subnetIds := ec2.GetDefaultVpcSubnetIds()
-	securityGroupId := ec2.GetDefaultSecurityGroupId()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
 	logGroupName := cwl.CreateLogGroup(taskLogGroupFormat, operation.TaskName)
 
@@ -155,11 +181,11 @@ func runTask(operation *TaskRunOperation) {
 			EnvVars:          operation.EnvVars,
 			ExecutionRoleArn: ecsTaskExecutionRoleArn,
 			Image:            operation.Image,
-			Memory:           operation.Memory,
-			Name:             operation.TaskName,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
-			Type:             "task",
+			Memory:           operation.Memory,
+			Name:             operation.TaskName,
+			Type:             typeTask,
 		},
 	)
 
@@ -169,8 +195,8 @@ func runTask(operation *TaskRunOperation) {
 			Count:             operation.Num,
 			TaskName:          operation.TaskName,
 			TaskDefinitionArn: taskDefinitionArn,
-			SubnetIds:         subnetIds,
-			SecurityGroupId:   securityGroupId,
+			SubnetIds:         operation.SubnetIds,
+			SecurityGroupIds:  operation.SecurityGroupIds,
 		},
 	)
 

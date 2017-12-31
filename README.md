@@ -113,6 +113,16 @@ commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 Environment variables can be specified via the --env flag. Specify --env with a
 key=value parameter multiple times to add multiple variables.
 
+Security groups can optionally be specified for the task by passing the
+--security-group-id flag with a security group ID. To add multiple security
+groups, pass --security-group-id with a security group ID multiple times. If
+--security-group-id is omitted, a permissive security group will be applied to
+the task.
+
+By default, the task will be created in the default VPC and attached to the
+default VPC subnets for each availability zone. You can override this by
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
+
 ##### fargate task info
 
 ```console

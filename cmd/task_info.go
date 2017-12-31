@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jpignata/fargate/console"
 	EC2 "github.com/jpignata/fargate/ec2"
@@ -73,13 +74,17 @@ func getTaskInfo(operation *TaskInfoOperation) {
 	console.KeyValue("Task Instances", "%d\n", len(tasks))
 
 	for _, task := range tasks {
+		eni := enis[task.EniId]
+
 		console.KeyValue("  "+task.TaskId, "\n")
 		console.KeyValue("    Image", "%s\n", task.Image)
 		console.KeyValue("    Status", "%s\n", util.Humanize(task.LastStatus))
 		console.KeyValue("    Started At", "%s\n", task.CreatedAt)
-		console.KeyValue("    IP", "%s\n", enis[task.EniId].PublicIpAddress)
+		console.KeyValue("    IP", "%s\n", eni.PublicIpAddress)
 		console.KeyValue("    CPU", "%s\n", task.Cpu)
 		console.KeyValue("    Memory", "%s\n", task.Memory)
+		console.KeyValue("    Subnet", "%s\n", task.SubnetId)
+		console.KeyValue("    Security Groups", "%s\n", strings.Join(eni.SecurityGroupIds, ", "))
 
 		if len(task.EnvVars) > 0 {
 			console.KeyValue("    Environment Variables", "\n")
