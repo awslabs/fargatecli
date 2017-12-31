@@ -263,6 +263,12 @@ Specify the desired count of tasks the service should maintain by passing the
 --num flag with a number. If you omit this flag, fargate will configure a
 service with a desired number of tasks of 1.
 
+Security groups can optionally be specified for the service by passing the
+--security-group-id flag with a security group ID. To add multiple security
+groups, pass --security-group-id with a security group ID multiple times. If
+--security-group-id is omitted, a permissive security group will be applied to
+the service.
+
 ##### fargate service deploy
 
 ```console

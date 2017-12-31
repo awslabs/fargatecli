@@ -21,9 +21,13 @@ const (
 	defaultClusterName = "fargate"
 	defaultRegion      = "us-east-1"
 
-	cpuUnitsInVCpu        = 1024
-	mebibytesInGibibyte   = 1024
-	validProtocolsPattern = "(?i)\\ATCP|HTTP(S)?\\z"
+	typeApplication       string = "application"
+	typeNetwork           string = "network"
+	protocolHttp          string = "HTTP"
+	protocolHttps         string = "HTTPS"
+	protocolTcp           string = "TCP"
+	mebibytesInGibibyte   int64  = 1024
+	validProtocolsPattern string = "(?i)\\ATCP|HTTP(S)?\\z"
 )
 
 var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings

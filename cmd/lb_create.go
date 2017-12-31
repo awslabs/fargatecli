@@ -14,13 +14,8 @@ import (
 )
 
 const (
-	typeApplication string = "application"
-	typeNetwork     string = "network"
-	protocolHttp    string = "HTTP"
-	protocolHttps   string = "HTTPS"
-	protocolTcp     string = "TCP"
-	minPort         int64  = 1
-	maxPort         int64  = 65535
+	minPort int64 = 1
+	maxPort int64 = 65535
 )
 
 type LbCreateOperation struct {

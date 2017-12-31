@@ -17,20 +17,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const validRuleTypesPattern = "(?i)^host|path$"
+const (
+	typeService           = "service"
+	validRuleTypesPattern = "(?i)^host|path$"
+)
 
 type ServiceCreateOperation struct {
-	ServiceName      string
 	Cpu              string
+	EnvVars          []ECS.EnvVar
 	Image            string
-	Memory           string
-	Port             Port
 	LoadBalancerArn  string
 	LoadBalancerName string
-	Rules            []ELBV2.Rule
-	Elbv2            ELBV2.ELBV2
-	EnvVars          []ECS.EnvVar
+	Memory           string
 	Num              int64
+	Port             Port
+	Rules            []ELBV2.Rule
+	SecurityGroupIds []string
+	ServiceName      string
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -67,16 +70,17 @@ func (o *ServiceCreateOperation) Validate() {
 }
 
 func (o *ServiceCreateOperation) SetLoadBalancer(lb string) {
-	loadBalancer := o.Elbv2.DescribeLoadBalancer(lb)
+	elbv2 := ELBV2.New(sess)
+	loadBalancer := elbv2.DescribeLoadBalancer(lb)
 
-	if loadBalancer.Type == "network" {
-		if o.Port.Protocol != "TCP" {
+	if loadBalancer.Type == typeNetwork {
+		if o.Port.Protocol != protocolTcp {
 			console.ErrorExit(fmt.Errorf("network load balancer %s only supports TCP", lb), "Invalid load balancer and protocol")
 		}
 	}
 
-	if loadBalancer.Type == "application" {
-		if !(o.Port.Protocol == "HTTP" || o.Port.Protocol == "HTTPS") {
+	if loadBalancer.Type == typeApplication {
+		if !(o.Port.Protocol == protocolHttp || o.Port.Protocol == protocolHttps) {
 			console.ErrorExit(fmt.Errorf("application load balancer %s only supports HTTP or HTTPS", lb), "Invalid load balancer and protocol")
 		}
 	}
@@ -125,15 +129,20 @@ func (o *ServiceCreateOperation) SetEnvVars(inputEnvVars []string) {
 	o.EnvVars = extractEnvVars(inputEnvVars)
 }
 
+func (o *ServiceCreateOperation) SetSecurityGroupIds(securityGroupIds []string) {
+	o.SecurityGroupIds = securityGroupIds
+}
+
 var (
-	flagServiceCreateCpu     string
-	flagServiceCreateEnvVars []string
-	flagServiceCreateImage   string
-	flagServiceCreateLb      string
-	flagServiceCreateMemory  string
-	flagServiceCreatePort    string
-	flagServiceCreateRules   []string
-	flagServiceCreateNum     int64
+	flagServiceCreateCpu              string
+	flagServiceCreateEnvVars          []string
+	flagServiceCreateImage            string
+	flagServiceCreateLb               string
+	flagServiceCreateMemory           string
+	flagServiceCreatePort             string
+	flagServiceCreateRules            []string
+	flagServiceCreateNum              int64
+	flagServiceCreateSecurityGroupIds []string
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -181,16 +190,22 @@ key=value parameter multiple times to add multiple variables.
 
 Specify the desired count of tasks the service should maintain by passing the
 --num flag with a number. If you omit this flag, fargate will configure a
-service with a desired number of tasks of 1.`,
+service with a desired number of tasks of 1.
+
+Security groups can optionally be specified for the service by passing the
+--security-group-id flag with a security group ID. To add multiple security
+groups, pass --security-group-id with a security group ID multiple times. If
+--security-group-id is omitted, a permissive security group will be applied to
+the service.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceCreateOperation{
-			Cpu:         flagServiceCreateCpu,
-			Elbv2:       ELBV2.New(sess),
-			Image:       flagServiceCreateImage,
-			Memory:      flagServiceCreateMemory,
-			Num:         flagServiceCreateNum,
-			ServiceName: args[0],
+			Cpu:              flagServiceCreateCpu,
+			Image:            flagServiceCreateImage,
+			Memory:           flagServiceCreateMemory,
+			Num:              flagServiceCreateNum,
+			SecurityGroupIds: flagServiceCreateSecurityGroupIds,
+			ServiceName:      args[0],
 		}
 
 		if flagServiceCreatePort != "" {
@@ -223,6 +238,7 @@ func init() {
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateLb, "lb", "l", "", "Name of a load balancer to use")
 	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateRules, "rule", "r", []string{}, "Routing rule for the load balancer [e.g. host=api.example.com, path=/api/*]; if omitted service will be the default route")
 	serviceCreateCmd.Flags().Int64VarP(&flagServiceCreateNum, "num", "n", 1, "Number of tasks instances to keep running")
+	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the service (can be specified multiple times)")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
@@ -231,6 +247,7 @@ func createService(operation *ServiceCreateOperation) {
 	cwl := CWL.New(sess)
 	ec2 := EC2.New(sess)
 	ecr := ECR.New(sess)
+	elbv2 := ELBV2.New(sess)
 	ecs := ECS.New(sess, clusterName)
 	iam := IAM.New(sess)
 
@@ -246,10 +263,14 @@ func createService(operation *ServiceCreateOperation) {
 	}
 
 	repository := docker.Repository{Uri: repositoryUri}
-	subnetIds := ec2.GetDefaultVpcSubnetIds()
-	securityGroupId := ec2.GetDefaultSecurityGroupId()
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
 	logGroupName := cwl.CreateLogGroup(serviceLogGroupFormat, operation.ServiceName)
+
+	if len(operation.SecurityGroupIds) == 0 {
+		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
+	}
+
+	subnetIds := ec2.GetDefaultVpcSubnetIds()
 
 	if operation.Image == "" {
 		var tag string
@@ -271,7 +292,7 @@ func createService(operation *ServiceCreateOperation) {
 
 	if operation.LoadBalancerArn != "" {
 		vpcId := ec2.GetDefaultVpcId()
-		targetGroupArn = operation.Elbv2.CreateTargetGroup(
+		targetGroupArn = elbv2.CreateTargetGroup(
 			&ELBV2.CreateTargetGroupInput{
 				Name:     operation.LoadBalancerName + "-" + operation.ServiceName,
 				Port:     operation.Port.Port,
@@ -282,10 +303,10 @@ func createService(operation *ServiceCreateOperation) {
 
 		if len(operation.Rules) > 0 {
 			for _, rule := range operation.Rules {
-				operation.Elbv2.AddRule(operation.LoadBalancerArn, targetGroupArn, rule)
+				elbv2.AddRule(operation.LoadBalancerArn, targetGroupArn, rule)
 			}
 		} else {
-			operation.Elbv2.ModifyLoadBalancerDefaultAction(operation.LoadBalancerArn, targetGroupArn)
+			elbv2.ModifyLoadBalancerDefaultAction(operation.LoadBalancerArn, targetGroupArn)
 		}
 	}
 
@@ -300,20 +321,20 @@ func createService(operation *ServiceCreateOperation) {
 			Port:             operation.Port.Port,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
-			Type:             "service",
+			Type:             typeService,
 		},
 	)
 
 	ecs.CreateService(
 		&ECS.CreateServiceInput{
 			Cluster:           clusterName,
+			DesiredCount:      operation.Num,
 			Name:              operation.ServiceName,
 			Port:              operation.Port.Port,
+			SecurityGroupIds:  operation.SecurityGroupIds,
 			SubnetIds:         subnetIds,
 			TargetGroupArn:    targetGroupArn,
 			TaskDefinitionArn: taskDefinitionArn,
-			DesiredCount:      operation.Num,
-			SecurityGroupId:   securityGroupId,
 		},
 	)
 
