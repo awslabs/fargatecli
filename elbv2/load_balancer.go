@@ -9,13 +9,15 @@ import (
 )
 
 type LoadBalancer struct {
-	DNSName      string
-	Name         string
-	State        string
-	StateReason  string
-	Arn          string
-	Type         string
-	HostedZoneId string
+	DNSName          string
+	Name             string
+	State            string
+	StateReason      string
+	Arn              string
+	Type             string
+	HostedZoneId     string
+	SecurityGroupIds []string
+	SubnetIds        []string
 }
 
 type DescribeLoadBalancersInput struct {
@@ -24,10 +26,10 @@ type DescribeLoadBalancersInput struct {
 }
 
 type CreateLoadBalancerInput struct {
-	Name            string
-	SubnetIds       []string
-	Type            string
-	SecurityGroupId string
+	Name             string
+	SubnetIds        []string
+	Type             string
+	SecurityGroupIds []string
 }
 
 func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
@@ -39,7 +41,7 @@ func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
 	}
 
 	if i.Type == awselbv2.LoadBalancerTypeEnumApplication {
-		input.SetSecurityGroups(aws.StringSlice([]string{i.SecurityGroupId}))
+		input.SetSecurityGroups(aws.StringSlice(i.SecurityGroupIds))
 	}
 
 	resp, err := elbv2.svc.CreateLoadBalancer(input)
@@ -109,15 +111,23 @@ func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBa
 		input,
 		func(resp *awselbv2.DescribeLoadBalancersOutput, lastPage bool) bool {
 			for _, loadBalancer := range resp.LoadBalancers {
+				var subnetIds []string
+
+				for _, availabilityZone := range loadBalancer.AvailabilityZones {
+					subnetIds = append(subnetIds, aws.StringValue(availabilityZone.SubnetId))
+				}
+
 				loadBalancers = append(loadBalancers,
 					LoadBalancer{
-						Name:         aws.StringValue(loadBalancer.LoadBalancerName),
-						DNSName:      aws.StringValue(loadBalancer.DNSName),
-						State:        aws.StringValue(loadBalancer.State.Code),
-						StateReason:  aws.StringValue(loadBalancer.State.Reason),
-						Arn:          aws.StringValue(loadBalancer.LoadBalancerArn),
-						Type:         aws.StringValue(loadBalancer.Type),
-						HostedZoneId: aws.StringValue(loadBalancer.CanonicalHostedZoneId),
+						Arn:              aws.StringValue(loadBalancer.LoadBalancerArn),
+						DNSName:          aws.StringValue(loadBalancer.DNSName),
+						HostedZoneId:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
+						Name:             aws.StringValue(loadBalancer.LoadBalancerName),
+						SecurityGroupIds: aws.StringValueSlice(loadBalancer.SecurityGroups),
+						State:            aws.StringValue(loadBalancer.State.Code),
+						StateReason:      aws.StringValue(loadBalancer.State.Reason),
+						SubnetIds:        subnetIds,
+						Type:             aws.StringValue(loadBalancer.Type),
 					},
 				)
 			}

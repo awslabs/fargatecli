@@ -46,6 +46,8 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 	console.KeyValue("Status", "%s\n", util.Humanize(loadBalancer.State))
 	console.KeyValue("Type", "%s\n", util.Humanize(loadBalancer.Type))
 	console.KeyValue("DNS Name", "%s\n", loadBalancer.DNSName)
+	console.KeyValue("Subnets", "%s\n", strings.Join(loadBalancer.SubnetIds, ", "))
+	console.KeyValue("Security Groups", "%s\n", strings.Join(loadBalancer.SecurityGroupIds, ", "))
 	console.KeyValue("Listeners", "\n")
 
 	for _, listener := range elbv2.GetListeners(loadBalancer.Arn) {
