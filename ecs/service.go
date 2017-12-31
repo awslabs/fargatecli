@@ -32,6 +32,7 @@ type Service struct {
 	Name              string
 	PendingCount      int64
 	RunningCount      int64
+	SecurityGroupIds  []string
 	TargetGroupArn    string
 	TaskDefinitionArn string
 }
@@ -191,12 +192,19 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 	}
 
 	for _, service := range resp.Services {
+		var securityGroupIds []*string
+
+		if service.NetworkConfiguration.AwsvpcConfiguration != nil {
+			securityGroupIds = service.NetworkConfiguration.AwsvpcConfiguration.SecurityGroups
+		}
+
 		s := Service{
 			Name:              aws.StringValue(service.ServiceName),
 			DesiredCount:      aws.Int64Value(service.DesiredCount),
 			PendingCount:      aws.Int64Value(service.PendingCount),
 			RunningCount:      aws.Int64Value(service.RunningCount),
 			TaskDefinitionArn: aws.StringValue(service.TaskDefinition),
+			SecurityGroupIds:  aws.StringValueSlice(securityGroupIds),
 		}
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))

@@ -62,6 +62,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	console.KeyValue("Image", "%s\n", service.Image)
 	console.KeyValue("Cpu", "%s\n", service.Cpu)
 	console.KeyValue("Memory", "%s\n", service.Memory)
+	console.KeyValue("Security Groups", "%s\n", strings.Join(service.SecurityGroupIds, ", "))
 
 	if service.TargetGroupArn != "" {
 		loadBalancerArn := elbv2.GetTargetGroupLoadBalancerArn(service.TargetGroupArn)
