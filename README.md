@@ -254,7 +254,8 @@ specifying the --rule flag along with a rule expression. Rule expressions are
 in the format of TYPE=VALUE. Type can either be PATH or HOST. PATH matches the
 PATH of the request and HOST matches the requested hostname in the HTTP
 request. Both PATH and HOST types can include up to three wildcard characters:
-\* to match multiple characters and ? to match a single character.
+\* to match multiple characters and ? to match a single character. If rules are
+omitted, the service will be the load balancer's default action.
 
 Environment variables can be specified via the --env flag. Specify --env with a
 key=value parameter multiple times to add multiple variables.
@@ -268,6 +269,10 @@ Security groups can optionally be specified for the service by passing the
 groups, pass --security-group-id with a security group ID multiple times. If
 --security-group-id is omitted, a permissive security group will be applied to
 the service.
+
+By default, the service will be created in the default VPC and attached
+to the default VPC subnets for each availability zone. You can override this by
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
 
 ##### fargate service deploy
 

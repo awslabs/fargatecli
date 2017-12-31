@@ -35,6 +35,7 @@ type Service struct {
 	SecurityGroupIds  []string
 	TargetGroupArn    string
 	TaskDefinitionArn string
+	SubnetIds         []string
 }
 
 type Event struct {
@@ -192,10 +193,11 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 	}
 
 	for _, service := range resp.Services {
-		var securityGroupIds []*string
+		var securityGroupIds, subnetIds []*string
 
-		if service.NetworkConfiguration.AwsvpcConfiguration != nil {
-			securityGroupIds = service.NetworkConfiguration.AwsvpcConfiguration.SecurityGroups
+		if config := service.NetworkConfiguration.AwsvpcConfiguration; config != nil {
+			securityGroupIds = config.SecurityGroups
+			subnetIds = config.Subnets
 		}
 
 		s := Service{
@@ -205,6 +207,7 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 			RunningCount:      aws.Int64Value(service.RunningCount),
 			TaskDefinitionArn: aws.StringValue(service.TaskDefinition),
 			SecurityGroupIds:  aws.StringValueSlice(securityGroupIds),
+			SubnetIds:         aws.StringValueSlice(subnetIds),
 		}
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))

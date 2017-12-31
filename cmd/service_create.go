@@ -34,6 +34,7 @@ type ServiceCreateOperation struct {
 	Rules            []ELBV2.Rule
 	SecurityGroupIds []string
 	ServiceName      string
+	SubnetIds        []string
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -143,12 +144,13 @@ var (
 	flagServiceCreateRules            []string
 	flagServiceCreateNum              int64
 	flagServiceCreateSecurityGroupIds []string
+	flagServiceCreateSubnetIds        []string
 )
 
 var serviceCreateCmd = &cobra.Command{
 	Use:   "create <service-name>",
-	Short: "Create a new service",
-	Long: `Create a new service
+	Short: "Create a service",
+	Long: `Create a service
 
 CPU and memory settings can be optionally specified as CPU units and mebibytes
 respectively using the --cpu and --memory flags. Every 1024 CPU units is
@@ -183,7 +185,8 @@ specifying the --rule flag along with a rule expression. Rule expressions are
 in the format of TYPE=VALUE. Type can either be PATH or HOST. PATH matches the
 PATH of the request and HOST matches the requested hostname in the HTTP
 request. Both PATH and HOST types can include up to three wildcard characters:
-* to match multiple characters and ? to match a single character.
+* to match multiple characters and ? to match a single character. If rules are
+omitted, the service will be the load balancer's default action.
 
 Environment variables can be specified via the --env flag. Specify --env with a
 key=value parameter multiple times to add multiple variables.
@@ -196,7 +199,11 @@ Security groups can optionally be specified for the service by passing the
 --security-group-id flag with a security group ID. To add multiple security
 groups, pass --security-group-id with a security group ID multiple times. If
 --security-group-id is omitted, a permissive security group will be applied to
-the service.`,
+the service.
+
+By default, the service will be created in the default VPC and attached
+to the default VPC subnets for each availability zone. You can override this by
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceCreateOperation{
@@ -206,6 +213,7 @@ the service.`,
 			Num:              flagServiceCreateNum,
 			SecurityGroupIds: flagServiceCreateSecurityGroupIds,
 			ServiceName:      args[0],
+			SubnetIds:        flagServiceCreateSubnetIds,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -236,9 +244,10 @@ func init() {
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreatePort, "port", "p", "", "Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935]")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateImage, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateLb, "lb", "l", "", "Name of a load balancer to use")
-	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateRules, "rule", "r", []string{}, "Routing rule for the load balancer [e.g. host=api.example.com, path=/api/*]; if omitted service will be the default route")
+	serviceCreateCmd.Flags().StringSliceVarP(&flagServiceCreateRules, "rule", "r", []string{}, "Routing rule for the load balancer [e.g. host=api.example.com, path=/api/*]; if omitted service will be the default route (can be specified multiple times)")
 	serviceCreateCmd.Flags().Int64VarP(&flagServiceCreateNum, "num", "n", 1, "Number of tasks instances to keep running")
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the service (can be specified multiple times)")
+	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the service (can be specified multiple times)")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
@@ -270,7 +279,9 @@ func createService(operation *ServiceCreateOperation) {
 		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
 	}
 
-	subnetIds := ec2.GetDefaultVpcSubnetIds()
+	if len(operation.SubnetIds) == 0 {
+		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
+	}
 
 	if operation.Image == "" {
 		var tag string
@@ -291,7 +302,7 @@ func createService(operation *ServiceCreateOperation) {
 	}
 
 	if operation.LoadBalancerArn != "" {
-		vpcId := ec2.GetDefaultVpcId()
+		vpcId := ec2.GetSubnetVpcId(operation.SubnetIds[0])
 		targetGroupArn = elbv2.CreateTargetGroup(
 			&ELBV2.CreateTargetGroupInput{
 				Name:     operation.LoadBalancerName + "-" + operation.ServiceName,
@@ -332,7 +343,7 @@ func createService(operation *ServiceCreateOperation) {
 			Name:              operation.ServiceName,
 			Port:              operation.Port.Port,
 			SecurityGroupIds:  operation.SecurityGroupIds,
-			SubnetIds:         subnetIds,
+			SubnetIds:         operation.SubnetIds,
 			TargetGroupArn:    targetGroupArn,
 			TaskDefinitionArn: taskDefinitionArn,
 		},
