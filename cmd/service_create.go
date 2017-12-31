@@ -253,25 +253,14 @@ func init() {
 }
 
 func createService(operation *ServiceCreateOperation) {
+	var targetGroupArn string
+
 	cwl := CWL.New(sess)
 	ec2 := EC2.New(sess)
 	ecr := ECR.New(sess)
 	elbv2 := ELBV2.New(sess)
 	ecs := ECS.New(sess, clusterName)
 	iam := IAM.New(sess)
-
-	var (
-		targetGroupArn string
-		repositoryUri  string
-	)
-
-	if ecr.IsRepositoryCreated(operation.ServiceName) {
-		repositoryUri = ecr.GetRepositoryUri(operation.ServiceName)
-	} else {
-		repositoryUri = ecr.CreateRepository(operation.ServiceName)
-	}
-
-	repository := docker.Repository{Uri: repositoryUri}
 	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
 	logGroupName := cwl.CreateLogGroup(serviceLogGroupFormat, operation.ServiceName)
 
@@ -284,15 +273,22 @@ func createService(operation *ServiceCreateOperation) {
 	}
 
 	if operation.Image == "" {
-		var tag string
+		var tag, repositoryUri string
 
-		username, password := ecr.GetUsernameAndPassword()
+		if ecr.IsRepositoryCreated(operation.ServiceName) {
+			repositoryUri = ecr.GetRepositoryUri(operation.ServiceName)
+		} else {
+			repositoryUri = ecr.CreateRepository(operation.ServiceName)
+		}
 
 		if git.IsCwdGitRepo() {
 			tag = git.GetShortSha()
 		} else {
 			tag = docker.GenerateTag()
 		}
+
+		repository := docker.NewRepository(repositoryUri)
+		username, password := ecr.GetUsernameAndPassword()
 
 		repository.Login(username, password)
 		repository.Build(tag)

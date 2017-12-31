@@ -131,19 +131,13 @@ func init() {
 }
 
 func runTask(operation *TaskRunOperation) {
-	var repositoryUri string
-
 	cwl := CWL.New(sess)
 	ec2 := EC2.New(sess)
 	ecr := ECR.New(sess)
 	ecs := ECS.New(sess, clusterName)
 	iam := IAM.New(sess)
-
-	if ecr.IsRepositoryCreated(operation.TaskName) {
-		repositoryUri = ecr.GetRepositoryUri(operation.TaskName)
-	} else {
-		repositoryUri = ecr.CreateRepository(operation.TaskName)
-	}
+	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
+	logGroupName := cwl.CreateLogGroup(taskLogGroupFormat, operation.TaskName)
 
 	if len(operation.SecurityGroupIds) == 0 {
 		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
@@ -153,20 +147,23 @@ func runTask(operation *TaskRunOperation) {
 		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
 	}
 
-	repository := docker.Repository{Uri: repositoryUri}
-	ecsTaskExecutionRoleArn := iam.CreateEcsTaskExecutionRole()
-	logGroupName := cwl.CreateLogGroup(taskLogGroupFormat, operation.TaskName)
-
 	if operation.Image == "" {
-		var tag string
+		var repositoryUri, tag string
 
-		username, password := ecr.GetUsernameAndPassword()
+		if ecr.IsRepositoryCreated(operation.TaskName) {
+			repositoryUri = ecr.GetRepositoryUri(operation.TaskName)
+		} else {
+			repositoryUri = ecr.CreateRepository(operation.TaskName)
+		}
 
 		if git.IsCwdGitRepo() {
 			tag = git.GetShortSha()
 		} else {
 			tag = docker.GenerateTag()
 		}
+
+		repository := docker.NewRepository(repositoryUri)
+		username, password := ecr.GetUsernameAndPassword()
 
 		repository.Login(username, password)
 		repository.Build(tag)

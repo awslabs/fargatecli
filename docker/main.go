@@ -18,6 +18,12 @@ type Repository struct {
 	Uri string
 }
 
+func NewRepository(repositoryUri string) Repository {
+	return Repository{
+		Uri: repositoryUri,
+	}
+}
+
 func (repository *Repository) Login(username, password string) {
 	console.Debug("Logging into Docker repository [%s]", repository.Uri)
 	console.Shell("docker login --username %s --password ******* %s", username, repository.Uri)
