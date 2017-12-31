@@ -51,10 +51,10 @@ func getServiceProcessList(operation *ServiceProcessListOperation) {
 
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-		fmt.Fprintln(w, "ID\tIMAGE\tSTATUS\tRUNNING\tIP\tCPU\tMEMORY\tDEPLOYMENT\t")
+		fmt.Fprintln(w, "ID\tIMAGE\tSTATUS\tRUNNING\tIP\tCPU\tMEMORY\t")
 
 		for _, t := range tasks {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 				t.TaskId,
 				t.Image,
 				util.Humanize(t.LastStatus),
@@ -62,7 +62,6 @@ func getServiceProcessList(operation *ServiceProcessListOperation) {
 				enis[t.EniId].PublicIpAddress,
 				t.Cpu,
 				t.Memory,
-				t.DeploymentId,
 			)
 		}
 
