@@ -17,10 +17,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	typeService           = "service"
-	validRuleTypesPattern = "(?i)^host|path$"
-)
+const typeService = "service"
 
 type ServiceCreateOperation struct {
 	Cpu              string
@@ -71,6 +68,10 @@ func (o *ServiceCreateOperation) Validate() {
 }
 
 func (o *ServiceCreateOperation) SetLoadBalancer(lb string) {
+	if o.Port.Empty() {
+		console.IssueExit("Setting a load balancer requires a port")
+	}
+
 	elbv2 := ELBV2.New(sess)
 	loadBalancer := elbv2.DescribeLoadBalancer(lb)
 
@@ -174,6 +175,12 @@ container image from the current working directory and push it to Amazon ECR in
 a repository named for the task group. If the current working directory is a
 git repository, the container image will be tagged with the short ref of the
 HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
+
+To use the service with a load balancer, a port must be specified when the
+service is created. Specify a port by passing the --port flag and a port
+expression of protocol:port-number. For example, if the service listens on port
+80 and uses HTTP, specify HTTP:80.  Valid protocols are HTTP, HTTPS, and TCP.
+You can only specify a single port.
 
 Services can optionally be configured to use a load balancer. To put a load
 balancer in front a service, pass the --lb flag with the name of a load
@@ -301,7 +308,7 @@ func createService(operation *ServiceCreateOperation) {
 		vpcId := ec2.GetSubnetVpcId(operation.SubnetIds[0])
 		targetGroupArn = elbv2.CreateTargetGroup(
 			&ELBV2.CreateTargetGroupInput{
-				Name:     operation.LoadBalancerName + "-" + operation.ServiceName,
+				Name:     fmt.Sprintf("%s-%s", clusterName, operation.ServiceName),
 				Port:     operation.Port.Port,
 				Protocol: operation.Port.Protocol,
 				VpcId:    vpcId,

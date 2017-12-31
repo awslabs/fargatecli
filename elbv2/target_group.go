@@ -55,6 +55,32 @@ func (elbv2 *ELBV2) DeleteTargetGroup(targetGroupName string) {
 	)
 }
 
+func (elbv2 *ELBV2) DeleteTargetGroupByArn(targetGroupArn string) {
+	_, err := elbv2.svc.DeleteTargetGroup(
+		&awselbv2.DeleteTargetGroupInput{
+			TargetGroupArn: aws.String(targetGroupArn),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not delete ELB target group")
+	}
+}
+
+func (elbv2 *ELBV2) GetTargetGroupArn(targetGroupName string) string {
+	resp, _ := elbv2.svc.DescribeTargetGroups(
+		&awselbv2.DescribeTargetGroupsInput{
+			Names: aws.StringSlice([]string{targetGroupName}),
+		},
+	)
+
+	if len(resp.TargetGroups) == 1 {
+		return aws.StringValue(resp.TargetGroups[0].TargetGroupArn)
+	}
+
+	return ""
+}
+
 func (elbv2 *ELBV2) GetTargetGroupLoadBalancerArn(targetGroupArn string) string {
 	targetGroup := elbv2.describeTargetGroupByArn(targetGroupArn)
 

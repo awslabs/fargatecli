@@ -1,3 +1,13 @@
+## 0.3.0 (In Progress)
+
+### Bug Fixes
+
+- service create will not run if a load balancer is configured without a port.
+- service create and task run will no longer create a repository if an image is
+  explictly passed.
+- service destroy will remove all references the service's target group and
+  delete it
+
 ## 0.2.0 (2017-12-31)
 
 ### Features

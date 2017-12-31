@@ -22,7 +22,9 @@ type Rule struct {
 	Type           string
 	Value          string
 	TargetGroupArn string
-	Priority       string
+	Priority       int
+	Arn            string
+	IsDefault      bool
 }
 
 func (r *Rule) String() string {
@@ -107,6 +109,15 @@ func (elbv2 *ELBV2) ModifyLoadBalancerDefaultAction(lbArn, targetGroupArn string
 
 func (elbv2 *ELBV2) AddRule(lbArn, targetGroupArn string, rule Rule) {
 	console.Debug("Adding ELB listener rule [%s=%s]", rule.Type, rule.Value)
+
+	listeners := elbv2.GetListeners(lbArn)
+
+	for _, listener := range listeners {
+		elbv2.AddRuleToListener(listener.Arn, targetGroupArn, rule)
+	}
+}
+
+func (elbv2 *ELBV2) AddRuleToListener(listenerArn, targetGroupArn string, rule Rule) {
 	var ruleType string
 
 	if rule.Type == "HOST" {
@@ -119,26 +130,21 @@ func (elbv2 *ELBV2) AddRule(lbArn, targetGroupArn string, rule Rule) {
 		Field:  aws.String(ruleType),
 		Values: aws.StringSlice([]string{rule.Value}),
 	}
-
-	listeners := elbv2.GetListeners(lbArn)
-
-	for _, listener := range listeners {
-		highestPriority := elbv2.GetHighestPriorityFromListener(listener.Arn)
-		priority := highestPriority + 10
-		action := &awselbv2.Action{
-			TargetGroupArn: aws.String(targetGroupArn),
-			Type:           aws.String(awselbv2.ActionTypeEnumForward),
-		}
-
-		elbv2.svc.CreateRule(
-			&awselbv2.CreateRuleInput{
-				Priority:    aws.Int64(priority),
-				ListenerArn: aws.String(listener.Arn),
-				Actions:     []*awselbv2.Action{action},
-				Conditions:  []*awselbv2.RuleCondition{ruleCondition},
-			},
-		)
+	highestPriority := elbv2.GetHighestPriorityFromListener(listenerArn)
+	priority := highestPriority + 10
+	action := &awselbv2.Action{
+		TargetGroupArn: aws.String(targetGroupArn),
+		Type:           aws.String(awselbv2.ActionTypeEnumForward),
 	}
+
+	elbv2.svc.CreateRule(
+		&awselbv2.CreateRuleInput{
+			Priority:    aws.Int64(priority),
+			ListenerArn: aws.String(listenerArn),
+			Actions:     []*awselbv2.Action{action},
+			Conditions:  []*awselbv2.RuleCondition{ruleCondition},
+		},
+	)
 }
 
 func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
@@ -166,11 +172,14 @@ func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
 			}
 
 			for _, v := range c.Values {
+				priority, _ := strconv.Atoi(aws.StringValue(r.Priority))
+
 				rule := Rule{
+					Arn:            aws.StringValue(r.RuleArn),
+					Priority:       priority,
 					TargetGroupArn: aws.StringValue(r.Actions[0].TargetGroupArn),
 					Type:           field,
 					Value:          aws.StringValue(v),
-					Priority:       aws.StringValue(r.Priority),
 				}
 
 				rules = append(rules, rule)
@@ -181,6 +190,7 @@ func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
 			rule := Rule{
 				TargetGroupArn: aws.StringValue(r.Actions[0].TargetGroupArn),
 				Type:           "DEFAULT",
+				IsDefault:      true,
 			}
 
 			rules = append(rules, rule)
@@ -249,4 +259,16 @@ func (elbv2 *ELBV2) GetListeners(lbArn string) []Listener {
 	}
 
 	return listeners
+}
+
+func (elbv2 *ELBV2) DeleteRule(ruleArn string) {
+	_, err := elbv2.svc.DeleteRule(
+		&awselbv2.DeleteRuleInput{
+			RuleArn: aws.String(ruleArn),
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not delete ELB rule")
+	}
 }

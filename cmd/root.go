@@ -28,6 +28,7 @@ const (
 	protocolTcp           string = "TCP"
 	mebibytesInGibibyte   int64  = 1024
 	validProtocolsPattern string = "(?i)\\ATCP|HTTP(S)?\\z"
+	validRuleTypesPattern string = "(?i)^host|path$"
 )
 
 var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings
@@ -54,6 +55,14 @@ var (
 type Port struct {
 	Port     int64
 	Protocol string
+}
+
+func (p *Port) Empty() bool {
+	return p.Port == 0 && p.Protocol == ""
+}
+
+func (p *Port) String() string {
+	return fmt.Sprintf("%s:%d", p.Protocol, p.Port)
 }
 
 var rootCmd = &cobra.Command{

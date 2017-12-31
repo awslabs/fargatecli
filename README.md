@@ -256,6 +256,12 @@ a repository named for the task group. If the current working directory is a
 git repository, the container image will be tagged with the short ref of the
 HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 
+To use the service with a load balancer, a port must be specified when the
+service is created. Specify a port by passing the --port flag and a port
+expression of protocol:port-number. For example, if the service listens on port
+80 and uses HTTP, specify HTTP:80.  Valid protocols are HTTP, HTTPS, and TCP.
+You can only specify a single port.
+
 Services can optionally be configured to use a load balancer. To put a load
 balancer in front a service, pass the --lb flag with the name of a load
 balancer. If you specify a load balancer, you must also specify a port via the

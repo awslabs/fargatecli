@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"text/tabwriter"
 
@@ -65,9 +66,11 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 
 		console.KeyValue("    Rules", "\n")
 
-		for _, rule := range elbv2.DescribeRules(listener.Arn) {
-			var priority string
+		rules := elbv2.DescribeRules(listener.Arn)
 
+		sort.Slice(rules, func(i, j int) bool { return rules[i].Priority > rules[j].Priority })
+
+		for _, rule := range rules {
 			serviceName := fmt.Sprintf("Unknown (%s)", rule.TargetGroupArn)
 
 			if strings.Contains(rule.TargetGroupArn, fmt.Sprintf("/%s-default/", loadBalancer.Name)) {
@@ -80,13 +83,7 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 				}
 			}
 
-			if rule.Priority != "" {
-				priority = rule.Priority
-			} else {
-				priority = "0"
-			}
-
-			fmt.Fprintf(w, "     %s\t%s\t%s\n", priority, rule.String(), serviceName)
+			fmt.Fprintf(w, "     %d\t%s\t%s\n", rule.Priority, rule.String(), serviceName)
 
 			ruleCount++
 		}

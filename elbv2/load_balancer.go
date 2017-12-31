@@ -18,6 +18,7 @@ type LoadBalancer struct {
 	HostedZoneId     string
 	SecurityGroupIds []string
 	SubnetIds        []string
+	VpcId            string
 }
 
 type DescribeLoadBalancersInput struct {
@@ -122,6 +123,7 @@ func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBa
 						Arn:              aws.StringValue(loadBalancer.LoadBalancerArn),
 						DNSName:          aws.StringValue(loadBalancer.DNSName),
 						HostedZoneId:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
+						VpcId:            aws.StringValue(loadBalancer.VpcId),
 						Name:             aws.StringValue(loadBalancer.LoadBalancerName),
 						SecurityGroupIds: aws.StringValueSlice(loadBalancer.SecurityGroups),
 						State:            aws.StringValue(loadBalancer.State.Code),
