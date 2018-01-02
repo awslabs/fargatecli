@@ -7,6 +7,8 @@
   explictly passed.
 - service destroy will remove all references the service's target group and
   delete it
+- Fix git repo detection to properly use a git sha image tag rather than a
+  time stamp tag ([#6][issue-6])
 
 ## 0.2.0 (2017-12-31)
 
@@ -32,3 +34,4 @@
   lb list as the resource record was never generated.
 
 [issue-2]: https://github.com/jpignata/fargate/issues/2
+[issue-6]: https://github.com/jpignata/fargate/issues/6
