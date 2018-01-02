@@ -20,11 +20,10 @@ func GetShortSha() string {
 		cmd.Stderr = os.Stderr
 	}
 
-	if err := cmd.Start(); err != nil {
+	if err := cmd.Run(); err != nil {
 		console.ErrorExit(err, "Could not find git HEAD short SHA")
 	}
 
-	cmd.Wait()
 	buf.ReadFrom(stdout)
 
 	return strings.TrimSpace(buf.String())
@@ -34,11 +33,7 @@ func IsCwdGitRepo() bool {
 	console.Debug("Checking if current working directory is a git repository")
 
 	cmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
-	cmd.Run()
+	err := cmd.Run()
 
-	if err := cmd.Wait(); err == nil {
-		return true
-	} else {
-		return false
-	}
+	return err == nil
 }
