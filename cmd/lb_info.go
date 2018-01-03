@@ -49,7 +49,7 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 	console.KeyValue("DNS Name", "%s\n", loadBalancer.DNSName)
 	console.KeyValue("Subnets", "%s\n", strings.Join(loadBalancer.SubnetIds, ", "))
 	console.KeyValue("Security Groups", "%s\n", strings.Join(loadBalancer.SecurityGroupIds, ", "))
-	console.KeyValue("Listeners", "\n")
+	console.KeyValue("Ports", "\n")
 
 	for _, listener := range elbv2.GetListeners(loadBalancer.Arn) {
 		var ruleCount int
