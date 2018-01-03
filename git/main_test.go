@@ -27,10 +27,9 @@ func TestGetShortSha(t *testing.T) {
 	os.Chdir(dir)
 	defer os.Chdir(cwd)
 
-	gitInit := exec.Command("git", "init")
-	gitInit.Run()
+	exec.Command("git", "init").Run()
 
-	gitCommit := exec.Command("git", "commit", "--allow-empty", "--allow-empty-message", "--message", "''")
+	gitCommit := exec.Command("git", "commit", "--allow-empty", "--message", "dummy commit")
 	commitOutput, err := gitCommit.CombinedOutput()
 
 	if err != nil {
