@@ -76,7 +76,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 			console.KeyValue("  DNS Name", "%s\n", loadBalancer.DNSName)
 
 			if len(listeners) > 0 {
-				console.KeyValue("  Listeners", "\n")
+				console.KeyValue("  Ports", "\n")
 			}
 
 			for _, listener := range listeners {
