@@ -6,9 +6,10 @@
 - service create and task run will no longer create a repository if an image is
   explictly passed.
 - service destroy will remove all references the service's target group and
-  delete it
+  delete it.
 - Fix git repo detection to properly use a git sha image tag rather than a
-  time stamp tag ([#6][issue-6])
+  time stamp tag. ([#6][issue-6])
+- Fail fast if a user attempts to destroy a service scaled above 0.
 
 ## 0.2.0 (2017-12-31)
 

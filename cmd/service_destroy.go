@@ -38,6 +38,11 @@ func destroyService(operation *ServiceDestroyOperation) {
 	ecs := ECS.New(sess, clusterName)
 	service := ecs.DescribeService(operation.ServiceName)
 
+	if service.DesiredCount > 0 {
+		err := fmt.Errorf("%d tasks running, scale service to 0", service.DesiredCount)
+		console.ErrorExit(err, "Cannot destroy service %s", operation.ServiceName)
+	}
+
 	if service.TargetGroupArn != "" {
 		loadBalancerArn := elbv2.GetTargetGroupLoadBalancerArn(service.TargetGroupArn)
 		loadBalancer := elbv2.DescribeLoadBalancerByArn(loadBalancerArn)
