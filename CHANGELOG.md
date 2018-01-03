@@ -1,3 +1,10 @@
+## In Progress
+
+### Bug Fixes
+
+- Bail out early in service info if the requested service is not active meaning
+  it has been previously destroyed.
+
 ## 0.2.1 (2018-02-02)
 
 ### Bug Fixes

@@ -16,6 +16,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const statusActive = "ACTIVE"
+
 type ServiceInfoOperation struct {
 	ServiceName string
 }
@@ -54,6 +56,10 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	elbv2 := ELBV2.New(sess)
 	service := ecs.DescribeService(operation.ServiceName)
 	tasks := ecs.DescribeTasksForService(operation.ServiceName)
+
+	if service.Status != statusActive {
+		console.InfoExit("Service not found")
+	}
 
 	console.KeyValue("Service Name", "%s\n", operation.ServiceName)
 	console.KeyValue("Status", "\n")

@@ -36,6 +36,7 @@ type Service struct {
 	TargetGroupArn    string
 	TaskDefinitionArn string
 	SubnetIds         []string
+	Status            string
 }
 
 type Event struct {
@@ -201,13 +202,14 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 		}
 
 		s := Service{
-			Name:              aws.StringValue(service.ServiceName),
 			DesiredCount:      aws.Int64Value(service.DesiredCount),
+			Name:              aws.StringValue(service.ServiceName),
 			PendingCount:      aws.Int64Value(service.PendingCount),
 			RunningCount:      aws.Int64Value(service.RunningCount),
-			TaskDefinitionArn: aws.StringValue(service.TaskDefinition),
 			SecurityGroupIds:  aws.StringValueSlice(securityGroupIds),
+			Status:            aws.StringValue(service.Status),
 			SubnetIds:         aws.StringValueSlice(subnetIds),
+			TaskDefinitionArn: aws.StringValue(service.TaskDefinition),
 		}
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(service.TaskDefinition))
