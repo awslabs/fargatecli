@@ -34,7 +34,7 @@ func listLoadBalancers() {
 
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-	fmt.Fprintln(w, "NAME\tTYPE\tSTATUS\tDNS NAME\tLISTENERS")
+	fmt.Fprintln(w, "NAME\tTYPE\tSTATUS\tDNS NAME\tPORTS")
 
 	for _, loadBalancer := range loadBalancers {
 		var listeners []string
