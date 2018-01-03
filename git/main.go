@@ -1,7 +1,6 @@
 package git
 
 import (
-	"bytes"
 	"os"
 	"os/exec"
 	"strings"
@@ -10,28 +9,24 @@ import (
 )
 
 func GetShortSha() string {
-	console.Debug("Finding git HEAD short SHA")
+	var sha string
 
-	buf := new(bytes.Buffer)
 	cmd := exec.Command("git", "rev-parse", "--short", "HEAD")
-	stdout, _ := cmd.StdoutPipe()
 
 	if console.Verbose {
 		cmd.Stderr = os.Stderr
 	}
 
-	if err := cmd.Run(); err != nil {
+	if out, err := cmd.Output(); err == nil {
+		sha = strings.TrimSpace(string(out))
+	} else {
 		console.ErrorExit(err, "Could not find git HEAD short SHA")
 	}
 
-	buf.ReadFrom(stdout)
-
-	return strings.TrimSpace(buf.String())
+	return sha
 }
 
 func IsCwdGitRepo() bool {
-	console.Debug("Checking if current working directory is a git repository")
-
 	cmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
 	err := cmd.Run()
 
