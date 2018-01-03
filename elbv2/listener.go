@@ -90,21 +90,23 @@ func (elbv2 *ELBV2) CreateListener(i *CreateListenerInput) string {
 }
 
 func (elbv2 *ELBV2) ModifyLoadBalancerDefaultAction(lbArn, targetGroupArn string) {
-	console.Debug("Setting ELB listener default action")
-	listeners := elbv2.GetListeners(lbArn)
+	for _, listener := range elbv2.GetListeners(lbArn) {
+		elbv2.ModifyListenerDefaultAction(listener.Arn, targetGroupArn)
+	}
+}
+
+func (elbv2 *ELBV2) ModifyListenerDefaultAction(listenerArn, targetGroupArn string) {
 	action := &awselbv2.Action{
 		TargetGroupArn: aws.String(targetGroupArn),
 		Type:           aws.String(awselbv2.ActionTypeEnumForward),
 	}
 
-	for _, listener := range listeners {
-		elbv2.svc.ModifyListener(
-			&awselbv2.ModifyListenerInput{
-				ListenerArn:    aws.String(listener.Arn),
-				DefaultActions: []*awselbv2.Action{action},
-			},
-		)
-	}
+	elbv2.svc.ModifyListener(
+		&awselbv2.ModifyListenerInput{
+			ListenerArn:    aws.String(listenerArn),
+			DefaultActions: []*awselbv2.Action{action},
+		},
+	)
 }
 
 func (elbv2 *ELBV2) AddRule(lbArn, targetGroupArn string, rule Rule) {

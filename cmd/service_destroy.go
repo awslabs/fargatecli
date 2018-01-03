@@ -61,7 +61,7 @@ func destroyService(operation *ServiceDestroyOperation) {
 							)
 						}
 
-						elbv2.ModifyLoadBalancerDefaultAction(loadBalancer.Arn, defaultTargetGroupArn)
+						elbv2.ModifyListenerDefaultAction(listener.Arn, defaultTargetGroupArn)
 					} else {
 						elbv2.DeleteRule(rule.Arn)
 					}
