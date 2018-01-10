@@ -102,3 +102,9 @@ img.icon {
     margin-left: 0px;
   }
 }
+
+.video iframe {
+  width: 100%
+  margin: 0 auto;
+  margin-bottom: 30px;
+}
