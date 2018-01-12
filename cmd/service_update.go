@@ -36,7 +36,7 @@ func (o *ServiceUpdateOperation) Validate() {
 	err := validateCpuAndMemory(o.Cpu, o.Memory)
 
 	if err != nil {
-		console.ErrorExit(err, "Invalid settings: %d CPU units / %d MiB", o.Cpu, o.Memory)
+		console.ErrorExit(err, "Invalid settings: %s CPU units / %s MiB", o.Cpu, o.Memory)
 	}
 }
 
@@ -72,6 +72,8 @@ At least one of --cpu or --memory must be specified.`,
 			Memory:      flagServiceUpdateMemory,
 		}
 
+		operation.Validate()
+
 		updateService(operation)
 	},
 }
@@ -93,5 +95,5 @@ func updateService(operation *ServiceUpdateOperation) {
 	)
 
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, newTaskDefinitionArn)
-	console.Info("Updated service %s to %d CPU units / %d MiB", operation.ServiceName, operation.Cpu, operation.Memory)
+	console.Info("Updated service %s to %s CPU units / %s MiB", operation.ServiceName, operation.Cpu, operation.Memory)
 }
