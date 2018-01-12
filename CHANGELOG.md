@@ -1,11 +1,12 @@
-## In Progress
+## 0.2.2 (2018-01-11)
 
 ### Bug Fixes
 
+- Fix service update operation to properly validate and run. ([#11][issue-11])
 - Bail out early in service info if the requested service is not active meaning
   it has been previously destroyed.
 
-## 0.2.1 (2018-02-02)
+## 0.2.1 (2018-01-02)
 
 ### Bug Fixes
 
@@ -43,3 +44,4 @@
 
 [issue-2]: https://github.com/jpignata/fargate/issues/2
 [issue-6]: https://github.com/jpignata/fargate/issues/6
+[issue-11]: https://github.com/jpignata/fargate/issues/11
