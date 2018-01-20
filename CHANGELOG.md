@@ -2,7 +2,7 @@
 
 ### Features
 
-- Support**--task-role** flag in service create and task run to allow passing
+- Support **--task-role** flag in service create and task run to allow passing
   a role name for the tasks to assume. ([#8][issue-8])
 
 ### Enhancements
