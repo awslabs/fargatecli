@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/jpignata/fargate/console"
 )
@@ -279,5 +280,28 @@ func (ecs *ECS) UpdateServiceTaskDefinition(serviceName, taskDefinitionArn strin
 
 	if err != nil {
 		console.ErrorExit(err, "Could not update ECS service task definition")
+	}
+}
+
+func (ecs *ECS) RestartService(serviceName string) {
+	_, err := ecs.svc.UpdateService(
+		&awsecs.UpdateServiceInput{
+			Cluster:            aws.String(ecs.ClusterName),
+			Service:            aws.String(serviceName),
+			ForceNewDeployment: aws.Bool(true),
+		},
+	)
+
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "ServiceNotFoundException":
+				console.IssueExit("Service %s not found", serviceName)
+			default:
+				console.ErrorExit(err, "Could not restart service")
+			}
+		}
+
+		console.ErrorExit(err, "Could not restart service")
 	}
 }

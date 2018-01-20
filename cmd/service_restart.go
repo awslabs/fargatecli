@@ -34,10 +34,7 @@ func init() {
 
 func restartService(operation *ServiceRestartOperation) {
 	ecs := ECS.New(sess, clusterName)
-	service := ecs.DescribeService(operation.ServiceName)
-	taskDefinitionArn := ecs.IncrementTaskDefinition(service.TaskDefinitionArn)
 
-	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
+	ecs.RestartService(operation.ServiceName)
 	console.Info("Restarted %s", operation.ServiceName)
-
 }
