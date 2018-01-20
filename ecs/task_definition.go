@@ -23,6 +23,7 @@ type CreateTaskDefinitionInput struct {
 	Port             int64
 	LogGroupName     string
 	LogRegion        string
+	TaskRole         string
 	Type             string
 }
 
@@ -44,11 +45,11 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 	}
 
 	containerDefinition := &awsecs.ContainerDefinition{
-		Name:             aws.String(input.Name),
+		Environment:      input.Environment(),
 		Essential:        aws.Bool(true),
 		Image:            aws.String(input.Image),
-		Environment:      input.Environment(),
 		LogConfiguration: logConfiguration,
+		Name:             aws.String(input.Name),
 	}
 
 	if input.Port != 0 {
@@ -61,17 +62,21 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 		)
 	}
 
-	resp, err := ecs.svc.RegisterTaskDefinition(
-		&awsecs.RegisterTaskDefinitionInput{
-			Family:                  aws.String(fmt.Sprintf("%s_%s", input.Type, input.Name)),
-			RequiresCompatibilities: aws.StringSlice([]string{awsecs.CompatibilityFargate}),
-			ContainerDefinitions:    []*awsecs.ContainerDefinition{containerDefinition},
-			NetworkMode:             aws.String(awsecs.NetworkModeAwsvpc),
-			Memory:                  aws.String(input.Memory),
-			Cpu:                     aws.String(input.Cpu),
-			ExecutionRoleArn:        aws.String(input.ExecutionRoleArn),
-		},
-	)
+	taskDefinitionInput := &awsecs.RegisterTaskDefinitionInput{
+		ContainerDefinitions:    []*awsecs.ContainerDefinition{containerDefinition},
+		Cpu:                     aws.String(input.Cpu),
+		ExecutionRoleArn:        aws.String(input.ExecutionRoleArn),
+		Family:                  aws.String(fmt.Sprintf("%s_%s", input.Type, input.Name)),
+		Memory:                  aws.String(input.Memory),
+		NetworkMode:             aws.String(awsecs.NetworkModeAwsvpc),
+		RequiresCompatibilities: aws.StringSlice([]string{awsecs.CompatibilityFargate}),
+	}
+
+	if input.TaskRole != "" {
+		taskDefinitionInput.SetTaskRoleArn(input.TaskRole)
+	}
+
+	resp, err := ecs.svc.RegisterTaskDefinition(taskDefinitionInput)
 
 	if err != nil {
 		console.ErrorExit(err, "Couldn't register ECS task definition")
@@ -272,6 +277,7 @@ func (ecs *ECS) UpdateTaskDefinitionCpuAndMemory(taskDefinitionArn, cpu, memory 
 			Memory:                  taskDefinition.Memory,
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+			TaskRoleArn:             taskDefinition.TaskRoleArn,
 		},
 	)
 

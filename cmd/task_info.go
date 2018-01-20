@@ -83,6 +83,11 @@ func getTaskInfo(operation *TaskInfoOperation) {
 		console.KeyValue("    IP", "%s\n", eni.PublicIpAddress)
 		console.KeyValue("    CPU", "%s\n", task.Cpu)
 		console.KeyValue("    Memory", "%s\n", task.Memory)
+
+		if task.TaskRole != "" {
+			console.KeyValue("    Task Role", "%s\n", task.TaskRole)
+		}
+
 		console.KeyValue("    Subnet", "%s\n", task.SubnetId)
 		console.KeyValue("    Security Groups", "%s\n", strings.Join(eni.SecurityGroupIds, ", "))
 

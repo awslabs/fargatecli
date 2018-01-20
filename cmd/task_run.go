@@ -23,6 +23,7 @@ type TaskRunOperation struct {
 	SecurityGroupIds []string
 	SubnetIds        []string
 	TaskName         string
+	TaskRole         string
 }
 
 func (o *TaskRunOperation) Validate() {
@@ -49,6 +50,7 @@ var (
 	flagTaskRunMemory           string
 	flagTaskRunSecurityGroupIds []string
 	flagTaskRunSubnetIds        []string
+	flagTaskRunTaskRole         string
 )
 
 var taskRunCmd = &cobra.Command{
@@ -98,7 +100,11 @@ the task.
 
 By default, the task will be created in the default VPC and attached to the
 default VPC subnets for each availability zone. You can override this by
-specifying explicit subnets by passing the --subnet-id flag with a subnet ID.`,
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
+
+A task role can be optionally specified via the --task-role flag by providing
+eith a full IAM role ARN or the name of an IAM role. The tasks will be able to
+assume this role.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &TaskRunOperation{
@@ -109,6 +115,7 @@ specifying explicit subnets by passing the --subnet-id flag with a subnet ID.`,
 			SecurityGroupIds: flagTaskRunSecurityGroupIds,
 			SubnetIds:        flagTaskRunSubnetIds,
 			TaskName:         args[0],
+			TaskRole:         flagTaskRunTaskRole,
 		}
 
 		operation.SetEnvVars(flagTaskRunEnvVars)
@@ -126,7 +133,7 @@ func init() {
 	taskRunCmd.Flags().StringVarP(&flagTaskRunMemory, "memory", "m", "512", "Amount of MiB to allocate for each task")
 	taskRunCmd.Flags().StringSliceVar(&flagTaskRunSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the task (can be specified multiple times)")
 	taskRunCmd.Flags().StringSliceVar(&flagTaskRunSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the task (can be specified multiple times)")
-
+	taskRunCmd.Flags().StringVarP(&flagTaskRunTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the tasks can assume")
 	taskCmd.AddCommand(taskRunCmd)
 }
 
@@ -183,6 +190,7 @@ func runTask(operation *TaskRunOperation) {
 			Memory:           operation.Memory,
 			Name:             operation.TaskName,
 			Type:             typeTask,
+			TaskRole:         operation.TaskRole,
 		},
 	)
 

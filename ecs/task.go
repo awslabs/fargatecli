@@ -19,19 +19,20 @@ const (
 )
 
 type Task struct {
-	DeploymentId     string
-	TaskId           string
 	Cpu              string
 	CreatedAt        time.Time
+	DeploymentId     string
 	DesiredStatus    string
+	EniId            string
+	EnvVars          []EnvVar
 	Image            string
 	LastStatus       string
 	Memory           string
-	EniId            string
-	StartedBy        string
-	EnvVars          []EnvVar
 	SecurityGroupIds []string
+	StartedBy        string
 	SubnetId         string
+	TaskId           string
+	TaskRole         string
 }
 
 func (t *Task) RunningFor() time.Duration {
@@ -215,6 +216,7 @@ func (ecs *ECS) DescribeTasks(taskIds []string) []Task {
 
 		taskDefinition := ecs.DescribeTaskDefinition(aws.StringValue(t.TaskDefinitionArn))
 		task.Image = aws.StringValue(taskDefinition.ContainerDefinitions[0].Image)
+		task.TaskRole = aws.StringValue(taskDefinition.TaskRoleArn)
 
 		for _, environment := range taskDefinition.ContainerDefinitions[0].Environment {
 			task.EnvVars = append(

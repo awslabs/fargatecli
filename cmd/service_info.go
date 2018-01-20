@@ -69,6 +69,11 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 	console.KeyValue("Image", "%s\n", service.Image)
 	console.KeyValue("Cpu", "%s\n", service.Cpu)
 	console.KeyValue("Memory", "%s\n", service.Memory)
+
+	if service.TaskRole != "" {
+		console.KeyValue("Task Role", "%s\n", service.TaskRole)
+	}
+
 	console.KeyValue("Subnets", "%s\n", strings.Join(service.SubnetIds, ", "))
 	console.KeyValue("Security Groups", "%s\n", strings.Join(service.SecurityGroupIds, ", "))
 

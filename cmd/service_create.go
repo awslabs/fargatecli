@@ -32,6 +32,7 @@ type ServiceCreateOperation struct {
 	SecurityGroupIds []string
 	ServiceName      string
 	SubnetIds        []string
+	TaskRole         string
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -141,11 +142,12 @@ var (
 	flagServiceCreateImage            string
 	flagServiceCreateLb               string
 	flagServiceCreateMemory           string
+	flagServiceCreateNum              int64
 	flagServiceCreatePort             string
 	flagServiceCreateRules            []string
-	flagServiceCreateNum              int64
 	flagServiceCreateSecurityGroupIds []string
 	flagServiceCreateSubnetIds        []string
+	flagServiceCreateTaskRole         string
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -210,7 +212,11 @@ the service.
 
 By default, the service will be created in the default VPC and attached
 to the default VPC subnets for each availability zone. You can override this by
-specifying explicit subnets by passing the --subnet-id flag with a subnet ID.`,
+specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
+
+A task role can be optionally specified via the --task-role flag by providing
+eith a full IAM role ARN or the name of an IAM role. The tasks run by the
+service will be able to assume this role.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceCreateOperation{
@@ -221,6 +227,7 @@ specifying explicit subnets by passing the --subnet-id flag with a subnet ID.`,
 			SecurityGroupIds: flagServiceCreateSecurityGroupIds,
 			ServiceName:      args[0],
 			SubnetIds:        flagServiceCreateSubnetIds,
+			TaskRole:         flagServiceCreateTaskRole,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -255,6 +262,7 @@ func init() {
 	serviceCreateCmd.Flags().Int64VarP(&flagServiceCreateNum, "num", "n", 1, "Number of tasks instances to keep running")
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the service (can be specified multiple times)")
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the service (can be specified multiple times)")
+	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the service's tasks can assume")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
@@ -335,6 +343,7 @@ func createService(operation *ServiceCreateOperation) {
 			Port:             operation.Port.Port,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
+			TaskRole:         operation.TaskRole,
 			Type:             typeService,
 		},
 	)

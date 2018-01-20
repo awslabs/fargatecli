@@ -35,6 +35,7 @@ type Service struct {
 	SecurityGroupIds  []string
 	TargetGroupArn    string
 	TaskDefinitionArn string
+	TaskRole          string
 	SubnetIds         []string
 	Status            string
 }
@@ -216,6 +217,7 @@ func (ecs *ECS) DescribeServices(serviceArns []string) []Service {
 
 		s.Cpu = aws.StringValue(taskDefinition.Cpu)
 		s.Memory = aws.StringValue(taskDefinition.Memory)
+		s.TaskRole = aws.StringValue(taskDefinition.TaskRoleArn)
 
 		if len(service.LoadBalancers) > 0 {
 			s.TargetGroupArn = aws.StringValue(service.LoadBalancers[0].TargetGroupArn)
