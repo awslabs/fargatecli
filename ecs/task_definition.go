@@ -62,21 +62,18 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 		)
 	}
 
-	taskDefinitionInput := &awsecs.RegisterTaskDefinitionInput{
-		ContainerDefinitions:    []*awsecs.ContainerDefinition{containerDefinition},
-		Cpu:                     aws.String(input.Cpu),
-		ExecutionRoleArn:        aws.String(input.ExecutionRoleArn),
-		Family:                  aws.String(fmt.Sprintf("%s_%s", input.Type, input.Name)),
-		Memory:                  aws.String(input.Memory),
-		NetworkMode:             aws.String(awsecs.NetworkModeAwsvpc),
-		RequiresCompatibilities: aws.StringSlice([]string{awsecs.CompatibilityFargate}),
-	}
-
-	if input.TaskRole != "" {
-		taskDefinitionInput.SetTaskRoleArn(input.TaskRole)
-	}
-
-	resp, err := ecs.svc.RegisterTaskDefinition(taskDefinitionInput)
+	resp, err := ecs.svc.RegisterTaskDefinition(
+		&awsecs.RegisterTaskDefinitionInput{
+			ContainerDefinitions:    []*awsecs.ContainerDefinition{containerDefinition},
+			Cpu:                     aws.String(input.Cpu),
+			ExecutionRoleArn:        aws.String(input.ExecutionRoleArn),
+			Family:                  aws.String(fmt.Sprintf("%s_%s", input.Type, input.Name)),
+			Memory:                  aws.String(input.Memory),
+			NetworkMode:             aws.String(awsecs.NetworkModeAwsvpc),
+			RequiresCompatibilities: aws.StringSlice([]string{awsecs.CompatibilityFargate}),
+			TaskRoleArn:             aws.String(input.TaskRole),
+		},
+	)
 
 	if err != nil {
 		console.ErrorExit(err, "Couldn't register ECS task definition")
@@ -137,28 +134,7 @@ func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) strin
 			Memory:                  taskDefinition.Memory,
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
-		},
-	)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not register ECS task definition")
-	}
-
-	return aws.StringValue(resp.TaskDefinition.TaskDefinitionArn)
-}
-
-func (ecs *ECS) IncrementTaskDefinition(taskDefinitionArn string) string {
-	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
-
-	resp, err := ecs.svc.RegisterTaskDefinition(
-		&awsecs.RegisterTaskDefinitionInput{
-			ContainerDefinitions:    taskDefinition.ContainerDefinitions,
-			Cpu:                     taskDefinition.Cpu,
-			ExecutionRoleArn:        taskDefinition.ExecutionRoleArn,
-			Family:                  taskDefinition.Family,
-			Memory:                  taskDefinition.Memory,
-			NetworkMode:             taskDefinition.NetworkMode,
-			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+			TaskRoleArn:             taskDefinition.TaskRoleArn,
 		},
 	)
 
@@ -193,6 +169,7 @@ func (ecs *ECS) AddEnvVarsToTaskDefinition(taskDefinitionArn string, envVars []E
 			Memory:                  taskDefinition.Memory,
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+			TaskRoleArn:             taskDefinition.TaskRoleArn,
 		},
 	)
 
@@ -230,6 +207,7 @@ func (ecs *ECS) RemoveEnvVarsFromTaskDefinition(taskDefinitionArn string, keys [
 			Memory:                  taskDefinition.Memory,
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
+			TaskRoleArn:             taskDefinition.TaskRoleArn,
 		},
 	)
 
