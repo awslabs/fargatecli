@@ -1,3 +1,20 @@
+## 0.2.3 (2018-01-19)
+
+### Features
+
+- Support**--task-role** flag in service create and task run to allow passing
+  a role name for the tasks to assume. ([#8][issue-8])
+
+### Enhancements
+
+- Use the `ForceNewDeployment` feature of `UpdateService` in service restart
+  instead of incrementing the task definition. ([#14][issue-14])
+
+### Bug Fixes
+
+- Fixed issue where we'd stomp on an existing task role on service updates like
+  deployments or environment variable changes. ([#8][issue-8])
+
 ## 0.2.2 (2018-01-11)
 
 ### Bug Fixes
@@ -44,4 +61,6 @@
 
 [issue-2]: https://github.com/jpignata/fargate/issues/2
 [issue-6]: https://github.com/jpignata/fargate/issues/6
+[issue-8]: https://github.com/jpignata/fargate/issues/8
 [issue-11]: https://github.com/jpignata/fargate/issues/11
+[issue-14]: https://github.com/jpignata/fargate/issues/14
