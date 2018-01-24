@@ -4,6 +4,10 @@
 
 Deploy serverless containers onto the cloud from your command line
 
+## Screencast
+
+[![fargate CLI screencast](http://img.youtube.com/vi/P6iY6ovhbfc/0.jpg)](http://www.youtube.com/watch?v=P6iY6ovhbfc)
+
 ## Usage
 
 ### Configuration
@@ -75,7 +79,8 @@ List running task groups
 ```console
 fargate task run <task-group-name> [--num <count>] [--cpu <cpu-units>] [--memory <MiB>]
                                    [--image <docker-image>] [--env <key=value>]
-                                   [--subnet-id <subnet-id>] [--security-group-id <security-group-id>]
+                                   [--task-role <task-role>] [--subnet-id <subnet-id>]
+                                   [--security-group-id <security-group-id>]
 ```
 
 Run new tasks
@@ -123,6 +128,10 @@ the task.
 By default, the task will be created in the default VPC and attached to the
 default VPC subnets for each availability zone. You can override this by
 specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
+
+A task role can be optionally specified via the --task-role flag by providing
+eith a full IAM role ARN or the name of an IAM role. The tasks will be able to
+assume this role.
 
 ##### fargate task info
 
@@ -228,7 +237,8 @@ List services
 fargate service create <service name> [--cpu <cpu units>] [--memory <MiB>] [--port <port-expression>]
                                       [--lb <load-balancer-name>] [--rule <rule-expression>]
                                       [--image <docker-image>] [--env <key=value>] [--num <count>]
-                                      [--security-group-id <security-group-id>] [--subnet-id <subnet-id]
+                                      [--task-role <task-role>] [--subnet-id <subnet-id>]
+                                      [--security-group-id <security-group-id>]
 ```
 
 Create a new service
@@ -291,6 +301,10 @@ the service.
 By default, the service will be created in the default VPC and attached
 to the default VPC subnets for each availability zone. You can override this by
 specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
+
+A task role can be optionally specified via the --task-role flag by providing
+eith a full IAM role ARN or the name of an IAM role. The tasks run by the
+service will be able to assume this role.
 
 ##### fargate service deploy
 
