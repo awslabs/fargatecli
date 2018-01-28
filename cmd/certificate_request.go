@@ -7,11 +7,12 @@ import (
 )
 
 type CertificateRequestOperation struct {
-	DomainName string
+	ACM        ACM.ACMClient
 	Aliases    []string
+	DomainName string
 }
 
-func (o *CertificateRequestOperation) Validate() {
+func (o CertificateRequestOperation) Validate() {
 	validateDomainName(o.DomainName)
 
 	for _, alias := range o.Aliases {
@@ -21,6 +22,19 @@ func (o *CertificateRequestOperation) Validate() {
 			console.ErrorExit(err, "Invalid domain name")
 		}
 	}
+}
+
+func (o CertificateRequestOperation) Execute() {
+	_, err := o.ACM.RequestCertificate(o.DomainName, o.Aliases)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not request certificate")
+	}
+
+	console.Info("Requested certificate for %s", o.DomainName)
+	console.Info("  You must validate ownership of the domain name for the certificate to be issued")
+	console.Info("  If your domain is hosted in Amazon Route53, you can do this by running: `fargate certificate validate %s`", o.DomainName)
+	console.Info("  Otherwise you must manually create the DNS record, see: `fargate certificate info %s`", o.DomainName)
 }
 
 var flagCertificateRequestAliases []string
@@ -41,26 +55,17 @@ raised by AWS support.`,
 		operation := &CertificateRequestOperation{
 			DomainName: args[0],
 			Aliases:    flagCertificateRequestAliases,
+			ACM:        ACM.New(sess),
 		}
 
 		operation.Validate()
-
-		requestCertificate(operation)
+		operation.Execute()
 	},
 }
 
 func init() {
-	certificateRequestCmd.Flags().StringSliceVarP(&flagCertificateRequestAliases, "alias", "a", []string{}, "Additional domain names to be included in the certificate (can be specified multiple times)")
+	certificateRequestCmd.Flags().StringSliceVarP(&flagCertificateRequestAliases, "alias", "a", []string{},
+		`Additional domain names to be included in the certificate (can be specified multiple times)`)
 
 	certificateCmd.AddCommand(certificateRequestCmd)
-}
-
-func requestCertificate(operation *CertificateRequestOperation) {
-	acm := ACM.New(sess)
-	acm.RequestCertificate(operation.DomainName, operation.Aliases)
-
-	console.Info("Requested certificate for %s", operation.DomainName)
-	console.Info("  You must validate ownership of the domain name for the certificate to be issued")
-	console.Info("  If your domain is hosted in Amazon Route53, you can do this by running: `fargate certificate validate %s`", operation.DomainName)
-	console.Info("  Otherwise you must manually create the DNS record, see: `fargate certificate info %s`", operation.DomainName)
 }

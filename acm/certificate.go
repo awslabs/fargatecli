@@ -126,7 +126,7 @@ func ValidateAlias(domainName string) error {
 	return nil
 }
 
-func (acm *ACM) RequestCertificate(domainName string, aliases []string) {
+func (acm ACM) RequestCertificate(domainName string, aliases []string) (string, error) {
 	console.Debug("Requesting ACM certificate")
 
 	requestCertificateInput := &awsacm.RequestCertificateInput{
@@ -138,11 +138,13 @@ func (acm *ACM) RequestCertificate(domainName string, aliases []string) {
 		requestCertificateInput.SetSubjectAlternativeNames(aws.StringSlice(aliases))
 	}
 
-	_, err := acm.svc.RequestCertificate(requestCertificateInput)
+	resp, err := acm.svc.RequestCertificate(requestCertificateInput)
 
 	if err != nil {
-		console.ErrorExit(err, "Couldn't request ACM certificate")
+		return "", err
 	}
+
+	return aws.StringValue(resp.CertificateArn), nil
 }
 
 func (acm *ACM) ListCertificates() []*Certificate {
