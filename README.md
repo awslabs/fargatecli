@@ -640,7 +640,7 @@ fargate certificate destroy <domain-name>
 
 Destroy certificate
 
-In order to destroy a service, it must not be in use by any load balancers or
+In order to destroy a certificate, it must not be in use by any load balancers or
 any other AWS resources.
 
 [region-table]: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
@@ -650,4 +650,4 @@ any other AWS resources.
 [go-iam-roles-for-ec2-instances]: http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#iam-roles-for-ec2-instances
 [go-specifying-credentials]: http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 [cwl-filter-expression]: http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events
-[acm-import-cert]: http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html 
+[acm-import-cert]: http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html

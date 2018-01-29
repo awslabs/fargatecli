@@ -15,7 +15,7 @@ var certificateDestroyCmd = &cobra.Command{
 	Short: "Destroy certificate",
 	Long: `Destroy certificate
 
-In order to destroy a service, it must not be in use by any load balancers or
+In order to destroy a certificate, it must not be in use by any load balancers or
 any other AWS resources.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

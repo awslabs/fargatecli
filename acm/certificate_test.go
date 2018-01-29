@@ -22,8 +22,8 @@ func TestRequestCertificate(t *testing.T) {
 
 	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
 
-	acm := ACM{
-		svc: mockACMAPI,
+	acm := SDKClient{
+		client: mockACMAPI,
 	}
 
 	i := &awsacm.RequestCertificateInput{
@@ -64,8 +64,8 @@ func TestRequestWithLimitError(t *testing.T) {
 
 	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
 
-	acm := ACM{
-		svc: mockACMAPI,
+	acm := SDKClient{
+		client: mockACMAPI,
 	}
 
 	i := &awsacm.RequestCertificateInput{

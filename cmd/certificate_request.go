@@ -1,40 +1,59 @@
 package cmd
 
 import (
-	ACM "github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
+	"github.com/jpignata/fargate/acm"
 	"github.com/spf13/cobra"
 )
 
-type CertificateRequestOperation struct {
-	ACM        ACM.ACMClient
-	Aliases    []string
-	DomainName string
+type certificateRequestOperation struct {
+	acm        acm.Client
+	aliases    []string
+	output     Output
+	domainName string
 }
 
-func (o CertificateRequestOperation) Validate() {
-	validateDomainName(o.DomainName)
+func (o certificateRequestOperation) execute() {
+	if errs := o.validate(); len(errs) > 0 {
+		o.output.Fatals(errs, "Invalid certificate request parameters")
 
-	for _, alias := range o.Aliases {
-		err := ACM.ValidateAlias(alias)
+		return
+	}
 
-		if err != nil {
-			console.ErrorExit(err, "Invalid domain name")
+	o.output.Debug("Requesting certificate [API=acm Action=RequestCertificate]")
+
+	if arn, err := o.acm.RequestCertificate(o.domainName, o.aliases); err == nil {
+		o.output.Debug("Requested certificate [ARN=%s]", arn)
+	} else {
+		o.output.Fatal(err, "Could not request certificate")
+
+		return
+	}
+
+	o.output.Info("Requested certificate for %s", o.domainName)
+	o.output.LineBreak()
+	o.output.Say("You must validate ownership of the domain name for the certificate to be issued.", 0)
+	o.output.LineBreak()
+	o.output.Say("If your domain is hosted using Amazon Route 53, this can be done automatically by running:", 0)
+	o.output.Say("fargate certificate validate %s", 1, o.domainName)
+	o.output.LineBreak()
+	o.output.Say("If not, you must manually create the DNS records returned by running:", 0)
+	o.output.Say("fargate certificate info %s", 1, o.domainName)
+}
+
+func (o certificateRequestOperation) validate() []error {
+	var errors []error
+
+	if err := acm.ValidateDomainName(o.domainName); err != nil {
+		errors = append(errors, err)
+	}
+
+	for _, alias := range o.aliases {
+		if err := acm.ValidateAlias(alias); err != nil {
+			errors = append(errors, err)
 		}
 	}
-}
 
-func (o CertificateRequestOperation) Execute() {
-	_, err := o.ACM.RequestCertificate(o.DomainName, o.Aliases)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not request certificate")
-	}
-
-	console.Info("Requested certificate for %s", o.DomainName)
-	console.Info("  You must validate ownership of the domain name for the certificate to be issued")
-	console.Info("  If your domain is hosted in Amazon Route53, you can do this by running: `fargate certificate validate %s`", o.DomainName)
-	console.Info("  Otherwise you must manually create the DNS record, see: `fargate certificate info %s`", o.DomainName)
+	return errors
 }
 
 var flagCertificateRequestAliases []string
@@ -52,14 +71,12 @@ Manager has a limit of 10 domain names per certificate, but this limit can be
 raised by AWS support.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		operation := &CertificateRequestOperation{
-			DomainName: args[0],
-			Aliases:    flagCertificateRequestAliases,
-			ACM:        ACM.New(sess),
-		}
-
-		operation.Validate()
-		operation.Execute()
+		certificateRequestOperation{
+			acm:        acm.New(sess),
+			aliases:    flagCertificateRequestAliases,
+			output:     output,
+			domainName: args[0],
+		}.execute()
 	},
 }
 
