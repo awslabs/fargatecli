@@ -233,29 +233,16 @@ func (acm *SDKClient) ImportCertificate(certificate, privateKey, certificateChai
 	}
 }
 
-func (acm *SDKClient) DeleteCertificate(domainName string) {
-	var err error
-
-	certificates := acm.listCertificates()
-
-	for _, certificate := range certificates {
-		if certificate.DomainName == domainName {
-			_, err := acm.client.DeleteCertificate(
-				&awsacm.DeleteCertificateInput{
-					CertificateArn: aws.String(certificate.Arn),
-				},
-			)
-
-			if err != nil {
-				console.ErrorExit(err, "Couldn't destroy certificate")
-			}
-
-			return
-		}
+func (acm SDKClient) DeleteCertificate(arn string) error {
+	input := &awsacm.DeleteCertificateInput{
+		CertificateArn: aws.String(arn),
 	}
 
-	err = fmt.Errorf("Certificate for %s not found", domainName)
-	console.ErrorExit(err, "Couldn't destroy certificate")
+	if _, err := acm.client.DeleteCertificate(input); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (acm *SDKClient) describeCertificate(arn string) *awsacm.CertificateDetail {
@@ -270,6 +257,27 @@ func (acm *SDKClient) describeCertificate(arn string) *awsacm.CertificateDetail 
 	}
 
 	return resp.Certificate
+}
+
+func (acm SDKClient) GetCertificateArns(domainName string) ([]string, error) {
+	var arns []string
+
+	input := &awsacm.ListCertificatesInput{}
+	handler := func(resp *awsacm.ListCertificatesOutput, lastPage bool) bool {
+		for _, c := range resp.CertificateSummaryList {
+			if aws.StringValue(c.DomainName) == domainName {
+				arns = append(arns, aws.StringValue(c.CertificateArn))
+			}
+		}
+
+		return true
+	}
+
+	if err := acm.client.ListCertificatesPages(input, handler); err != nil {
+		return arns, err
+	}
+
+	return arns, nil
 }
 
 func (acm *SDKClient) listCertificates() []*Certificate {

@@ -1,13 +1,46 @@
 package cmd
 
 import (
-	ACM "github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
+	"github.com/jpignata/fargate/acm"
 	"github.com/spf13/cobra"
 )
 
-type CertificateDestroyOperation struct {
-	DomainName string
+type certificateDestroyOperation struct {
+	acm        acm.Client
+	domainName string
+	output     Output
+}
+
+func (o certificateDestroyOperation) execute() {
+	o.output.Debug("Listing certificates [API=acm Action=ListCertificate]")
+
+	certificateArns, err := o.acm.GetCertificateArns(o.domainName)
+
+	switch {
+	case err != nil:
+		o.output.Fatal(err, "Could not destroy certificate")
+		return
+	case len(certificateArns) == 0:
+		o.output.Fatal(nil, "Could not find certificate for %s", o.domainName)
+		return
+	case len(certificateArns) > 1:
+		o.output.Fatal(
+			nil,
+			"Found %d certificates for %s, for safety please destroy the one you intend via the AWS CLI or AWS Management Console",
+			len(certificateArns),
+			o.domainName,
+		)
+		return
+	}
+
+	o.output.Debug("Deleting certificate [API=acm Action=DeleteCertificate ARN=%s]", certificateArns[0])
+
+	if err := o.acm.DeleteCertificate(certificateArns[0]); err != nil {
+		o.output.Fatal(err, "Could not destroy certificate")
+		return
+	}
+
+	o.output.Info("Destroyed certificate %s", o.domainName)
 }
 
 var certificateDestroyCmd = &cobra.Command{
@@ -19,21 +52,14 @@ In order to destroy a certificate, it must not be in use by any load balancers o
 any other AWS resources.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		operation := &CertificateDestroyOperation{
-			DomainName: args[0],
-		}
-
-		destroyCertificate(operation)
+		certificateDestroyOperation{
+			acm:        acm.New(sess),
+			domainName: args[0],
+			output:     output,
+		}.execute()
 	},
 }
 
 func init() {
 	certificateCmd.AddCommand(certificateDestroyCmd)
-}
-
-func destroyCertificate(operation *CertificateDestroyOperation) {
-	acm := ACM.New(sess)
-
-	acm.DeleteCertificate(operation.DomainName)
-	console.Info("Destroyed certificate %s", operation.DomainName)
 }

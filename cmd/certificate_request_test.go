@@ -18,17 +18,17 @@ func TestCertificateRequestOperation(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	mockACMClient := client.NewMockACMClient(mockCtrl)
+	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
 	operation := certificateRequestOperation{
-		acm:        mockACMClient,
+		acm:        mockClient,
 		aliases:    aliases,
 		domainName: domainName,
 		output:     mockOutput,
 	}
 
-	mockACMClient.EXPECT().RequestCertificate(domainName, aliases).Return(certificateArn, nil)
+	mockClient.EXPECT().RequestCertificate(domainName, aliases).Return(certificateArn, nil)
 
 	operation.execute()
 
@@ -44,17 +44,17 @@ func TestCertificateRequestOperationError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	mockACMClient := client.NewMockACMClient(mockCtrl)
+	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
 	operation := certificateRequestOperation{
-		acm:        mockACMClient,
+		acm:        mockClient,
 		aliases:    aliases,
 		domainName: domainName,
 		output:     mockOutput,
 	}
 
-	mockACMClient.EXPECT().RequestCertificate(domainName, aliases).Return("", fmt.Errorf("Oops, something went wrong."))
+	mockClient.EXPECT().RequestCertificate(domainName, aliases).Return("", fmt.Errorf("Oops, something went wrong."))
 
 	operation.execute()
 
@@ -71,11 +71,11 @@ func TestCertificateRequestOperationInvalid(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	mockACMClient := client.NewMockACMClient(mockCtrl)
+	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
 	operation := certificateRequestOperation{
-		acm:        mockACMClient,
+		acm:        mockClient,
 		domainName: "z", // Invalid
 		output:     mockOutput,
 	}

@@ -48,7 +48,7 @@ func TestRequestCertificate(t *testing.T) {
 	}
 }
 
-func TestRequestWithLimitError(t *testing.T) {
+func TestRequestCertificateWithLimitError(t *testing.T) {
 	var aliases []string
 
 	domainName := "*.example.com"

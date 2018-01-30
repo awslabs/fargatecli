@@ -8,6 +8,8 @@ import (
 
 type Client interface {
 	RequestCertificate(string, []string) (string, error)
+	DeleteCertificate(string) error
+	GetCertificateArns(string) ([]string, error)
 }
 
 type SDKClient struct {

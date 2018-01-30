@@ -22,14 +22,15 @@ const (
 	defaultClusterName = "fargate"
 	defaultRegion      = "us-east-1"
 
-	typeApplication       string = "application"
-	typeNetwork           string = "network"
-	protocolHttp          string = "HTTP"
-	protocolHttps         string = "HTTPS"
-	protocolTcp           string = "TCP"
-	mebibytesInGibibyte   int64  = 1024
-	validProtocolsPattern string = "(?i)\\ATCP|HTTP(S)?\\z"
-	validRuleTypesPattern string = "(?i)^host|path$"
+	mebibytesInGibibyte   = 1024
+	protocolHttp          = "HTTP"
+	protocolHttps         = "HTTPS"
+	protocolTcp           = "TCP"
+	runtimeMacOS          = "darwin"
+	typeApplication       = "application"
+	typeNetwork           = "network"
+	validProtocolsPattern = "(?i)\\ATCP|HTTP(S)?\\z"
+	validRuleTypesPattern = "(?i)^host|path$"
 )
 
 var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings
@@ -98,7 +99,7 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 				output.Color = true
 			}
 
-			if runtime.GOOS == "darwin" && !noEmoji {
+			if runtime.GOOS == runtimeMacOS && !noEmoji {
 				output.Emoji = true
 			}
 		}
@@ -178,8 +179,11 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	rootCmd.PersistentFlags().StringVar(&region, "region", "", `AWS region (default "us-east-1")`)
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Disable color output")
-	rootCmd.PersistentFlags().BoolVar(&noEmoji, "no-emoji", false, "Disable emoji output")
 	rootCmd.PersistentFlags().StringVar(&clusterName, "cluster", "", `ECS cluster name (default "fargate")`)
+
+	if runtime.GOOS == runtimeMacOS {
+		rootCmd.PersistentFlags().BoolVar(&noEmoji, "no-emoji", false, "Disable emoji output")
+	}
 }
 
 func inflatePort(src string) (port Port) {
