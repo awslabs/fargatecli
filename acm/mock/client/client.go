@@ -6,6 +6,7 @@ package client
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	acm "github.com/jpignata/fargate/acm"
 	reflect "reflect"
 )
 
@@ -44,17 +45,17 @@ func (mr *MockClientMockRecorder) DeleteCertificate(arg0 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCertificate", reflect.TypeOf((*MockClient)(nil).DeleteCertificate), arg0)
 }
 
-// GetCertificateArns mocks base method
-func (m *MockClient) GetCertificateArns(arg0 string) ([]string, error) {
-	ret := m.ctrl.Call(m, "GetCertificateArns", arg0)
-	ret0, _ := ret[0].([]string)
+// ListCertificates2 mocks base method
+func (m *MockClient) ListCertificates2() (acm.Certificates, error) {
+	ret := m.ctrl.Call(m, "ListCertificates2")
+	ret0, _ := ret[0].(acm.Certificates)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetCertificateArns indicates an expected call of GetCertificateArns
-func (mr *MockClientMockRecorder) GetCertificateArns(arg0 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCertificateArns", reflect.TypeOf((*MockClient)(nil).GetCertificateArns), arg0)
+// ListCertificates2 indicates an expected call of ListCertificates2
+func (mr *MockClientMockRecorder) ListCertificates2() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCertificates2", reflect.TypeOf((*MockClient)(nil).ListCertificates2))
 }
 
 // RequestCertificate mocks base method

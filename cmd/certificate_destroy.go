@@ -14,12 +14,16 @@ type certificateDestroyOperation struct {
 func (o certificateDestroyOperation) execute() {
 	o.output.Debug("Listing certificates [API=acm Action=ListCertificate]")
 
-	certificateArns, err := o.acm.GetCertificateArns(o.domainName)
+	certificates, err := o.acm.ListCertificates2()
 
-	switch {
-	case err != nil:
+	if err != nil {
 		o.output.Fatal(err, "Could not destroy certificate")
 		return
+	}
+
+	certificateArns := certificates.GetCertificateArns(o.domainName)
+
+	switch {
 	case len(certificateArns) == 0:
 		o.output.Fatal(nil, "Could not find certificate for %s", o.domainName)
 		return

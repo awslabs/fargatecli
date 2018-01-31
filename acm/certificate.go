@@ -110,6 +110,20 @@ func ValidateDomainName(domainName string) error {
 	return nil
 }
 
+type Certificates []Certificate
+
+func (cs Certificates) GetCertificateArns(domainName string) []string {
+	var certificateArns []string
+
+	for _, c := range cs {
+		if c.DomainName == domainName {
+			certificateArns = append(certificateArns, c.Arn)
+		}
+	}
+
+	return certificateArns
+}
+
 func ValidateAlias(alias string) error {
 	if len(alias) < 1 || len(alias) > 253 {
 		return fmt.Errorf("%s: An alias must be between 1 and 253 characters in length", alias)
@@ -146,12 +160,12 @@ func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (st
 	return aws.StringValue(resp.CertificateArn), nil
 }
 
-func (acm *SDKClient) ListCertificates() []*Certificate {
+func (acm *SDKClient) ListCertificates() []Certificate {
 	var wg sync.WaitGroup
 
 	ctx := context.Background()
-	ch := make(chan *Certificate)
-	certificates := acm.listCertificates()
+	ch := make(chan Certificate)
+	certificates, _ := acm.ListCertificates2()
 	limiter := rate.NewLimiter(10, 1)
 
 	for i := 0; i < 4; i++ {
@@ -183,7 +197,9 @@ func (acm *SDKClient) ListCertificates() []*Certificate {
 func (acm *SDKClient) DescribeCertificate(domainName string) *Certificate {
 	var certificate *Certificate
 
-	for _, c := range acm.listCertificates() {
+	certificates, _ := acm.ListCertificates2()
+
+	for _, c := range certificates {
 		if c.DomainName == domainName {
 			certificateDetail := acm.describeCertificate(c.Arn)
 			certificate = c.Inflate(certificateDetail)
@@ -203,7 +219,9 @@ func (acm *SDKClient) DescribeCertificate(domainName string) *Certificate {
 func (acm *SDKClient) ListCertificateDomainNames(certificateArns []string) []string {
 	var domainNames []string
 
-	for _, certificate := range acm.listCertificates() {
+	certificates, _ := acm.ListCertificates2()
+
+	for _, certificate := range certificates {
 		for _, certificateArn := range certificateArns {
 			if certificate.Arn == certificateArn {
 				domainNames = append(domainNames, certificate.DomainName)
@@ -259,51 +277,26 @@ func (acm *SDKClient) describeCertificate(arn string) *awsacm.CertificateDetail 
 	return resp.Certificate
 }
 
-func (acm SDKClient) GetCertificateArns(domainName string) ([]string, error) {
-	var arns []string
+func (acm SDKClient) ListCertificates2() (Certificates, error) {
+	var certificates Certificates
 
 	input := &awsacm.ListCertificatesInput{}
 	handler := func(resp *awsacm.ListCertificatesOutput, lastPage bool) bool {
-		for _, c := range resp.CertificateSummaryList {
-			if aws.StringValue(c.DomainName) == domainName {
-				arns = append(arns, aws.StringValue(c.CertificateArn))
+		for _, cs := range resp.CertificateSummaryList {
+			c := Certificate{
+				Arn:        aws.StringValue(cs.CertificateArn),
+				DomainName: aws.StringValue(cs.DomainName),
 			}
+
+			certificates = append(certificates, c)
 		}
 
 		return true
 	}
 
 	if err := acm.client.ListCertificatesPages(input, handler); err != nil {
-		return arns, err
+		return certificates, err
 	}
 
-	return arns, nil
-}
-
-func (acm *SDKClient) listCertificates() []*Certificate {
-	certificates := []*Certificate{}
-
-	err := acm.client.ListCertificatesPagesWithContext(
-		context.Background(),
-		&awsacm.ListCertificatesInput{},
-		func(resp *awsacm.ListCertificatesOutput, lastPage bool) bool {
-			for _, c := range resp.CertificateSummaryList {
-				certificates = append(
-					certificates,
-					&Certificate{
-						Arn:        aws.StringValue(c.CertificateArn),
-						DomainName: aws.StringValue(c.DomainName),
-					},
-				)
-			}
-
-			return true
-		},
-	)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not list ACM certificates")
-	}
-
-	return certificates
+	return certificates, nil
 }

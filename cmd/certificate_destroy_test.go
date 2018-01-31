@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/jpignata/fargate/acm"
 	"github.com/jpignata/fargate/acm/mock/client"
 	"github.com/jpignata/fargate/cmd/mock"
 )
@@ -12,6 +13,10 @@ import (
 func TestCertificateDestroyOperation(t *testing.T) {
 	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	domainName := "example.com"
+	certificate := acm.Certificate{
+		Arn:        certificateArn,
+		DomainName: domainName,
+	}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -19,7 +24,7 @@ func TestCertificateDestroyOperation(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().GetCertificateArns(domainName).Return([]string{certificateArn}, nil)
+	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{certificate}, nil)
 	mockClient.EXPECT().DeleteCertificate(certificateArn).Return(nil)
 
 	certificateDestroyOperation{
@@ -48,7 +53,7 @@ func TestCertificateDestroyOperationCertNotFound(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().GetCertificateArns(domainName).Return([]string{}, nil)
+	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{}, nil)
 
 	certificateDestroyOperation{
 		acm:        mockClient,
@@ -69,6 +74,14 @@ func TestCertificateDestroyOperationMoreThanOneCertFound(t *testing.T) {
 	certificateArn1 := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	certificateArn2 := "arn:aws:acm:us-east-1:123456789012:certificate/abcdef01-2345-6789-0abc-def012345678"
 	domainName := "example.com"
+	certificate1 := acm.Certificate{
+		Arn:        certificateArn1,
+		DomainName: domainName,
+	}
+	certificate2 := acm.Certificate{
+		Arn:        certificateArn2,
+		DomainName: domainName,
+	}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -76,7 +89,7 @@ func TestCertificateDestroyOperationMoreThanOneCertFound(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().GetCertificateArns(domainName).Return([]string{certificateArn1, certificateArn2}, nil)
+	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{certificate1, certificate2}, nil)
 
 	certificateDestroyOperation{
 		acm:        mockClient,
@@ -102,7 +115,7 @@ func TestCertificateDestroyOperationError(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().GetCertificateArns(domainName).Return([]string{}, errors.New("Something went boom."))
+	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{}, errors.New("Something went boom."))
 
 	certificateDestroyOperation{
 		acm:        mockClient,
