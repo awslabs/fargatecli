@@ -46,8 +46,8 @@ func (o certificateListOperation) find() ([]acm.Certificate, error) {
 	var wg sync.WaitGroup
 	var inflatedCertificates []acm.Certificate
 
-	ctx := context.Background()
-	ch := make(chan acm.Certificate, len(certificates))
+	results := make(chan acm.Certificate, len(certificates))
+	errs := make(chan error, len(certificates))
 	limiter := rate.NewLimiter(describeRequestLimitRate, 1)
 
 	for _, certificate := range certificates {
@@ -56,19 +56,29 @@ func (o certificateListOperation) find() ([]acm.Certificate, error) {
 		go func(c acm.Certificate) {
 			defer wg.Done()
 
-			if err := limiter.Wait(ctx); err == nil {
+			if err := limiter.Wait(context.Background()); err == nil {
 				o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", c.Arn)
-				certificate, _ := o.acm.InflateCertificate(c)
+				certificate, err := o.acm.InflateCertificate(c)
 
-				ch <- certificate
+				if err != nil {
+					errs <- err
+				}
+
+				results <- certificate
 			}
 		}(certificate)
 	}
 
 	wg.Wait()
-	close(ch)
 
-	for c := range ch {
+	close(results)
+	close(errs)
+
+	if len(errs) > 0 {
+		return inflatedCertificates, <-errs
+	}
+
+	for c := range results {
 		inflatedCertificates = append(inflatedCertificates, c)
 	}
 
