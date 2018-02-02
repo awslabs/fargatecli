@@ -1,15 +1,12 @@
 package acm
 
 import (
-	"context"
 	"fmt"
 	"strings"
-	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsacm "github.com/aws/aws-sdk-go/service/acm"
 	"github.com/jpignata/fargate/console"
-	"golang.org/x/time/rate"
 )
 
 type Certificate struct {
@@ -160,44 +157,10 @@ func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (st
 	return aws.StringValue(resp.CertificateArn), nil
 }
 
-func (acm *SDKClient) ListCertificates() []Certificate {
-	var wg sync.WaitGroup
-
-	ctx := context.Background()
-	ch := make(chan Certificate)
-	certificates, _ := acm.ListCertificates2()
-	limiter := rate.NewLimiter(10, 1)
-
-	for i := 0; i < 4; i++ {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
-			for c := range ch {
-				if err := limiter.Wait(ctx); err == nil {
-					certificateDetail := acm.describeCertificate(c.Arn)
-					c.Inflate(certificateDetail)
-				}
-			}
-		}()
-	}
-
-	for _, c := range certificates {
-		ch <- c
-	}
-
-	close(ch)
-
-	wg.Wait()
-
-	return certificates
-}
-
 func (acm *SDKClient) DescribeCertificate(domainName string) *Certificate {
 	var certificate *Certificate
 
-	certificates, _ := acm.ListCertificates2()
+	certificates, _ := acm.ListCertificates()
 
 	for _, c := range certificates {
 		if c.DomainName == domainName {
@@ -254,7 +217,7 @@ func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 func (acm *SDKClient) ListCertificateDomainNames(certificateArns []string) []string {
 	var domainNames []string
 
-	certificates, _ := acm.ListCertificates2()
+	certificates, _ := acm.ListCertificates()
 
 	for _, certificate := range certificates {
 		for _, certificateArn := range certificateArns {
@@ -312,7 +275,7 @@ func (acm *SDKClient) describeCertificate(arn string) *awsacm.CertificateDetail 
 	return resp.Certificate
 }
 
-func (acm SDKClient) ListCertificates2() (Certificates, error) {
+func (acm SDKClient) ListCertificates() (Certificates, error) {
 	var certificates Certificates
 
 	input := &awsacm.ListCertificatesInput{}

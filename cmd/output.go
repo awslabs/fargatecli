@@ -118,13 +118,15 @@ func (c ConsoleOutput) KeyValue(key, value string, indent int, a ...interface{})
 }
 
 func (c ConsoleOutput) Table(header string, rows [][]string) {
-	if c.Color {
-		c.Say(white+header+reset, 0)
-	} else {
-		c.Say(header, 0)
-	}
+	if len(header) > 0 {
+		if c.Color {
+			c.Say(white+header+reset, 0)
+		} else {
+			c.Say(header, 0)
+		}
 
-	c.LineBreak()
+		c.LineBreak()
+	}
 
 	w := new(tabwriter.Writer)
 	defer w.Flush()

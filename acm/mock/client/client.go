@@ -58,17 +58,17 @@ func (mr *MockClientMockRecorder) InflateCertificate(arg0 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InflateCertificate", reflect.TypeOf((*MockClient)(nil).InflateCertificate), arg0)
 }
 
-// ListCertificates2 mocks base method
-func (m *MockClient) ListCertificates2() (acm.Certificates, error) {
-	ret := m.ctrl.Call(m, "ListCertificates2")
+// ListCertificates mocks base method
+func (m *MockClient) ListCertificates() (acm.Certificates, error) {
+	ret := m.ctrl.Call(m, "ListCertificates")
 	ret0, _ := ret[0].(acm.Certificates)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListCertificates2 indicates an expected call of ListCertificates2
-func (mr *MockClientMockRecorder) ListCertificates2() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCertificates2", reflect.TypeOf((*MockClient)(nil).ListCertificates2))
+// ListCertificates indicates an expected call of ListCertificates
+func (mr *MockClientMockRecorder) ListCertificates() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCertificates", reflect.TypeOf((*MockClient)(nil).ListCertificates))
 }
 
 // RequestCertificate mocks base method

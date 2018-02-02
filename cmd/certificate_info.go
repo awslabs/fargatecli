@@ -35,7 +35,7 @@ func (o certificateInfoOperation) execute() {
 
 func (o certificateInfoOperation) find() (acm.Certificate, error) {
 	o.output.Debug("Listing certificates [API=acm Action=ListCertificate]")
-	certificates, err := o.acm.ListCertificates2()
+	certificates, err := o.acm.ListCertificates()
 
 	if err != nil {
 		return acm.Certificate{}, err
@@ -43,7 +43,7 @@ func (o certificateInfoOperation) find() (acm.Certificate, error) {
 
 	for _, certificate := range certificates {
 		if certificate.DomainName == o.domainName {
-			o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate]")
+			o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", certificate.Arn)
 			certificate, err := o.acm.InflateCertificate(certificate)
 
 			if err != nil {

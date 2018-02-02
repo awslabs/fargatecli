@@ -14,7 +14,7 @@ type certificateDestroyOperation struct {
 func (o certificateDestroyOperation) execute() {
 	o.output.Debug("Listing certificates [API=acm Action=ListCertificate]")
 
-	certificates, err := o.acm.ListCertificates2()
+	certificates, err := o.acm.ListCertificates()
 
 	if err != nil {
 		o.output.Fatal(err, "Could not destroy certificate")

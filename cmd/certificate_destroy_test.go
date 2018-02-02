@@ -24,7 +24,7 @@ func TestCertificateDestroyOperation(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{certificate}, nil)
+	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
 	mockClient.EXPECT().DeleteCertificate(certificateArn).Return(nil)
 
 	certificateDestroyOperation{
@@ -53,7 +53,7 @@ func TestCertificateDestroyOperationCertNotFound(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{}, nil)
+	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, nil)
 
 	certificateDestroyOperation{
 		acm:        mockClient,
@@ -89,7 +89,7 @@ func TestCertificateDestroyOperationMoreThanOneCertFound(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{certificate1, certificate2}, nil)
+	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate1, certificate2}, nil)
 
 	certificateDestroyOperation{
 		acm:        mockClient,
@@ -115,7 +115,7 @@ func TestCertificateDestroyOperationError(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().ListCertificates2().Return(acm.Certificates{}, errors.New("Something went boom."))
+	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, errors.New("Something went boom."))
 
 	certificateDestroyOperation{
 		acm:        mockClient,

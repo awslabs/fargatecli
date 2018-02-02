@@ -7,10 +7,10 @@ import (
 )
 
 type Client interface {
-	RequestCertificate(string, []string) (string, error)
 	DeleteCertificate(string) error
-	ListCertificates2() (Certificates, error)
 	InflateCertificate(Certificate) (Certificate, error)
+	ListCertificates() (Certificates, error)
+	RequestCertificate(string, []string) (string, error)
 }
 
 type SDKClient struct {
