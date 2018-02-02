@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"text/tabwriter"
 
 	"github.com/kyokomi/emoji"
 	"github.com/mgutz/ansi"
@@ -24,9 +25,11 @@ type Output interface {
 	Debug(string, ...interface{})
 	Fatal(error, string, ...interface{})
 	Fatals([]error, string, ...interface{})
-	Say(string, int, ...interface{})
 	Info(string, ...interface{})
+	KeyValue(string, string, int, ...interface{})
 	LineBreak()
+	Say(string, int, ...interface{})
+	Table(string, [][]string)
 	Warn(string, ...interface{})
 }
 
@@ -104,6 +107,38 @@ func (c ConsoleOutput) Fatals(errs []error, msg string, a ...interface{}) {
 	}
 
 	os.Exit(1)
+}
+
+func (c ConsoleOutput) KeyValue(key, value string, indent int, a ...interface{}) {
+	if c.Color {
+		c.Say(white+key+reset+": "+value, indent, a...)
+	} else {
+		c.Say(key+": "+value, indent, a...)
+	}
+}
+
+func (c ConsoleOutput) Table(header string, rows [][]string) {
+	if c.Color {
+		c.Say(white+header+reset, 0)
+	} else {
+		c.Say(header, 0)
+	}
+
+	c.LineBreak()
+
+	w := new(tabwriter.Writer)
+	defer w.Flush()
+
+	w.Init(os.Stdout, 0, 8, 1, '\t', 0)
+
+	for _, row := range rows {
+		for _, column := range row {
+			fmt.Fprint(w, column+"\t")
+		}
+
+		fmt.Fprint(w, "\n")
+	}
+
 }
 
 func (c ConsoleOutput) LineBreak() {

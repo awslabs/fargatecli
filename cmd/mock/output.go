@@ -3,12 +3,19 @@ package mock
 import "fmt"
 
 type Output struct {
-	DebugMsgs []string
-	Exited    bool
-	FatalMsgs map[string][]error
-	SayMsgs   []string
-	InfoMsgs  []string
-	WarnMsgs  []string
+	DebugMsgs    []string
+	Exited       bool
+	FatalMsgs    map[string][]error
+	SayMsgs      []string
+	InfoMsgs     []string
+	WarnMsgs     []string
+	KeyValueMsgs []string
+	Tables       []Table
+}
+
+type Table struct {
+	Header string
+	Rows   [][]string
 }
 
 func (c *Output) Info(msg string, a ...interface{}) {
@@ -43,6 +50,14 @@ func (c *Output) Say(msg string, indent int, a ...interface{}) {
 
 func (c *Output) Debug(msg string, a ...interface{}) {
 	c.DebugMsgs = append(c.DebugMsgs, fmt.Sprintf(msg, a...))
+}
+
+func (c *Output) KeyValue(key, value string, indent int, a ...interface{}) {
+	c.KeyValueMsgs = append(c.KeyValueMsgs, fmt.Sprintf("%s: %s", key, value))
+}
+
+func (c *Output) Table(header string, rows [][]string) {
+	c.Tables = append(c.Tables, Table{Header: header, Rows: rows})
 }
 
 func (c *Output) LineBreak() {

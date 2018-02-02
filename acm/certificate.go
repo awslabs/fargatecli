@@ -216,6 +216,41 @@ func (acm *SDKClient) DescribeCertificate(domainName string) *Certificate {
 	return certificate
 }
 
+func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
+	resp, err := acm.client.DescribeCertificate(
+		&awsacm.DescribeCertificateInput{
+			CertificateArn: aws.String(c.Arn),
+		},
+	)
+
+	if err != nil {
+		return c, err
+	}
+
+	c.Status = aws.StringValue(resp.Certificate.Status)
+	c.SubjectAlternativeNames = aws.StringValueSlice(resp.Certificate.SubjectAlternativeNames)
+	c.Type = aws.StringValue(resp.Certificate.Type)
+
+	for _, domainValidation := range resp.Certificate.DomainValidationOptions {
+		validation := CertificateValidation{
+			Status:     aws.StringValue(domainValidation.ValidationStatus),
+			DomainName: aws.StringValue(domainValidation.DomainName),
+		}
+
+		if domainValidation.ResourceRecord != nil {
+			validation.ResourceRecord = CertificateResourceRecord{
+				Type:  aws.StringValue(domainValidation.ResourceRecord.Type),
+				Name:  aws.StringValue(domainValidation.ResourceRecord.Name),
+				Value: aws.StringValue(domainValidation.ResourceRecord.Value),
+			}
+		}
+
+		c.AddValidation(validation)
+	}
+
+	return c, nil
+}
+
 func (acm *SDKClient) ListCertificateDomainNames(certificateArns []string) []string {
 	var domainNames []string
 

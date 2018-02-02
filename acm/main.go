@@ -10,6 +10,7 @@ type Client interface {
 	RequestCertificate(string, []string) (string, error)
 	DeleteCertificate(string) error
 	ListCertificates2() (Certificates, error)
+	InflateCertificate(Certificate) (Certificate, error)
 }
 
 type SDKClient struct {
