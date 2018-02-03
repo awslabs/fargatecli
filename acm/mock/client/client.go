@@ -45,6 +45,19 @@ func (mr *MockClientMockRecorder) DeleteCertificate(arg0 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCertificate", reflect.TypeOf((*MockClient)(nil).DeleteCertificate), arg0)
 }
 
+// ImportCertificate mocks base method
+func (m *MockClient) ImportCertificate(arg0, arg1, arg2 []byte) (string, error) {
+	ret := m.ctrl.Call(m, "ImportCertificate", arg0, arg1, arg2)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ImportCertificate indicates an expected call of ImportCertificate
+func (mr *MockClientMockRecorder) ImportCertificate(arg0, arg1, arg2 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportCertificate", reflect.TypeOf((*MockClient)(nil).ImportCertificate), arg0, arg1, arg2)
+}
+
 // InflateCertificate mocks base method
 func (m *MockClient) InflateCertificate(arg0 acm.Certificate) (acm.Certificate, error) {
 	ret := m.ctrl.Call(m, "InflateCertificate", arg0)

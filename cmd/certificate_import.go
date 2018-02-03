@@ -1,36 +1,87 @@
 package cmd
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"strings"
 
-	ACM "github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
+	"github.com/jpignata/fargate/acm"
 	"github.com/spf13/cobra"
 )
 
-type CertificateImportOperation struct {
-	CertificateFile      string
-	PrivateKeyFile       string
-	CertificateChainFile string
+type certificateImportOperation struct {
+	acm                  acm.Client
+	certificate          []byte
+	certificateChain     []byte
+	certificateChainFile string
+	certificateFile      string
+	output               Output
+	privateKey           []byte
+	privateKeyFile       string
 }
 
-func (o *CertificateImportOperation) Validate() {
-	var msgs []string
-
-	if o.CertificateFile == "" {
-		msgs = append(msgs, "--certificate is required")
+func (o certificateImportOperation) execute() {
+	if errs := o.validate(); len(errs) > 0 {
+		o.output.Fatals(errs, "Invalid certificate import parameters")
+		return
 	}
 
-	if o.PrivateKeyFile == "" {
-		msgs = append(msgs, "--key is required")
+	if errs := o.readFiles(); len(errs) > 0 {
+		o.output.Fatals(errs, "Could not read file(s)")
+		return
 	}
 
-	if len(msgs) > 0 {
-		console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
+	o.output.Debug("Importing certificate [API=acm Action=ImportCertificate]")
+	arn, err := o.acm.ImportCertificate(o.certificate, o.privateKey, o.certificateChain)
+
+	if err != nil {
+		o.output.Fatal(err, "Could not import certificate")
+		return
 	}
+
+	o.output.Info("Imported certificate [ARN=%s]", arn)
+}
+
+func (o certificateImportOperation) validate() []error {
+	var errs []error
+
+	if o.certificateFile == "" {
+		errs = append(errs, fmt.Errorf("--certificate is required"))
+	}
+
+	if o.privateKeyFile == "" {
+		errs = append(errs, fmt.Errorf("--key is required"))
+	}
+
+	return errs
+}
+
+func (o *certificateImportOperation) readFiles() []error {
+	var errs []error
+
+	o.output.Debug("Reading certificate [File=%s]", o.certificateFile)
+	if certificate, err := ioutil.ReadFile(o.certificateFile); err == nil {
+		o.certificate = certificate
+	} else {
+		errs = append(errs, err)
+	}
+
+	o.output.Debug("Reading private key [File=%s]", o.privateKeyFile)
+	if privateKey, err := ioutil.ReadFile(o.privateKeyFile); err == nil {
+		o.privateKey = privateKey
+	} else {
+		errs = append(errs, err)
+	}
+
+	if o.certificateChainFile != "" {
+		o.output.Debug("Reading certificate chain [File=%s]", o.certificateChainFile)
+		if certificateChain, err := ioutil.ReadFile(o.certificateChainFile); err == nil {
+			o.certificateChain = certificateChain
+		} else {
+			errs = append(errs, err)
+		}
+	}
+
+	return errs
 }
 
 var (
@@ -44,21 +95,19 @@ var certificateImportCmd = &cobra.Command{
 	Short: "Import a certificate",
 	Long: `Import a certificate
 
-Upload a certificate from a certificate file, a private key file, an optionally
+Upload a certificate from a certificate file, a private key file, and optionally
 an intermediate certificate chain file. The files must be PEM-encoded and the
 private key must not be encrypted or protected by a passphrase. See
 http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html
 for more details.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		operation := &CertificateImportOperation{
-			CertificateFile:      flagCertificateImportCertificate,
-			PrivateKeyFile:       flagCertificateImportKey,
-			CertificateChainFile: flagCertificateImportChain,
-		}
-
-		operation.Validate()
-
-		importCertificate(operation)
+		certificateImportOperation{
+			acm:                  acm.New(sess),
+			output:               output,
+			certificateFile:      flagCertificateImportCertificate,
+			privateKeyFile:       flagCertificateImportKey,
+			certificateChainFile: flagCertificateImportChain,
+		}.execute()
 	},
 }
 
@@ -68,42 +117,4 @@ func init() {
 	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "", "Filename of intermediate certificate chain")
 
 	certificateCmd.AddCommand(certificateImportCmd)
-}
-
-func importCertificate(operation *CertificateImportOperation) {
-	var (
-		certificate      string
-		privateKey       string
-		certificateChain string
-	)
-
-	acm := ACM.New(sess)
-
-	certificateData, err := ioutil.ReadFile(operation.CertificateFile)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not read certificate from file %s", operation.CertificateFile)
-	}
-
-	privateKeyData, err := ioutil.ReadFile(operation.PrivateKeyFile)
-
-	if err != nil {
-		console.ErrorExit(err, "Could not read key from file %s", operation.PrivateKeyFile)
-	}
-
-	certificate = base64.StdEncoding.EncodeToString(certificateData)
-	privateKey = base64.StdEncoding.EncodeToString(privateKeyData)
-
-	if operation.CertificateChainFile != "" {
-		certificateChainData, err := ioutil.ReadFile(operation.CertificateChainFile)
-
-		if err != nil {
-			console.ErrorExit(err, "Could not read certificate chain from file %s", operation.CertificateChainFile)
-		}
-
-		certificateChain = base64.StdEncoding.EncodeToString(certificateChainData)
-	}
-
-	acm.ImportCertificate([]byte(certificate), []byte(privateKey), []byte(certificateChain))
-	console.Info("Imported certificate from %s", operation.CertificateFile)
 }

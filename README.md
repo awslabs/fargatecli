@@ -582,7 +582,7 @@ fargate certificate import <domain-name> --certificate <filename> --key <filenam
 
 Import a certificate
 
-Upload a certificate from a certificate file, a private key file, an optionally
+Upload a certificate from a certificate file, a private key file, and optionally
 an intermediate certificate chain file. The files must be PEM-encoded and the
 private key must not be encrypted or protected by a passphrase. See the
 [AWS Certificate Manager documentation][acm-import-cert] for more details.

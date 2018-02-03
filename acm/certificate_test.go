@@ -3,6 +3,7 @@ package acm
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"reflect"
 	"testing"
 
@@ -352,5 +353,64 @@ func TestInflateCertificateError(t *testing.T) {
 
 	if !reflect.DeepEqual(outCertificate, inCertificate) {
 		t.Errorf("Certificate modified, expected %+v, got %+v", inCertificate, outCertificate)
+	}
+}
+
+func TestImportCertificate(t *testing.T) {
+	dummy := make([]byte, 10)
+	rand.Read(dummy)
+
+	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
+
+	acm := SDKClient{client: mockACMAPI}
+	i := &awsacm.ImportCertificateInput{
+		Certificate:      dummy,
+		CertificateChain: dummy,
+		PrivateKey:       dummy,
+	}
+	o := &awsacm.ImportCertificateOutput{
+		CertificateArn: aws.String(certificateArn),
+	}
+
+	mockACMAPI.EXPECT().ImportCertificate(i).Return(o, nil)
+
+	arn, err := acm.ImportCertificate(dummy, dummy, dummy)
+
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+
+	if arn != certificateArn {
+		t.Errorf("Expected ARN == %s, got: %s", certificateArn, arn)
+	}
+}
+
+func TestImportCertificateError(t *testing.T) {
+	var empty []byte
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
+
+	acm := SDKClient{client: mockACMAPI}
+	i := &awsacm.ImportCertificateInput{
+		Certificate:      empty,
+		CertificateChain: empty,
+		PrivateKey:       empty,
+	}
+	o := &awsacm.ImportCertificateOutput{}
+
+	mockACMAPI.EXPECT().ImportCertificate(i).Return(o, errors.New(":-("))
+
+	_, err := acm.ImportCertificate(empty, empty, empty)
+
+	if err == nil {
+		t.Error("Expected error, got nil")
 	}
 }

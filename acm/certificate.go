@@ -124,6 +124,21 @@ func (acm SDKClient) DeleteCertificate(arn string) error {
 	return nil
 }
 
+func (acm SDKClient) ImportCertificate(certificate, privateKey, certificateChain []byte) (string, error) {
+	input := &awsacm.ImportCertificateInput{
+		Certificate: certificate,
+		PrivateKey:  privateKey,
+	}
+
+	if len(certificateChain) != 0 {
+		input.SetCertificateChain(certificateChain)
+	}
+
+	resp, err := acm.client.ImportCertificate(input)
+
+	return aws.StringValue(resp.CertificateArn), err
+}
+
 func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 	resp, err := acm.client.DescribeCertificate(
 		&awsacm.DescribeCertificateInput{
@@ -232,23 +247,4 @@ func (acm *SDKClient) ListCertificateDomainNames(certificateArns []string) []str
 	}
 
 	return domainNames
-}
-
-func (acm *SDKClient) ImportCertificate(certificate, privateKey, certificateChain []byte) {
-	console.Debug("Importing ACM certificate")
-
-	input := &awsacm.ImportCertificateInput{
-		Certificate: certificate,
-		PrivateKey:  privateKey,
-	}
-
-	if len(certificateChain) != 0 {
-		input.SetCertificateChain(certificateChain)
-	}
-
-	_, err := acm.client.ImportCertificate(input)
-
-	if err != nil {
-		console.ErrorExit(err, "Couldn't import certificate")
-	}
 }

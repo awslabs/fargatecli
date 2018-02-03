@@ -14,6 +14,7 @@ type Client interface {
 	InflateCertificate(Certificate) (Certificate, error)
 	ListCertificates() (Certificates, error)
 	RequestCertificate(string, []string) (string, error)
+	ImportCertificate([]byte, []byte, []byte) (string, error)
 }
 
 type SDKClient struct {
