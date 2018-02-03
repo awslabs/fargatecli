@@ -22,8 +22,12 @@ func (c *Certificate) AddValidation(v CertificateValidation) {
 	c.Validations = append(c.Validations, v)
 }
 
-func (c *Certificate) IsIssued() bool {
+func (c Certificate) IsIssued() bool {
 	return c.Status == awsacm.CertificateStatusIssued
+}
+
+func (c Certificate) IsPendingValidation() bool {
+	return c.Status == awsacm.CertificateStatusPendingValidation
 }
 
 type CertificateValidation struct {
@@ -32,19 +36,19 @@ type CertificateValidation struct {
 	ResourceRecord CertificateResourceRecord
 }
 
-func (v *CertificateValidation) IsPendingValidation() bool {
-	return v.Status == awsacm.DomainStatusPendingValidation
-}
-
-func (v *CertificateValidation) IsSuccess() bool {
-	return v.Status == awsacm.DomainStatusSuccess
-}
-
-func (v *CertificateValidation) IsFailed() bool {
+func (v CertificateValidation) IsFailed() bool {
 	return v.Status == awsacm.DomainStatusFailed
 }
 
-func (v *CertificateValidation) ResourceRecordString() string {
+func (v CertificateValidation) IsPendingValidation() bool {
+	return v.Status == awsacm.DomainStatusPendingValidation
+}
+
+func (v CertificateValidation) IsSuccess() bool {
+	return v.Status == awsacm.DomainStatusSuccess
+}
+
+func (v CertificateValidation) ResourceRecordString() string {
 	if v.ResourceRecord.Type == "" {
 		return ""
 	}
@@ -60,26 +64,6 @@ type CertificateResourceRecord struct {
 	Type  string
 	Name  string
 	Value string
-}
-
-func (c *Certificate) IsPendingValidation() bool {
-	return c.Status == awsacm.CertificateStatusPendingValidation
-}
-
-func ValidateDomainName(domainName string) error {
-	if len(domainName) < 1 || len(domainName) > 253 {
-		return fmt.Errorf("%s: The domain name must be between 1 and 253 characters in length", domainName)
-	}
-
-	if strings.Count(domainName, ".") > 62 {
-		return fmt.Errorf("%s: The domain name cannot exceed 63 octets", domainName)
-	}
-
-	if strings.Count(domainName, ".") == 0 {
-		return fmt.Errorf("%s: The domain name requires at least 2 octets", domainName)
-	}
-
-	return nil
 }
 
 type Certificates []Certificate
@@ -112,39 +96,32 @@ func ValidateAlias(alias string) error {
 	return nil
 }
 
-func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (string, error) {
-	requestCertificateInput := &awsacm.RequestCertificateInput{
-		DomainName:       aws.String(domainName),
-		ValidationMethod: aws.String(awsacm.ValidationMethodDns),
+func ValidateDomainName(domainName string) error {
+	if len(domainName) < 1 || len(domainName) > 253 {
+		return fmt.Errorf("%s: The domain name must be between 1 and 253 characters in length", domainName)
 	}
 
-	if len(aliases) > 0 {
-		requestCertificateInput.SetSubjectAlternativeNames(aws.StringSlice(aliases))
+	if strings.Count(domainName, ".") > 62 {
+		return fmt.Errorf("%s: The domain name cannot exceed 63 octets", domainName)
 	}
 
-	resp, err := acm.client.RequestCertificate(requestCertificateInput)
-
-	if err != nil {
-		return "", err
+	if strings.Count(domainName, ".") == 0 {
+		return fmt.Errorf("%s: The domain name requires at least 2 octets", domainName)
 	}
 
-	return aws.StringValue(resp.CertificateArn), nil
+	return nil
 }
 
-func (acm *SDKClient) DescribeCertificate(domainName string) Certificate {
-	certificates, _ := acm.ListCertificates()
-
-	for _, c := range certificates {
-		if c.DomainName == domainName {
-			certificate, _ := acm.InflateCertificate(c)
-			return certificate
-		}
+func (acm SDKClient) DeleteCertificate(arn string) error {
+	input := &awsacm.DeleteCertificateInput{
+		CertificateArn: aws.String(arn),
 	}
 
-	err := fmt.Errorf("Could not find ACM certificate for %s", domainName)
-	console.ErrorExit(err, "Couldn't describe ACM certificate")
+	if _, err := acm.client.DeleteCertificate(input); err != nil {
+		return err
+	}
 
-	return Certificate{}
+	return nil
 }
 
 func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
@@ -182,6 +159,65 @@ func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 	return c, nil
 }
 
+func (acm SDKClient) ListCertificates() (Certificates, error) {
+	var certificates Certificates
+
+	input := &awsacm.ListCertificatesInput{}
+	handler := func(resp *awsacm.ListCertificatesOutput, lastPage bool) bool {
+		for _, cs := range resp.CertificateSummaryList {
+			c := Certificate{
+				Arn:        aws.StringValue(cs.CertificateArn),
+				DomainName: aws.StringValue(cs.DomainName),
+			}
+
+			certificates = append(certificates, c)
+		}
+
+		return true
+	}
+
+	if err := acm.client.ListCertificatesPages(input, handler); err != nil {
+		return certificates, err
+	}
+
+	return certificates, nil
+}
+
+func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (string, error) {
+	requestCertificateInput := &awsacm.RequestCertificateInput{
+		DomainName:       aws.String(domainName),
+		ValidationMethod: aws.String(awsacm.ValidationMethodDns),
+	}
+
+	if len(aliases) > 0 {
+		requestCertificateInput.SetSubjectAlternativeNames(aws.StringSlice(aliases))
+	}
+
+	resp, err := acm.client.RequestCertificate(requestCertificateInput)
+
+	if err != nil {
+		return "", err
+	}
+
+	return aws.StringValue(resp.CertificateArn), nil
+}
+
+func (acm *SDKClient) DescribeCertificate(domainName string) Certificate {
+	certificates, _ := acm.ListCertificates()
+
+	for _, c := range certificates {
+		if c.DomainName == domainName {
+			certificate, _ := acm.InflateCertificate(c)
+			return certificate
+		}
+	}
+
+	err := fmt.Errorf("Could not find ACM certificate for %s", domainName)
+	console.ErrorExit(err, "Couldn't describe ACM certificate")
+
+	return Certificate{}
+}
+
 func (acm *SDKClient) ListCertificateDomainNames(certificateArns []string) []string {
 	var domainNames []string
 
@@ -215,40 +251,4 @@ func (acm *SDKClient) ImportCertificate(certificate, privateKey, certificateChai
 	if err != nil {
 		console.ErrorExit(err, "Couldn't import certificate")
 	}
-}
-
-func (acm SDKClient) DeleteCertificate(arn string) error {
-	input := &awsacm.DeleteCertificateInput{
-		CertificateArn: aws.String(arn),
-	}
-
-	if _, err := acm.client.DeleteCertificate(input); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (acm SDKClient) ListCertificates() (Certificates, error) {
-	var certificates Certificates
-
-	input := &awsacm.ListCertificatesInput{}
-	handler := func(resp *awsacm.ListCertificatesOutput, lastPage bool) bool {
-		for _, cs := range resp.CertificateSummaryList {
-			c := Certificate{
-				Arn:        aws.StringValue(cs.CertificateArn),
-				DomainName: aws.StringValue(cs.DomainName),
-			}
-
-			certificates = append(certificates, c)
-		}
-
-		return true
-	}
-
-	if err := acm.client.ListCertificatesPages(input, handler); err != nil {
-		return certificates, err
-	}
-
-	return certificates, nil
 }
