@@ -138,7 +138,6 @@ func ValidateAlias(alias string) error {
 }
 
 func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (string, error) {
-
 	requestCertificateInput := &awsacm.RequestCertificateInput{
 		DomainName:       aws.String(domainName),
 		ValidationMethod: aws.String(awsacm.ValidationMethodDns),
