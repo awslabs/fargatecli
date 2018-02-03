@@ -1,16 +1,14 @@
-.PHONY: test build dist
+.PHONY: mocks test build dist
+
+PACKAGES := $(shell go list ./...)
+
+mocks:
+	go generate $(PACKAGES)
 
 test:
-	go test ./...
+	go test $(PACKAGES)
 
 build:
-	go get github.com/spf13/cobra
-	go get github.com/aws/aws-sdk-go/aws
-	go get github.com/mgutz/ansi
-	go get github.com/hashicorp/golang-lru
-	go get golang.org/x/time/rate
-	go get golang.org/x/crypto/ssh/terminal
-
 	go build -o bin/fargate main.go
 
 dist:
