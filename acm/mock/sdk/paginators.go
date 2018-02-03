@@ -5,13 +5,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/acm/acmiface"
 )
 
-type MockCertificateListPagesClient struct {
+type MockListCertificatesPagesClient struct {
 	acmiface.ACMAPI
 	Resp  *acm.ListCertificatesOutput
 	Error error
 }
 
-func (m MockCertificateListPagesClient) ListCertificatesPages(in *acm.ListCertificatesInput, fn func(*acm.ListCertificatesOutput, bool) bool) error {
+func (m MockListCertificatesPagesClient) ListCertificatesPages(in *acm.ListCertificatesInput, fn func(*acm.ListCertificatesOutput, bool) bool) error {
 	fn(m.Resp, true)
 
 	if m.Error != nil {

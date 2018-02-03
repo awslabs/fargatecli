@@ -48,7 +48,9 @@ func TestCertificateInfoOperation(t *testing.T) {
 	mockClient.EXPECT().InflateCertificate(inCertificate).Return(outCertificate, nil)
 
 	certificateInfoOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: domainName,
 		output:     mockOutput,
 	}.execute()
@@ -123,7 +125,9 @@ func TestCertificateInfoOperationNotFound(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
 
 	certificateInfoOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: "example.com",
 		output:     mockOutput,
 	}.execute()
@@ -151,7 +155,9 @@ func TestCertificateInfoOperationListError(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(certificateList, errors.New("boom"))
 
 	certificateInfoOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: "example.com",
 		output:     mockOutput,
 	}.execute()
@@ -186,7 +192,9 @@ func TestCertificateInfoOperationDescribeError(t *testing.T) {
 	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, errors.New("boom"))
 
 	certificateInfoOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: "example.com",
 		output:     mockOutput,
 	}.execute()

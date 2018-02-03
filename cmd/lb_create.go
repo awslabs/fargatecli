@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	ACM "github.com/jpignata/fargate/acm"
+	"github.com/jpignata/fargate/acm"
 	"github.com/jpignata/fargate/console"
 	EC2 "github.com/jpignata/fargate/ec2"
 	ELBV2 "github.com/jpignata/fargate/elbv2"
@@ -19,6 +19,7 @@ const (
 )
 
 type LbCreateOperation struct {
+	certificateOperation
 	LoadBalancerName string
 	CertificateArns  []string
 	Ports            []Port
@@ -30,10 +31,8 @@ type LbCreateOperation struct {
 func (o *LbCreateOperation) SetCertificateArns(certificateDomainNames []string) {
 	var certificateArns []string
 
-	acm := ACM.New(sess)
-
 	for _, certificateDomainName := range certificateDomainNames {
-		certificate := acm.DescribeCertificate(certificateDomainName)
+		certificate, _ := o.findCertificate(certificateDomainName, output)
 
 		if certificate.IsIssued() {
 			certificateArns = append(certificateArns, certificate.Arn)
@@ -158,6 +157,9 @@ times. If --security-group-id is omitted, a permissive security group will be
 applied to the load balancer.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &LbCreateOperation{
+			certificateOperation: certificateOperation{
+				acm: acm.New(sess),
+			},
 			LoadBalancerName: args[0],
 		}
 

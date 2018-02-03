@@ -177,26 +177,26 @@ func TestCertificateValidationResourceRecordString(t *testing.T) {
 	}
 }
 
-func TestCertificatesGetCertificateArns(t *testing.T) {
+func TestCertificatesGetCertificates(t *testing.T) {
 	certificates := Certificates{
 		Certificate{DomainName: "staging.example.com", Arn: "staging.example.com-1"},
 		Certificate{DomainName: "www.example.com", Arn: "www.example.com-1"},
 		Certificate{DomainName: "www.example.com", Arn: "www.example.com-2"},
 	}
 
-	var empty []string
+	var empty Certificates
 	var tests = []struct {
 		in  string
-		out []string
+		out Certificates
 	}{
-		{"staging.example.com", []string{"staging.example.com-1"}},
-		{"www.example.com", []string{"www.example.com-1", "www.example.com-2"}},
+		{"staging.example.com", Certificates{certificates[0]}},
+		{"www.example.com", Certificates{certificates[1], certificates[2]}},
 		{"www.amazon.com", empty},
 	}
 
 	for _, test := range tests {
-		if !reflect.DeepEqual(certificates.GetCertificateArns(test.in), test.out) {
-			t.Errorf("Expected %s, got: %s", test.out, certificates.GetCertificateArns(test.in))
+		if !reflect.DeepEqual(certificates.GetCertificates(test.in), test.out) {
+			t.Errorf("Expected %+v, got: %+v", test.out, certificates.GetCertificates(test.in))
 		}
 	}
 }
@@ -227,11 +227,11 @@ func TestRequestCertificate(t *testing.T) {
 	arn, err := acm.RequestCertificate(domainName, aliases)
 
 	if err != nil {
-		t.Error("Error; %+v", err)
+		t.Errorf("Error; %+v", err)
 	}
 
 	if arn != certificateArn {
-		t.Error("Invalid certificate ARN; want: %s, got: %s", certificateArn, arn)
+		t.Errorf("Invalid certificate ARN; want: %s, got: %s", certificateArn, arn)
 	}
 }
 
@@ -243,7 +243,7 @@ func TestRequestCertificateError(t *testing.T) {
 
 	// Simulating a certificate request with more than 10 domains
 	for i := 0; i < 10; i++ {
-		aliases = append(aliases, fmt.Sprintf("example-%i.com", i))
+		aliases = append(aliases, fmt.Sprintf("example-%d.com", i))
 	}
 
 	mockCtrl := gomock.NewController(t)
@@ -259,7 +259,7 @@ func TestRequestCertificateError(t *testing.T) {
 	}
 	o := &awsacm.RequestCertificateOutput{}
 
-	mockACMAPI.EXPECT().RequestCertificate(i).Return(o, errors.New("Certificate has too many domains."))
+	mockACMAPI.EXPECT().RequestCertificate(i).Return(o, errors.New("certificate has too many domains"))
 
 	arn, err := acm.RequestCertificate(domainName, aliases)
 
@@ -282,7 +282,7 @@ func TestListCertificates(t *testing.T) {
 		},
 	}
 
-	mockClient := sdk.MockCertificateListPagesClient{Resp: resp}
+	mockClient := sdk.MockListCertificatesPagesClient{Resp: resp}
 	acm := SDKClient{client: mockClient}
 	certificates, err := acm.ListCertificates()
 
@@ -300,7 +300,7 @@ func TestListCertificates(t *testing.T) {
 }
 
 func TestListCertificatesError(t *testing.T) {
-	mockClient := sdk.MockCertificateListPagesClient{
+	mockClient := sdk.MockListCertificatesPagesClient{
 		Resp:  &awsacm.ListCertificatesOutput{},
 		Error: errors.New(":-("),
 	}
@@ -333,7 +333,7 @@ func TestDeleteCertificate(t *testing.T) {
 	err := acm.DeleteCertificate(certificateArn)
 
 	if err != nil {
-		t.Error("Error; %+v", err)
+		t.Errorf("Error; %+v", err)
 	}
 }
 

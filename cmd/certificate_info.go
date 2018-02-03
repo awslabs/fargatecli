@@ -1,60 +1,35 @@
 package cmd
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/jpignata/fargate/acm"
 	"github.com/spf13/cobra"
 )
 
-var errCertificateNotFound = errors.New("Certificate not found")
-
 type certificateInfoOperation struct {
-	acm        acm.Client
+	certificateOperation
 	domainName string
 	output     Output
 }
 
 func (o certificateInfoOperation) execute() {
-	certificate, err := o.find()
+	certificate, err := o.findCertificate(o.domainName, o.output)
 
 	if err != nil {
 		switch err {
 		case errCertificateNotFound:
 			o.output.Info("No certificate found for %s", o.domainName)
+		case errCertificateTooManyFound:
+			o.output.Fatal(nil, "Multiple certificates found for %s", o.domainName)
 		default:
-			o.output.Fatal(err, "Could not find certificate for %s", o.domainName)
+			o.output.Fatal(nil, "Could not find certificate for %s", o.domainName)
 		}
 
 		return
 	}
 
 	o.display(certificate)
-}
-
-func (o certificateInfoOperation) find() (acm.Certificate, error) {
-	o.output.Debug("Listing certificates [API=acm Action=ListCertificate]")
-	certificates, err := o.acm.ListCertificates()
-
-	if err != nil {
-		return acm.Certificate{}, err
-	}
-
-	for _, certificate := range certificates {
-		if certificate.DomainName == o.domainName {
-			o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", certificate.Arn)
-			certificate, err := o.acm.InflateCertificate(certificate)
-
-			if err != nil {
-				return acm.Certificate{}, err
-			}
-
-			return certificate, nil
-		}
-	}
-
-	return acm.Certificate{}, errCertificateNotFound
 }
 
 func (o certificateInfoOperation) display(certificate acm.Certificate) {
@@ -88,7 +63,9 @@ ownership.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateInfoOperation{
-			acm:        acm.New(sess),
+			certificateOperation: certificateOperation{
+				acm: acm.New(sess),
+			},
 			domainName: args[0],
 			output:     output,
 		}.execute()

@@ -25,10 +25,13 @@ func TestCertificateDestroyOperation(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
+	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
 	mockClient.EXPECT().DeleteCertificate(certificateArn).Return(nil)
 
 	certificateDestroyOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: domainName,
 		output:     mockOutput,
 	}.execute()
@@ -56,7 +59,9 @@ func TestCertificateDestroyOperationCertNotFound(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, nil)
 
 	certificateDestroyOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: domainName,
 		output:     mockOutput,
 	}.execute()
@@ -92,7 +97,9 @@ func TestCertificateDestroyOperationMoreThanOneCertFound(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate1, certificate2}, nil)
 
 	certificateDestroyOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: domainName,
 		output:     mockOutput,
 	}.execute()
@@ -115,10 +122,12 @@ func TestCertificateDestroyOperationListError(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, errors.New("Something went boom."))
+	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, errors.New("something went boom"))
 
 	certificateDestroyOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: domainName,
 		output:     mockOutput,
 	}.execute()
@@ -147,10 +156,13 @@ func TestCertificateDestroyOperationDeleteError(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
+	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
 	mockClient.EXPECT().DeleteCertificate(certificateArn).Return(errors.New(":-("))
 
 	certificateDestroyOperation{
-		acm:        mockClient,
+		certificateOperation: certificateOperation{
+			acm: mockClient,
+		},
 		domainName: domainName,
 		output:     mockOutput,
 	}.execute()

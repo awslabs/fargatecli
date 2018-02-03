@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/acm/acmiface"
 )
 
+// Client represents a method for accessing AWS Certificate Manager.
 type Client interface {
 	DeleteCertificate(string) error
 	InflateCertificate(Certificate) (Certificate, error)
@@ -17,10 +18,12 @@ type Client interface {
 	ImportCertificate([]byte, []byte, []byte) (string, error)
 }
 
+// SDKClient implements access to AWS Certificate Manager via the AWS SDK.
 type SDKClient struct {
 	client acmiface.ACMAPI
 }
 
+// New returns an SDKClient configured with the current session.
 func New(sess *session.Session) SDKClient {
 	return SDKClient{
 		client: acm.New(sess),

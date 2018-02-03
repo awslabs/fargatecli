@@ -54,7 +54,7 @@ func TestCertificateRequestOperationError(t *testing.T) {
 		output:     mockOutput,
 	}
 
-	mockClient.EXPECT().RequestCertificate(domainName, aliases).Return("", fmt.Errorf("Oops, something went wrong."))
+	mockClient.EXPECT().RequestCertificate(domainName, aliases).Return("", fmt.Errorf("oops, something went wrong"))
 
 	operation.execute()
 

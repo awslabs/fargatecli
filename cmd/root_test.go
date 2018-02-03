@@ -66,7 +66,7 @@ func TestValidateCpuAndMemory(t *testing.T) {
 		s := validateCpuAndMemory(test.CpuUnits, test.Mebibytes)
 
 		if s != test.Out {
-			t.Errorf("validateCpuAndMemory(%d, %d) => %#v, want %s", test.CpuUnits, test.Mebibytes, s, test.Out)
+			t.Errorf("validateCpuAndMemory(%s, %s) => %#v, want %s", test.CpuUnits, test.Mebibytes, s, test.Out)
 		}
 	}
 }

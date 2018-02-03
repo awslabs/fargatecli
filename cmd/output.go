@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/kyokomi/emoji"
@@ -21,6 +22,7 @@ var (
 	white  = ansi.ColorCode("white+bh")
 )
 
+// Output represents a channel for sending messages to a user.
 type Output interface {
 	Debug(string, ...interface{})
 	Fatal(error, string, ...interface{})
@@ -33,12 +35,16 @@ type Output interface {
 	Warn(string, ...interface{})
 }
 
+// ConsoleOutput implements a channel for sending messages to a user over standard output.
 type ConsoleOutput struct {
 	Color   bool
 	Emoji   bool
 	Verbose bool
+	Test    bool
 }
 
+// Debug prints a formatted message to standard output if `Verbose` is set to `true`. Messages are
+// prefixed to indicate they are for debugging with :wrench: or [d].
 func (c ConsoleOutput) Debug(msg string, a ...interface{}) {
 	if c.Verbose {
 		switch {
@@ -54,15 +60,18 @@ func (c ConsoleOutput) Debug(msg string, a ...interface{}) {
 	}
 }
 
+// Say prints an optionally indented, formatted message followed by a line break to standard
+// output.
 func (c ConsoleOutput) Say(msg string, indent int, a ...interface{}) {
 	for i := 0; i < indent; i++ {
-		fmt.Print("    ")
+		fmt.Print(strings.Repeat(" ", 4))
 	}
 
-	fmt.Printf(msg, a...)
-	fmt.Print("\n")
+	fmt.Printf(msg+"\n", a...)
 }
 
+// Info prints a formatted message to standard output. Messages are prefixed to indicate they are
+// informational with :information_source: or [i].
 func (c ConsoleOutput) Info(msg string, a ...interface{}) {
 	switch {
 	case c.Emoji && c.Color:
@@ -76,6 +85,8 @@ func (c ConsoleOutput) Info(msg string, a ...interface{}) {
 	}
 }
 
+// Warn prints a formatted message to standard output. Messages are prefixed to indicate they are
+// warnings with :warning: or [!].
 func (c ConsoleOutput) Warn(msg string, a ...interface{}) {
 	switch {
 	case c.Emoji && c.Color:
@@ -89,16 +100,14 @@ func (c ConsoleOutput) Warn(msg string, a ...interface{}) {
 	}
 }
 
+// Fatal prints a formatted message and an error string to standard output  Messages are prefixed
+// to indicate they are fatals with :warning: or [!].
 func (c ConsoleOutput) Fatal(err error, msg string, a ...interface{}) {
-	c.Warn(msg, a...)
-
-	if err != nil {
-		c.Say(err.Error(), 1)
-	}
-
-	os.Exit(1)
+	c.Fatals([]error{err}, msg, a...)
 }
 
+// Fatals prints a formatted message and one or more error strings to standard output. Messages
+// are prefixed to indicate they are fatals with :warning: or [!].
 func (c ConsoleOutput) Fatals(errs []error, msg string, a ...interface{}) {
 	c.Warn(msg, a...)
 
@@ -106,9 +115,12 @@ func (c ConsoleOutput) Fatals(errs []error, msg string, a ...interface{}) {
 		c.Say(err.Error(), 1)
 	}
 
-	os.Exit(1)
+	if !c.Test {
+		os.Exit(1)
+	}
 }
 
+// KeyValue prints a formatted, optionally indented key and value pair to standard output.
 func (c ConsoleOutput) KeyValue(key, value string, indent int, a ...interface{}) {
 	if c.Color {
 		c.Say(white+key+reset+": "+value, indent, a...)
@@ -117,6 +129,7 @@ func (c ConsoleOutput) KeyValue(key, value string, indent int, a ...interface{})
 	}
 }
 
+// Table prints a formatted table with optional header to standard output.
 func (c ConsoleOutput) Table(header string, rows [][]string) {
 	if len(header) > 0 {
 		if c.Color {
@@ -134,8 +147,12 @@ func (c ConsoleOutput) Table(header string, rows [][]string) {
 	w.Init(os.Stdout, 0, 8, 1, '\t', 0)
 
 	for _, row := range rows {
-		for _, column := range row {
-			fmt.Fprint(w, column+"\t")
+		for i, column := range row {
+			fmt.Fprint(w, column)
+
+			if i != len(row)-1 {
+				fmt.Fprint(w, "\t")
+			}
 		}
 
 		fmt.Fprint(w, "\n")
@@ -143,6 +160,7 @@ func (c ConsoleOutput) Table(header string, rows [][]string) {
 
 }
 
+// LineBreak prints a single line break.
 func (c ConsoleOutput) LineBreak() {
 	fmt.Print("\n")
 }

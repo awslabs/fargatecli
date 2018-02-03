@@ -6,9 +6,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsacm "github.com/aws/aws-sdk-go/service/acm"
-	"github.com/jpignata/fargate/console"
 )
 
+// Certificate is a certificate hosted in AWS Certificate Manager.
 type Certificate struct {
 	Arn                     string
 	Status                  string
@@ -18,36 +18,44 @@ type Certificate struct {
 	Type                    string
 }
 
+// AddValidation adds a certificate validation to a certificate.
 func (c *Certificate) AddValidation(v CertificateValidation) {
 	c.Validations = append(c.Validations, v)
 }
 
+// IsIssued returns true if the certificate's status is ISSUED.
 func (c Certificate) IsIssued() bool {
 	return c.Status == awsacm.CertificateStatusIssued
 }
 
+// IsPendingValidation returns true if the certificate's status is PENDING_VALIDATION.
 func (c Certificate) IsPendingValidation() bool {
 	return c.Status == awsacm.CertificateStatusPendingValidation
 }
 
+// CertificateValidation holds details about how to validate a certificate.
 type CertificateValidation struct {
 	Status         string
 	DomainName     string
 	ResourceRecord CertificateResourceRecord
 }
 
+// IsFailed returns true if a certificate validation's status is FAILED.
 func (v CertificateValidation) IsFailed() bool {
 	return v.Status == awsacm.DomainStatusFailed
 }
 
+// IsPendingValidation returns true if a certificate validation's status is PENDING_VALIDATION.
 func (v CertificateValidation) IsPendingValidation() bool {
 	return v.Status == awsacm.DomainStatusPendingValidation
 }
 
+// IsSuccess returns true if a certificate validation's status is SUCCESS
 func (v CertificateValidation) IsSuccess() bool {
 	return v.Status == awsacm.DomainStatusSuccess
 }
 
+// ResourceRecordString returns the resource record for display.
 func (v CertificateValidation) ResourceRecordString() string {
 	if v.ResourceRecord.Type == "" {
 		return ""
@@ -60,26 +68,30 @@ func (v CertificateValidation) ResourceRecordString() string {
 	)
 }
 
+// CertificateResourceRecord contains the DNS record used to validate a certificate.
 type CertificateResourceRecord struct {
 	Type  string
 	Name  string
 	Value string
 }
 
+// Certificates is a collection of certificates.
 type Certificates []Certificate
 
-func (cs Certificates) GetCertificateArns(domainName string) []string {
-	var certificateArns []string
+// GetCertificates returns certificates for the given domain name.
+func (cs Certificates) GetCertificates(domainName string) Certificates {
+	var certificates Certificates
 
 	for _, c := range cs {
 		if c.DomainName == domainName {
-			certificateArns = append(certificateArns, c.Arn)
+			certificates = append(certificates, c)
 		}
 	}
 
-	return certificateArns
+	return certificates
 }
 
+// ValidateAlias checks an alias' length and number of octets for validity.
 func ValidateAlias(alias string) error {
 	if len(alias) < 1 || len(alias) > 253 {
 		return fmt.Errorf("%s: An alias must be between 1 and 253 characters in length", alias)
@@ -96,6 +108,7 @@ func ValidateAlias(alias string) error {
 	return nil
 }
 
+// ValidateDomainName checks a domain names length and number of octets for validity.
 func ValidateDomainName(domainName string) error {
 	if len(domainName) < 1 || len(domainName) > 253 {
 		return fmt.Errorf("%s: The domain name must be between 1 and 253 characters in length", domainName)
@@ -112,6 +125,7 @@ func ValidateDomainName(domainName string) error {
 	return nil
 }
 
+// DeleteCertificate deletes the certificate identified by the given ARN.
 func (acm SDKClient) DeleteCertificate(arn string) error {
 	input := &awsacm.DeleteCertificateInput{
 		CertificateArn: aws.String(arn),
@@ -124,6 +138,8 @@ func (acm SDKClient) DeleteCertificate(arn string) error {
 	return nil
 }
 
+// ImportCertificate creates a new certificate from the provided certificate, private key, and
+// optional certificate chain.
 func (acm SDKClient) ImportCertificate(certificate, privateKey, certificateChain []byte) (string, error) {
 	input := &awsacm.ImportCertificateInput{
 		Certificate: certificate,
@@ -139,6 +155,8 @@ func (acm SDKClient) ImportCertificate(certificate, privateKey, certificateChain
 	return aws.StringValue(resp.CertificateArn), err
 }
 
+// InflateCertificate uses a partially hydrated certificate to fetch the rest of its details and
+// return the full certificate.
 func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 	resp, err := acm.client.DescribeCertificate(
 		&awsacm.DescribeCertificateInput{
@@ -174,6 +192,7 @@ func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 	return c, nil
 }
 
+// ListCertificates returns all certificates associated with the caller's account.
 func (acm SDKClient) ListCertificates() (Certificates, error) {
 	var certificates Certificates
 
@@ -191,13 +210,12 @@ func (acm SDKClient) ListCertificates() (Certificates, error) {
 		return true
 	}
 
-	if err := acm.client.ListCertificatesPages(input, handler); err != nil {
-		return certificates, err
-	}
+	err := acm.client.ListCertificatesPages(input, handler)
 
-	return certificates, nil
+	return certificates, err
 }
 
+// RequestCertificate creates a new certificate.
 func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (string, error) {
 	requestCertificateInput := &awsacm.RequestCertificateInput{
 		DomainName:       aws.String(domainName),
@@ -217,22 +235,7 @@ func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (st
 	return aws.StringValue(resp.CertificateArn), nil
 }
 
-func (acm *SDKClient) DescribeCertificate(domainName string) Certificate {
-	certificates, _ := acm.ListCertificates()
-
-	for _, c := range certificates {
-		if c.DomainName == domainName {
-			certificate, _ := acm.InflateCertificate(c)
-			return certificate
-		}
-	}
-
-	err := fmt.Errorf("Could not find ACM certificate for %s", domainName)
-	console.ErrorExit(err, "Couldn't describe ACM certificate")
-
-	return Certificate{}
-}
-
+// ListCertificateDomainNames is bunk and will be refactored out of existence soon.
 func (acm *SDKClient) ListCertificateDomainNames(certificateArns []string) []string {
 	var domainNames []string
 
