@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	ACM "github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
 	"github.com/spf13/cobra"
 )
 
@@ -18,12 +16,4 @@ provides TLS certificates free of charge for use within AWS resources.`,
 
 func init() {
 	rootCmd.AddCommand(certificateCmd)
-}
-
-func validateDomainName(domainName string) {
-	err := ACM.ValidateDomainName(domainName)
-
-	if err != nil {
-		console.ErrorExit(err, "Invalid domain name")
-	}
 }

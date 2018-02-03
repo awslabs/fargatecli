@@ -15,7 +15,11 @@ type CertificateValidateOperation struct {
 }
 
 func (o *CertificateValidateOperation) Validate() {
-	validateDomainName(o.DomainName)
+	err := ACM.ValidateDomainName(o.DomainName)
+
+	if err != nil {
+		console.ErrorExit(err, "Invalid domain name")
+	}
 }
 
 var certificateValidateCmd = &cobra.Command{
