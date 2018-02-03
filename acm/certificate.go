@@ -229,20 +229,6 @@ func (acm SDKClient) DeleteCertificate(arn string) error {
 	return nil
 }
 
-func (acm *SDKClient) describeCertificate(arn string) *awsacm.CertificateDetail {
-	resp, err := acm.client.DescribeCertificate(
-		&awsacm.DescribeCertificateInput{
-			CertificateArn: aws.String(arn),
-		},
-	)
-
-	if err != nil {
-		console.ErrorExit(err, "Couldn't describe ACM certificate")
-	}
-
-	return resp.Certificate
-}
-
 func (acm SDKClient) ListCertificates() (Certificates, error) {
 	var certificates Certificates
 
