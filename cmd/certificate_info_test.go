@@ -36,7 +36,7 @@ func TestCertificateInfoOperation(t *testing.T) {
 			},
 		},
 	}
-	certificateList := []acm.Certificate{inCertificate}
+	certificateList := acm.Certificates{inCertificate}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -112,7 +112,7 @@ func TestCertificateInfoOperation(t *testing.T) {
 }
 
 func TestCertificateInfoOperationNotFound(t *testing.T) {
-	certificateList := []acm.Certificate{}
+	certificateList := acm.Certificates{}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -140,7 +140,7 @@ func TestCertificateInfoOperationNotFound(t *testing.T) {
 }
 
 func TestCertificateInfoOperationListError(t *testing.T) {
-	certificateList := []acm.Certificate{}
+	certificateList := acm.Certificates{}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -174,7 +174,7 @@ func TestCertificateInfoOperationDescribeError(t *testing.T) {
 		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 	}
-	certificateList := []acm.Certificate{certificate}
+	certificateList := acm.Certificates{certificate}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

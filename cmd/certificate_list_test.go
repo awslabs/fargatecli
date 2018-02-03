@@ -12,7 +12,7 @@ import (
 )
 
 func TestCertificateListOperation(t *testing.T) {
-	certificateList := []acm.Certificate{
+	certificateList := acm.Certificates{
 		acm.Certificate{
 			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
@@ -74,7 +74,7 @@ func TestCertificateListOperation(t *testing.T) {
 }
 
 func TestCertificateListOperationOrdered(t *testing.T) {
-	certificateList := []acm.Certificate{
+	certificateList := acm.Certificates{
 		acm.Certificate{
 			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-f",
 			DomainName: "f.com",
@@ -133,7 +133,7 @@ func TestCertificateListOperationOrdered(t *testing.T) {
 }
 
 func TestCertificateListOperationNotFound(t *testing.T) {
-	certificateList := []acm.Certificate{}
+	certificateList := acm.Certificates{}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -160,7 +160,7 @@ func TestCertificateListOperationNotFound(t *testing.T) {
 }
 
 func TestCertificateListOperationListError(t *testing.T) {
-	certificateList := []acm.Certificate{}
+	certificateList := acm.Certificates{}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -193,7 +193,7 @@ func TestCertificateListOperationDescribeError(t *testing.T) {
 		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 	}
-	certificateList := []acm.Certificate{certificate}
+	certificateList := acm.Certificates{certificate}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

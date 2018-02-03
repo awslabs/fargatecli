@@ -22,31 +22,6 @@ func (c *Certificate) AddValidation(v CertificateValidation) {
 	c.Validations = append(c.Validations, v)
 }
 
-func (c *Certificate) Inflate(d *awsacm.CertificateDetail) *Certificate {
-	c.Status = aws.StringValue(d.Status)
-	c.SubjectAlternativeNames = aws.StringValueSlice(d.SubjectAlternativeNames)
-	c.Type = aws.StringValue(d.Type)
-
-	for _, domainValidation := range d.DomainValidationOptions {
-		validation := CertificateValidation{
-			Status:     aws.StringValue(domainValidation.ValidationStatus),
-			DomainName: aws.StringValue(domainValidation.DomainName),
-		}
-
-		if domainValidation.ResourceRecord != nil {
-			validation.ResourceRecord = CertificateResourceRecord{
-				Type:  aws.StringValue(domainValidation.ResourceRecord.Type),
-				Name:  aws.StringValue(domainValidation.ResourceRecord.Name),
-				Value: aws.StringValue(domainValidation.ResourceRecord.Value),
-			}
-		}
-
-		c.AddValidation(validation)
-	}
-
-	return c
-}
-
 func (c *Certificate) IsIssued() bool {
 	return c.Status == awsacm.CertificateStatusIssued
 }
@@ -156,26 +131,20 @@ func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (st
 	return aws.StringValue(resp.CertificateArn), nil
 }
 
-func (acm *SDKClient) DescribeCertificate(domainName string) *Certificate {
-	var certificate *Certificate
-
+func (acm *SDKClient) DescribeCertificate(domainName string) Certificate {
 	certificates, _ := acm.ListCertificates()
 
 	for _, c := range certificates {
 		if c.DomainName == domainName {
-			certificateDetail := acm.describeCertificate(c.Arn)
-			certificate = c.Inflate(certificateDetail)
-
-			break
+			certificate, _ := acm.InflateCertificate(c)
+			return certificate
 		}
 	}
 
-	if certificate == nil {
-		err := fmt.Errorf("Could not find ACM certificate for %s", domainName)
-		console.ErrorExit(err, "Couldn't describe ACM certificate")
-	}
+	err := fmt.Errorf("Could not find ACM certificate for %s", domainName)
+	console.ErrorExit(err, "Couldn't describe ACM certificate")
 
-	return certificate
+	return Certificate{}
 }
 
 func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
