@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
 	"github.com/spf13/cobra"
 	"golang.org/x/time/rate"
 )
@@ -28,7 +27,7 @@ func (o certificateListOperation) execute() {
 	}
 
 	if len(certificates) == 0 {
-		console.Info("No certificates found")
+		o.output.Info("No certificates found")
 		return
 	}
 
