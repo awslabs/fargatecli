@@ -86,7 +86,7 @@ func ValidateAlias(alias string) error {
 	}
 
 	if strings.Count(alias, ".") > 252 {
-		return fmt.Errorf("%s: An alias domain name cannot exceed 253 octets", alias)
+		return fmt.Errorf("%s: An alias cannot exceed 253 octets", alias)
 	}
 
 	if strings.Count(alias, ".") == 0 {

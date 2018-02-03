@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -12,6 +13,193 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/jpignata/fargate/acm/mock/sdk"
 )
+
+func TestValidateAlias(t *testing.T) {
+	var tests = []struct {
+		in  string
+		out error
+	}{
+		{"valid.example.com", nil},
+		{"invalid", errors.New("An alias requires at least 2 octets")},
+		{strings.Repeat(".", 253), errors.New("An alias cannot exceed 253 octets")},
+		{strings.Repeat("a", 255), errors.New("An alias must be between 1 and 253 characters in length")},
+		{"", errors.New("An alias must be between 1 and 253 characters in length")},
+	}
+
+	for _, test := range tests {
+		err := ValidateAlias(test.in)
+
+		switch {
+		case test.out == nil:
+			if err != nil {
+				t.Errorf("Expected nil, got %s", err)
+			}
+		default:
+			if !strings.Contains(err.Error(), test.out.Error()) {
+				t.Errorf("Expected contains %s, got %s", test.out.Error(), err.Error())
+			}
+		}
+	}
+}
+
+func TestValidateDomainName(t *testing.T) {
+	var tests = []struct {
+		in  string
+		out error
+	}{
+		{"valid.example.com", nil},
+		{"invalid", errors.New("The domain name requires at least 2 octets")},
+		{strings.Repeat(".", 63), errors.New("The domain name cannot exceed 63 octets")},
+		{strings.Repeat("a", 255), errors.New("The domain name must be between 1 and 253 characters in length")},
+		{"", errors.New("The domain name must be between 1 and 253 characters in length")},
+	}
+
+	for _, test := range tests {
+		err := ValidateDomainName(test.in)
+
+		switch {
+		case test.out == nil:
+			if err != nil {
+				t.Errorf("Expected nil, got %s", err)
+			}
+		default:
+			if !strings.Contains(err.Error(), test.out.Error()) {
+				t.Errorf("Expected contains %s, got %s", test.out.Error(), err.Error())
+			}
+		}
+	}
+}
+
+func TestCertificateIsPendingValidation(t *testing.T) {
+	var tests = []struct {
+		in  Certificate
+		out bool
+	}{
+		{Certificate{Status: "PENDING_VALIDATION"}, true},
+		{Certificate{Status: "ISSUED"}, false},
+		{Certificate{Status: ""}, false},
+	}
+
+	for _, test := range tests {
+		if test.in.IsPendingValidation() != test.out {
+			t.Errorf("Expected %s to be IsPendingValidation", test.in.Status)
+		}
+	}
+}
+
+func TestCertificateIsIssued(t *testing.T) {
+	var tests = []struct {
+		in  Certificate
+		out bool
+	}{
+		{Certificate{Status: "ISSUED"}, true},
+		{Certificate{Status: "PENDING_VALIDATION"}, false},
+		{Certificate{Status: ""}, false},
+	}
+
+	for _, test := range tests {
+		if test.in.IsIssued() != test.out {
+			t.Errorf("Expected %s to be IsIssued", test.in.Status)
+		}
+	}
+}
+
+func TestCertificateValidationIsPendingValidation(t *testing.T) {
+	var tests = []struct {
+		in  CertificateValidation
+		out bool
+	}{
+		{CertificateValidation{Status: "PENDING_VALIDATION"}, true},
+		{CertificateValidation{Status: "SUCCESS"}, false},
+		{CertificateValidation{Status: ""}, false},
+	}
+
+	for _, test := range tests {
+		if test.in.IsPendingValidation() != test.out {
+			t.Errorf("Expected %s to be IsPendingValidation", test.in.Status)
+		}
+	}
+}
+
+func TestCertificateValidationIsSuccess(t *testing.T) {
+	var tests = []struct {
+		in  CertificateValidation
+		out bool
+	}{
+		{CertificateValidation{Status: "SUCCESS"}, true},
+		{CertificateValidation{Status: "PENDING_VALIDATION"}, false},
+		{CertificateValidation{Status: ""}, false},
+	}
+
+	for _, test := range tests {
+		if test.in.IsSuccess() != test.out {
+			t.Errorf("Expected %s to be IsSuccess", test.in.Status)
+		}
+	}
+}
+
+func TestCertificateValidationIsFailed(t *testing.T) {
+	var tests = []struct {
+		in  CertificateValidation
+		out bool
+	}{
+		{CertificateValidation{Status: "FAILED"}, true},
+		{CertificateValidation{Status: "PENDING_VALIDATION"}, false},
+		{CertificateValidation{Status: ""}, false},
+	}
+
+	for _, test := range tests {
+		if test.in.IsFailed() != test.out {
+			t.Errorf("Expected %s to be IsFailed", test.in.Status)
+		}
+	}
+}
+
+func TestCertificateValidationResourceRecordString(t *testing.T) {
+	var tests = []struct {
+		in  CertificateValidation
+		out string
+	}{
+		{CertificateValidation{}, ""},
+		{CertificateValidation{
+			ResourceRecord: CertificateResourceRecord{
+				Type:  "CNAME",
+				Name:  "name",
+				Value: "value",
+			},
+		}, "CNAME name -> value"},
+	}
+
+	for _, test := range tests {
+		if test.in.ResourceRecordString() != test.out {
+			t.Errorf("Expected ResourceRecordString() == CNAME name -> value, got: %s", test.in.ResourceRecordString())
+		}
+	}
+}
+
+func TestCertificatesGetCertificateArns(t *testing.T) {
+	certificates := Certificates{
+		Certificate{DomainName: "staging.example.com", Arn: "staging.example.com-1"},
+		Certificate{DomainName: "www.example.com", Arn: "www.example.com-1"},
+		Certificate{DomainName: "www.example.com", Arn: "www.example.com-2"},
+	}
+
+	var empty []string
+	var tests = []struct {
+		in  string
+		out []string
+	}{
+		{"staging.example.com", []string{"staging.example.com-1"}},
+		{"www.example.com", []string{"www.example.com-1", "www.example.com-2"}},
+		{"www.amazon.com", empty},
+	}
+
+	for _, test := range tests {
+		if !reflect.DeepEqual(certificates.GetCertificateArns(test.in), test.out) {
+			t.Errorf("Expected %s, got: %s", test.out, certificates.GetCertificateArns(test.in))
+		}
+	}
+}
 
 func TestRequestCertificate(t *testing.T) {
 	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
