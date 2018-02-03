@@ -124,7 +124,7 @@ func TestCertificateListOperationOrdered(t *testing.T) {
 			continue
 		}
 
-		// Compare domain to the domain of the previous row, check it is lexigaphically after
+		// Compare domain to the domain of the previous row, check it is lexicographically subsequent
 		if mockOutput.Tables[0].Rows[i-1][0] > r[0] {
 			t.Errorf("Expected alphabetical order, got %+v", mockOutput.Tables[0].Rows[1:len(mockOutput.Tables[0].Rows)+1])
 			break
