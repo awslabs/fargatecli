@@ -34,8 +34,8 @@ func TestCertificateDestroyOperation(t *testing.T) {
 	}.execute()
 
 	if len(mockOutput.FatalMsgs) > 0 {
-		for msg, err := range mockOutput.FatalMsgs {
-			t.Errorf(msg, err)
+		for _, fatal := range mockOutput.FatalMsgs {
+			t.Errorf(fatal.Msg, fatal.Errors)
 		}
 	}
 
@@ -106,7 +106,7 @@ func TestCertificateDestroyOperationMoreThanOneCertFound(t *testing.T) {
 	}
 }
 
-func TestCertificateDestroyOperationError(t *testing.T) {
+func TestCertificateDestroyOperationListError(t *testing.T) {
 	domainName := "example.com"
 
 	mockCtrl := gomock.NewController(t)
@@ -116,6 +116,38 @@ func TestCertificateDestroyOperationError(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, errors.New("Something went boom."))
+
+	certificateDestroyOperation{
+		acm:        mockClient,
+		domainName: domainName,
+		output:     mockOutput,
+	}.execute()
+
+	if len(mockOutput.FatalMsgs) == 0 {
+		t.Errorf("Expected fatal output from operation, got none")
+	}
+
+	if !mockOutput.Exited {
+		t.Errorf("Expected premature exit; didn't")
+	}
+}
+
+func TestCertificateDestroyOperationDeleteError(t *testing.T) {
+	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	domainName := "example.com"
+	certificate := acm.Certificate{
+		Arn:        certificateArn,
+		DomainName: domainName,
+	}
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockClient := client.NewMockClient(mockCtrl)
+	mockOutput := &mock.Output{}
+
+	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
+	mockClient.EXPECT().DeleteCertificate(certificateArn).Return(errors.New(":-("))
 
 	certificateDestroyOperation{
 		acm:        mockClient,

@@ -22,7 +22,7 @@ func (o certificateInfoOperation) execute() {
 	if err != nil {
 		switch err {
 		case errCertificateNotFound:
-			o.output.Info("Not certificate found for %s", o.domainName)
+			o.output.Info("No certificate found for %s", o.domainName)
 		default:
 			o.output.Fatal(err, "Could not find certificate for %s", o.domainName)
 		}

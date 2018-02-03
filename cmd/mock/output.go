@@ -5,17 +5,22 @@ import "fmt"
 type Output struct {
 	DebugMsgs    []string
 	Exited       bool
-	FatalMsgs    map[string][]error
+	FatalMsgs    []Fatal
 	SayMsgs      []string
 	InfoMsgs     []string
 	WarnMsgs     []string
-	KeyValueMsgs []string
+	KeyValueMsgs map[string]string
 	Tables       []Table
 }
 
 type Table struct {
 	Header string
 	Rows   [][]string
+}
+
+type Fatal struct {
+	Msg    string
+	Errors []error
 }
 
 func (c *Output) Info(msg string, a ...interface{}) {
@@ -27,20 +32,11 @@ func (c *Output) Warn(msg string, a ...interface{}) {
 }
 
 func (c *Output) Fatal(err error, msg string, a ...interface{}) {
-	if c.FatalMsgs == nil {
-		c.FatalMsgs = make(map[string][]error)
-	}
-
-	c.FatalMsgs[fmt.Sprintf(msg, a...)] = []error{err}
-	c.Exited = true
+	c.Fatals([]error{err}, msg, a...)
 }
 
 func (c *Output) Fatals(errs []error, msg string, a ...interface{}) {
-	if c.FatalMsgs == nil {
-		c.FatalMsgs = make(map[string][]error)
-	}
-
-	c.FatalMsgs[fmt.Sprintf(msg, a...)] = errs
+	c.FatalMsgs = append(c.FatalMsgs, Fatal{Msg: fmt.Sprintf(msg, a...), Errors: errs})
 	c.Exited = true
 }
 
@@ -53,7 +49,11 @@ func (c *Output) Debug(msg string, a ...interface{}) {
 }
 
 func (c *Output) KeyValue(key, value string, indent int, a ...interface{}) {
-	c.KeyValueMsgs = append(c.KeyValueMsgs, fmt.Sprintf("%s: %s", key, value))
+	if c.KeyValueMsgs == nil {
+		c.KeyValueMsgs = make(map[string]string)
+	}
+
+	c.KeyValueMsgs[key] = value
 }
 
 func (c *Output) Table(header string, rows [][]string) {
