@@ -10,9 +10,7 @@ func (ecs *ECS) CreateCluster() (string, error) {
 		ClusterName: aws.String(ecs.ClusterName),
 	}
 
-	if output, err := ecs.svc.CreateCluster(input); err == nil {
-		return aws.StringValue(output.Cluster.ClusterArn), nil
-	} else {
-		return "", err
-	}
+	resp, err := ecs.svc.CreateCluster(input)
+
+	return aws.StringValue(resp.Cluster.ClusterArn), err
 }
