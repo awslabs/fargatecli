@@ -610,7 +610,6 @@ fargate certificate info <domain-name>
 
 Inspect certificate
 
-
 Show extended information for a certificate. Includes each validation for the
 certificate which shows DNS records which must be created to validate domain
 ownership.
