@@ -1,6 +1,6 @@
 .PHONY: mocks test build dist
 
-PACKAGES := $(shell go list ./...)
+PACKAGES := $(shell go list ./... | grep -v /mock)
 
 mocks:
 	go generate $(PACKAGES)
