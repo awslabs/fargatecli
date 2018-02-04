@@ -9,7 +9,6 @@ import (
 	"github.com/jpignata/fargate/console"
 	EC2 "github.com/jpignata/fargate/ec2"
 	ELBV2 "github.com/jpignata/fargate/elbv2"
-	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +36,7 @@ func (o *LbCreateOperation) SetCertificateArns(certificateDomainNames []string) 
 		if certificate.IsIssued() {
 			certificateArns = append(certificateArns, certificate.Arn)
 		} else {
-			err := fmt.Errorf("Certificate is in state %s", util.Humanize(certificate.Status))
+			err := fmt.Errorf("Certificate is in state %s", Humanize(certificate.Status))
 			console.ErrorExit(err, "Couldn't use certificate %s", certificateDomainName)
 		}
 	}

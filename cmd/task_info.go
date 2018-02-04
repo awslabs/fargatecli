@@ -7,7 +7,6 @@ import (
 	"github.com/jpignata/fargate/console"
 	EC2 "github.com/jpignata/fargate/ec2"
 	ECS "github.com/jpignata/fargate/ecs"
-	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
 
@@ -78,7 +77,7 @@ func getTaskInfo(operation *TaskInfoOperation) {
 
 		console.KeyValue("  "+task.TaskId, "\n")
 		console.KeyValue("    Image", "%s\n", task.Image)
-		console.KeyValue("    Status", "%s\n", util.Humanize(task.LastStatus))
+		console.KeyValue("    Status", "%s\n", Humanize(task.LastStatus))
 		console.KeyValue("    Started At", "%s\n", task.CreatedAt)
 		console.KeyValue("    IP", "%s\n", eni.PublicIpAddress)
 		console.KeyValue("    CPU", "%s\n", task.Cpu)

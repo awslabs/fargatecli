@@ -8,7 +8,6 @@ import (
 	"github.com/jpignata/fargate/console"
 	EC2 "github.com/jpignata/fargate/ec2"
 	ECS "github.com/jpignata/fargate/ecs"
-	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
 
@@ -57,7 +56,7 @@ func getServiceProcessList(operation *ServiceProcessListOperation) {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 				t.TaskId,
 				t.Image,
-				util.Humanize(t.LastStatus),
+				Humanize(t.LastStatus),
 				t.RunningFor(),
 				enis[t.EniId].PublicIpAddress,
 				t.Cpu,

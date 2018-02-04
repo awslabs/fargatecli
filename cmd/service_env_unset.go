@@ -5,7 +5,6 @@ import (
 
 	"github.com/jpignata/fargate/console"
 	ECS "github.com/jpignata/fargate/ecs"
-	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +20,7 @@ func (o *ServiceEnvUnsetOperation) Validate() {
 }
 
 func (o *ServiceEnvUnsetOperation) SetKeys(keys []string) {
-	o.Keys = util.Map(keys, strings.ToUpper)
+	o.Keys = Map(keys, strings.ToUpper)
 }
 
 var serviceEnvUnsetCmd = &cobra.Command{

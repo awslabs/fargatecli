@@ -12,7 +12,6 @@ import (
 	EC2 "github.com/jpignata/fargate/ec2"
 	ECS "github.com/jpignata/fargate/ecs"
 	ELBV2 "github.com/jpignata/fargate/elbv2"
-	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
 
@@ -141,7 +140,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 				t.TaskId,
 				t.Image,
-				util.Humanize(t.LastStatus),
+				Humanize(t.LastStatus),
 				t.RunningFor(),
 				enis[t.EniId].PublicIpAddress,
 				t.Cpu,
@@ -164,7 +163,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%d\t%d\t%d\n",
 				d.Id,
 				d.Image,
-				util.Humanize(d.Status),
+				Humanize(d.Status),
 				d.CreatedAt,
 				d.DesiredCount,
 				d.RunningCount,

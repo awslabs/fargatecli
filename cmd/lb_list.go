@@ -8,7 +8,6 @@ import (
 
 	"github.com/jpignata/fargate/console"
 	ELBV2 "github.com/jpignata/fargate/elbv2"
-	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
 
@@ -45,8 +44,8 @@ func listLoadBalancers() {
 
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 			loadBalancer.Name,
-			util.Humanize(loadBalancer.Type),
-			util.Humanize(loadBalancer.State),
+			Humanize(loadBalancer.Type),
+			Humanize(loadBalancer.State),
 			loadBalancer.DNSName,
 			strings.Join(listeners, ", "),
 		)

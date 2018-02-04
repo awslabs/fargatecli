@@ -11,7 +11,6 @@ import (
 	"github.com/jpignata/fargate/console"
 	ECS "github.com/jpignata/fargate/ecs"
 	ELBV2 "github.com/jpignata/fargate/elbv2"
-	"github.com/jpignata/fargate/util"
 	"github.com/spf13/cobra"
 )
 
@@ -44,8 +43,8 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 	services := ecs.ListServices()
 
 	console.KeyValue("Load Balancer Name", "%s\n", loadBalancer.Name)
-	console.KeyValue("Status", "%s\n", util.Humanize(loadBalancer.State))
-	console.KeyValue("Type", "%s\n", util.Humanize(loadBalancer.Type))
+	console.KeyValue("Status", "%s\n", Humanize(loadBalancer.State))
+	console.KeyValue("Type", "%s\n", Humanize(loadBalancer.Type))
 	console.KeyValue("DNS Name", "%s\n", loadBalancer.DNSName)
 	console.KeyValue("Subnets", "%s\n", strings.Join(loadBalancer.SubnetIds, ", "))
 	console.KeyValue("Security Groups", "%s\n", strings.Join(loadBalancer.SecurityGroupIds, ", "))
