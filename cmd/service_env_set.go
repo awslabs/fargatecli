@@ -30,6 +30,7 @@ var serviceEnvSetCmd = &cobra.Command{
 
 At least one environment variable must be specified via the --env flag. Specify
 --env with a key=value parameter multiple times to add multiple variables.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceEnvSetOperation{
 			ServiceName: args[0],

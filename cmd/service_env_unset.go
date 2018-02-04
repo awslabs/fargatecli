@@ -31,6 +31,7 @@ var serviceEnvUnsetCmd = &cobra.Command{
 
 Unsets the environment variable specified via the --key flag. Specify --key with
 a key name multiple times to unset multiple variables.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceEnvUnsetOperation{
 			ServiceName: args[0],
