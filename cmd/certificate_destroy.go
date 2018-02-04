@@ -1,13 +1,40 @@
 package cmd
 
 import (
-	ACM "github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
+	"github.com/jpignata/fargate/acm"
 	"github.com/spf13/cobra"
 )
 
-type CertificateDestroyOperation struct {
-	DomainName string
+type certificateDestroyOperation struct {
+	certificateOperation
+	domainName string
+	output     Output
+}
+
+func (o certificateDestroyOperation) execute() {
+	certificate, err := o.findCertificate(o.domainName, o.output)
+
+	if err != nil {
+		switch err {
+		case errCertificateNotFound:
+			o.output.Fatal(err, "Could not find certificate for %s", o.domainName)
+			return
+		case errCertificateTooManyFound:
+			o.output.Fatal(err, "Multiple certificates found for %s, for safety please destroy the one you intend via the AWS CLI", o.domainName)
+			return
+		default:
+			o.output.Fatal(err, "Could not destroy certificate")
+			return
+		}
+	}
+
+	o.output.Debug("Deleting certificate [API=acm Action=DeleteCertificate ARN=%s]", certificate.Arn)
+	if err := o.acm.DeleteCertificate(certificate.Arn); err != nil {
+		o.output.Fatal(err, "Could not destroy certificate")
+		return
+	}
+
+	o.output.Info("Destroyed certificate %s", o.domainName)
 }
 
 var certificateDestroyCmd = &cobra.Command{
@@ -15,25 +42,20 @@ var certificateDestroyCmd = &cobra.Command{
 	Short: "Destroy certificate",
 	Long: `Destroy certificate
 
-In order to destroy a service, it must not be in use by any load balancers or
+In order to destroy a certificate, it must not be in use by any load balancers or
 any other AWS resources.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		operation := &CertificateDestroyOperation{
-			DomainName: args[0],
-		}
-
-		destroyCertificate(operation)
+		certificateDestroyOperation{
+			certificateOperation: certificateOperation{
+				acm: acm.New(sess),
+			},
+			domainName: args[0],
+			output:     output,
+		}.execute()
 	},
 }
 
 func init() {
 	certificateCmd.AddCommand(certificateDestroyCmd)
-}
-
-func destroyCertificate(operation *CertificateDestroyOperation) {
-	acm := ACM.New(sess)
-
-	acm.DeleteCertificate(operation.DomainName)
-	console.Info("Destroyed certificate %s", operation.DomainName)
 }

@@ -3,23 +3,14 @@ package ecs
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
-	"github.com/jpignata/fargate/console"
 )
 
-func (ecs *ECS) CreateCluster() error {
-	console.Debug("Creating ECS cluster")
-
-	_, err := ecs.svc.CreateCluster(
-		&awsecs.CreateClusterInput{
-			ClusterName: aws.String(ecs.ClusterName),
-		},
-	)
-
-	if err != nil {
-		return err
+func (ecs *ECS) CreateCluster() (string, error) {
+	input := &awsecs.CreateClusterInput{
+		ClusterName: aws.String(ecs.ClusterName),
 	}
 
-	console.Debug("Created ECS cluster %s", ecs.ClusterName)
+	resp, err := ecs.svc.CreateCluster(input)
 
-	return nil
+	return aws.StringValue(resp.Cluster.ClusterArn), err
 }

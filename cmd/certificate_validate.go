@@ -2,20 +2,70 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
-	ACM "github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
-	Route53 "github.com/jpignata/fargate/route53"
-	"github.com/jpignata/fargate/util"
+	"github.com/jpignata/fargate/acm"
+	"github.com/jpignata/fargate/route53"
 	"github.com/spf13/cobra"
 )
 
-type CertificateValidateOperation struct {
-	DomainName string
+type certificateValidateOperation struct {
+	certificateOperation
+	domainName string
+	output     Output
+	route53    route53.Client
 }
 
-func (o *CertificateValidateOperation) Validate() {
-	validateDomainName(o.DomainName)
+func (o certificateValidateOperation) execute() {
+	certificate, err := o.findCertificate(o.domainName, o.output)
+
+	if err != nil {
+		o.output.Fatal(err, "Could not validate certificate")
+		return
+	}
+
+	if !certificate.IsPendingValidation() {
+		o.output.Fatal(
+			fmt.Errorf("Certificate %s is in state %s", o.domainName, strings.ToLower(Humanize(certificate.Status))),
+			"Could not validate certificate",
+		)
+		return
+	}
+
+	o.output.Debug("Listing hosted zones [API=route53 Action=ListHostedZones]")
+	hostedZones, err := o.route53.ListHostedZones()
+
+	if err != nil {
+		o.output.Fatal(err, "Could not validate certificate")
+		return
+	}
+
+	for _, v := range certificate.Validations {
+		switch {
+		case v.IsPendingValidation():
+			if zone, ok := hostedZones.FindSuperDomainOf(v.DomainName); ok {
+				o.output.Debug("Creating resource record [API=route53 Action=ChangeResourceRecordSets HostedZone=%s]", zone.ID)
+				id, err := o.route53.CreateResourceRecord(zone, v.ResourceRecord.Type, v.ResourceRecord.Name, v.ResourceRecord.Value)
+
+				if err != nil {
+					o.output.Fatal(err, "Could not validate certificate")
+					return
+				}
+
+				o.output.Debug("Created resource record [ChangeID=%s]", id)
+				o.output.Info("[%s] created validation record", v.DomainName)
+			} else {
+				o.output.Warn("[%s] could not find zone in Amazon Route 53", v.DomainName)
+			}
+		case v.IsSuccess():
+			o.output.Info("[%s] already validated", v.DomainName)
+		case v.IsFailed():
+			o.output.Fatal(nil, "[%s] failed validation", v.DomainName)
+			return
+		default:
+			o.output.Warn("[%s] unexpected status: %s", v.DomainName, strings.ToLower(Humanize(v.Status)))
+		}
+	}
 }
 
 var certificateValidateCmd = &cobra.Command{
@@ -34,76 +84,17 @@ These records are also available in fargate certificate info \<domain-name>.
 AWS Certificate Manager may take up to several hours after the DNS records are
 created to complete validation and issue the certificate.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		operation := &CertificateValidateOperation{
-			DomainName: args[0],
-		}
-
-		validateCertificate(operation)
+		certificateValidateOperation{
+			certificateOperation: certificateOperation{
+				acm: acm.New(sess),
+			},
+			domainName: args[0],
+			output:     output,
+			route53:    route53.New(sess),
+		}.execute()
 	},
 }
 
 func init() {
 	certificateCmd.AddCommand(certificateValidateCmd)
-}
-
-func validateCertificate(operation *CertificateValidateOperation) {
-	var successfulValidations int
-
-	route53 := Route53.New(sess)
-	acm := ACM.New(sess)
-
-	hostedZones := route53.ListHostedZones()
-	certificate := acm.DescribeCertificate(operation.DomainName)
-
-	if !certificate.IsPendingValidation() {
-		console.ErrorExit(fmt.Errorf("Certificate status is %s", util.Humanize(certificate.Status)), "Could not validate certificate")
-	}
-
-	for _, certificateValidation := range certificate.Validations {
-		if certificateValidation.IsPendingValidation() {
-			if createResourceRecord(certificateValidation, route53, hostedZones) {
-				successfulValidations++
-			}
-		} else if certificateValidation.IsSuccess() {
-			console.Info("[%s] Domain has been validated", certificateValidation.DomainName)
-		} else if certificateValidation.IsFailed() {
-			console.Info("[%s] Domain has failed validation; please delete the certificate and re-request", certificateValidation.DomainName)
-		}
-	}
-
-	if successfulValidations > 0 {
-		console.Info("[%s] Record validation could take up to several hours to complete", operation.DomainName)
-		console.Info("[%s] To view the status of pending validations, run: `fargate certificate info %s`", operation.DomainName, operation.DomainName)
-	}
-}
-
-func createResourceRecord(v ACM.CertificateValidation, route53 Route53.Route53, hostedZones []Route53.HostedZone) bool {
-	for _, hostedZone := range hostedZones {
-		if hostedZone.IsSuperDomainOf(v.DomainName) {
-			console.Debug("[%s] Found Route53 hosted zone", v.DomainName)
-			console.Debug("[%s] Creating %s %s -> %s",
-				v.DomainName,
-				v.ResourceRecord.Type,
-				v.ResourceRecord.Name,
-				v.ResourceRecord.Value,
-			)
-
-			route53.CreateResourceRecord(
-				hostedZone,
-				v.ResourceRecord.Type,
-				v.ResourceRecord.Name,
-				v.ResourceRecord.Value,
-			)
-
-			console.Info("[%s] Created validation record", v.DomainName)
-
-			return true
-		}
-	}
-
-	console.Issue("[%s] Could not find Route53 hosted zone", v.DomainName)
-	console.Info("[%s]   If you're hosting this domain elsewhere or in another AWS account, please manually create the validation record:", v.DomainName)
-	console.Info("[%s]   %s %s -> %s", v.DomainName, v.ResourceRecord.Type, v.ResourceRecord.Name, v.ResourceRecord.Value)
-
-	return false
 }

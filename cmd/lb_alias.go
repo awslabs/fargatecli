@@ -40,16 +40,20 @@ func createAliasRecord(operation *LbAliasOperation) {
 	route53 := Route53.New(sess)
 	elbv2 := ELBV2.New(sess)
 
-	hostedZones := route53.ListHostedZones()
+	hostedZones, err := route53.ListHostedZones()
+
+	if err != nil {
+		console.ErrorExit(err, "Could not alias load balancer")
+		return
+	}
+
 	loadBalancer := elbv2.DescribeLoadBalancer(operation.LoadBalancerName)
 
-	for _, hostedZone := range hostedZones {
-		if hostedZone.IsSuperDomainOf(operation.AliasDomain) {
-			route53.CreateAlias(hostedZone, "A", operation.AliasDomain, loadBalancer.DNSName, loadBalancer.HostedZoneId)
-			console.Info("Created alias record (%s -> %s)", operation.AliasDomain, loadBalancer.DNSName)
+	if hostedZone, ok := hostedZones.FindSuperDomainOf(operation.AliasDomain); ok {
+		route53.CreateAlias(hostedZone, "A", operation.AliasDomain, loadBalancer.DNSName, loadBalancer.HostedZoneId)
+		console.Info("Created alias record (%s -> %s)", operation.AliasDomain, loadBalancer.DNSName)
 
-			return
-		}
+		return
 	}
 
 	console.Issue("Could not find hosted zone for %s", operation.AliasDomain)

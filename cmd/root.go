@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -21,14 +22,15 @@ const (
 	defaultClusterName = "fargate"
 	defaultRegion      = "us-east-1"
 
-	typeApplication       string = "application"
-	typeNetwork           string = "network"
-	protocolHttp          string = "HTTP"
-	protocolHttps         string = "HTTPS"
-	protocolTcp           string = "TCP"
-	mebibytesInGibibyte   int64  = 1024
-	validProtocolsPattern string = "(?i)\\ATCP|HTTP(S)?\\z"
-	validRuleTypesPattern string = "(?i)^host|path$"
+	mebibytesInGibibyte   = 1024
+	protocolHttp          = "HTTP"
+	protocolHttps         = "HTTPS"
+	protocolTcp           = "TCP"
+	runtimeMacOS          = "darwin"
+	typeApplication       = "application"
+	typeNetwork           = "network"
+	validProtocolsPattern = "(?i)\\ATCP|HTTP(S)?\\z"
+	validRuleTypesPattern = "(?i)^host|path$"
 )
 
 var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings
@@ -47,6 +49,8 @@ var validRegions = []string{"us-east-1"}
 var (
 	clusterName string
 	noColor     bool
+	noEmoji     bool
+	output      ConsoleOutput
 	region      string
 	sess        *session.Session
 	verbose     bool
@@ -77,6 +81,8 @@ including Amazon Elastic Container Service (ECS), Amazon Elastic Container
 Registry (ECR), Elastic Load Balancing, AWS Certificate Manager, Amazon
 CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		output = ConsoleOutput{}
+
 		if cmd.Parent().Name() == "fargate" {
 			return
 		}
@@ -84,10 +90,18 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 		if verbose {
 			verbose = true
 			console.Verbose = true
+			output.Verbose = true
 		}
 
-		if noColor || !terminal.IsTerminal(int(os.Stdout.Fd())) {
-			console.Color = false
+		if terminal.IsTerminal(int(os.Stdout.Fd())) {
+			if !noColor {
+				console.Color = true
+				output.Color = true
+			}
+
+			if runtime.GOOS == runtimeMacOS && !noEmoji {
+				output.Emoji = true
+			}
 		}
 
 		envAwsDefaultRegion := os.Getenv("AWS_DEFAULT_REGION")
@@ -111,12 +125,16 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			console.IssueExit("Invalid region: %s [valid regions: %s]", region, strings.Join(validRegions, ", "))
 		}
 
+		config := &aws.Config{
+			Region: aws.String(region),
+		}
+
+		if verbose {
+			config.LogLevel = aws.LogLevel(aws.LogDebugWithHTTPBody)
+		}
+
 		sess = session.Must(
-			session.NewSession(
-				&aws.Config{
-					Region: aws.String(region),
-				},
-			),
+			session.NewSession(config),
 		)
 
 		_, err := sess.Config.Credentials.Get()
@@ -139,7 +157,15 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			clusterName = defaultClusterName
 			ecs := ECS.New(sess, clusterName)
 
-			ecs.CreateCluster()
+			output.Debug("Creating default cluster [API=ecs Action=CreateCluster]")
+
+			arn, err := ecs.CreateCluster()
+
+			if err == nil {
+				output.Debug("Created default cluster [ARN=%s]", arn)
+			} else {
+				output.Fatal(err, "Could not create default cluster")
+			}
 		}
 	},
 }
@@ -154,6 +180,10 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&region, "region", "", `AWS region (default "us-east-1")`)
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Disable color output")
 	rootCmd.PersistentFlags().StringVar(&clusterName, "cluster", "", `ECS cluster name (default "fargate")`)
+
+	if runtime.GOOS == runtimeMacOS {
+		rootCmd.PersistentFlags().BoolVar(&noEmoji, "no-emoji", false, "Disable emoji output")
+	}
 }
 
 func inflatePort(src string) (port Port) {

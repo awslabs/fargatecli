@@ -582,7 +582,7 @@ fargate certificate import <domain-name> --certificate <filename> --key <filenam
 
 Import a certificate
 
-Upload a certificate from a certificate file, a private key file, an optionally
+Upload a certificate from a certificate file, a private key file, and optionally
 an intermediate certificate chain file. The files must be PEM-encoded and the
 private key must not be encrypted or protected by a passphrase. See the
 [AWS Certificate Manager documentation][acm-import-cert] for more details.
@@ -610,9 +610,9 @@ fargate certificate info <domain-name>
 
 Inspect certificate
 
-Show extended information for a certificate including each validation for the
-certificate including any DNS records which must be created to validate
-domain ownership.
+Show extended information for a certificate. Includes each validation for the
+certificate which shows DNS records which must be created to validate domain
+ownership.
 
 ##### fargate certificate validate
 
@@ -640,7 +640,7 @@ fargate certificate destroy <domain-name>
 
 Destroy certificate
 
-In order to destroy a service, it must not be in use by any load balancers or
+In order to destroy a certificate, it must not be in use by any load balancers or
 any other AWS resources.
 
 [region-table]: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
@@ -650,4 +650,4 @@ any other AWS resources.
 [go-iam-roles-for-ec2-instances]: http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#iam-roles-for-ec2-instances
 [go-specifying-credentials]: http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 [cwl-filter-expression]: http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events
-[acm-import-cert]: http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html 
+[acm-import-cert]: http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html
