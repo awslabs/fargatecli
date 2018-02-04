@@ -13,6 +13,7 @@ type ServiceEnvListOperation struct {
 var serviceEnvListCmd = &cobra.Command{
 	Use:   "list <service-name>",
 	Short: "Show environment variables",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceEnvListOperation{
 			ServiceName: args[0],
