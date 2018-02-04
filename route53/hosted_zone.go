@@ -69,7 +69,7 @@ func (route53 SDKClient) CreateResourceRecord(h HostedZone, recordType, name, va
 }
 
 // CreateAlias creates an alias record in an Amazon Route 53 hosted zone.
-func (route53 SDKClient) CreateAlias(h HostedZone, recordType, name, target, targetHostedZone string) (string, error) {
+func (route53 SDKClient) CreateAlias(h HostedZone, recordType, name, target, targetHostedZoneID string) (string, error) {
 	change := &awsroute53.Change{
 		Action: aws.String(awsroute53.ChangeActionUpsert),
 		ResourceRecordSet: &awsroute53.ResourceRecordSet{
@@ -78,7 +78,7 @@ func (route53 SDKClient) CreateAlias(h HostedZone, recordType, name, target, tar
 			AliasTarget: &awsroute53.AliasTarget{
 				DNSName:              aws.String(target),
 				EvaluateTargetHealth: aws.Bool(false),
-				HostedZoneId:         aws.String(targetHostedZone),
+				HostedZoneId:         aws.String(targetHostedZoneID),
 			},
 		},
 	}

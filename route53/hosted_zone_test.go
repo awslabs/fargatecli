@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsroute53 "github.com/aws/aws-sdk-go/service/route53"
+	"github.com/golang/mock/gomock"
 	"github.com/jpignata/fargate/route53/mock/sdk"
 )
 
@@ -86,5 +87,109 @@ func TestListHostedZonesError(t *testing.T) {
 
 	if len(hostedZones) > 0 {
 		t.Errorf("Expected no hosted zones, got %d", len(hostedZones))
+	}
+}
+
+func TestCreateResourceRecord(t *testing.T) {
+	hostedZoneID := "zone1"
+	hostedZone := HostedZone{Name: "example.com", ID: hostedZoneID}
+	recordType := "CNAME"
+	name := "www.example.com"
+	value := "example.hosted-websites.com"
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockRoute53API := sdk.NewMockRoute53API(mockCtrl)
+	route53 := SDKClient{client: mockRoute53API}
+
+	i := &awsroute53.ChangeResourceRecordSetsInput{
+		HostedZoneId: aws.String(hostedZoneID),
+		ChangeBatch: &awsroute53.ChangeBatch{
+			Changes: []*awsroute53.Change{
+				&awsroute53.Change{
+					Action: aws.String(awsroute53.ChangeActionUpsert),
+					ResourceRecordSet: &awsroute53.ResourceRecordSet{
+						Name: aws.String(name),
+						Type: aws.String(recordType),
+						TTL:  aws.Int64(defaultTTL),
+						ResourceRecords: []*awsroute53.ResourceRecord{
+							&awsroute53.ResourceRecord{
+								Value: aws.String(value),
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	o := &awsroute53.ChangeResourceRecordSetsOutput{
+		ChangeInfo: &awsroute53.ChangeInfo{
+			Id: aws.String("1"),
+		},
+	}
+
+	mockRoute53API.EXPECT().ChangeResourceRecordSets(i).Return(o, nil)
+
+	id, err := route53.CreateResourceRecord(hostedZone, recordType, name, value)
+
+	if id != "1" {
+		t.Errorf("Expected id == 1, got %s", id)
+	}
+
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+}
+
+func TestCreateAliasRecord(t *testing.T) {
+	hostedZoneID := "zone1"
+	targetHostedZoneID := "zone2"
+	hostedZone := HostedZone{Name: "example.com", ID: hostedZoneID}
+	recordType := "A"
+	name := "www.example.com"
+	target := "example.load-balancers.com"
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockRoute53API := sdk.NewMockRoute53API(mockCtrl)
+	route53 := SDKClient{client: mockRoute53API}
+
+	i := &awsroute53.ChangeResourceRecordSetsInput{
+		HostedZoneId: aws.String(hostedZoneID),
+		ChangeBatch: &awsroute53.ChangeBatch{
+			Changes: []*awsroute53.Change{
+				&awsroute53.Change{
+					Action: aws.String(awsroute53.ChangeActionUpsert),
+					ResourceRecordSet: &awsroute53.ResourceRecordSet{
+						Name: aws.String(name),
+						Type: aws.String(recordType),
+						AliasTarget: &awsroute53.AliasTarget{
+							DNSName:              aws.String(target),
+							EvaluateTargetHealth: aws.Bool(false),
+							HostedZoneId:         aws.String(targetHostedZoneID),
+						},
+					},
+				},
+			},
+		},
+	}
+	o := &awsroute53.ChangeResourceRecordSetsOutput{
+		ChangeInfo: &awsroute53.ChangeInfo{
+			Id: aws.String("2"),
+		},
+	}
+
+	mockRoute53API.EXPECT().ChangeResourceRecordSets(i).Return(o, nil)
+
+	id, err := route53.CreateAlias(hostedZone, recordType, name, target, targetHostedZoneID)
+
+	if id != "2" {
+		t.Errorf("Expected id == 2, got %s", id)
+	}
+
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
 	}
 }
