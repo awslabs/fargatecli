@@ -60,9 +60,9 @@ func (mr *MockClientMockRecorder) CreateResourceRecord(arg0, arg1, arg2, arg3 in
 }
 
 // ListHostedZones mocks base method
-func (m *MockClient) ListHostedZones() ([]route53.HostedZone, error) {
+func (m *MockClient) ListHostedZones() (route53.HostedZones, error) {
 	ret := m.ctrl.Call(m, "ListHostedZones")
-	ret0, _ := ret[0].([]route53.HostedZone)
+	ret0, _ := ret[0].(route53.HostedZones)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

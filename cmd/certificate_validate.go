@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jpignata/fargate/acm"
 	"github.com/jpignata/fargate/route53"
@@ -24,7 +25,10 @@ func (o certificateValidateOperation) execute() {
 	}
 
 	if !certificate.IsPendingValidation() {
-		o.output.Fatal(fmt.Errorf("Certificate %s is %s", o.domainName, Humanize(certificate.Status)), "Could not validate certificate")
+		o.output.Fatal(
+			fmt.Errorf("Certificate %s is in state %s", o.domainName, strings.ToLower(Humanize(certificate.Status))),
+			"Could not validate certificate",
+		)
 		return
 	}
 
@@ -40,7 +44,7 @@ func (o certificateValidateOperation) execute() {
 		switch {
 		case v.IsPendingValidation():
 			if zone, ok := hostedZones.FindSuperDomainOf(v.DomainName); ok {
-				o.output.Debug("Creating resource record [API=route53 Action=CreateResourceRecordChangeSet HostedZone=%s]", zone.Name)
+				o.output.Debug("Creating resource record [API=route53 Action=ChangeResourceRecordSets HostedZone=%s]", zone.ID)
 				id, err := o.route53.CreateResourceRecord(zone, v.ResourceRecord.Type, v.ResourceRecord.Name, v.ResourceRecord.Value)
 
 				if err != nil {
@@ -48,19 +52,18 @@ func (o certificateValidateOperation) execute() {
 					return
 				}
 
-				o.output.Debug("Created resource record [ID=%s]", id)
-				o.output.Info("%s: created validation record", v.DomainName)
+				o.output.Debug("Created resource record [ChangeID=%s]", id)
+				o.output.Info("[%s] created validation record", v.DomainName)
 			} else {
-				o.output.Warn("%s: could not find zone in Amazon Route 53", v.DomainName)
+				o.output.Warn("[%s] could not find zone in Amazon Route 53", v.DomainName)
 			}
 		case v.IsSuccess():
-			o.output.Info("%s: already validated", v.DomainName)
+			o.output.Info("[%s] already validated", v.DomainName)
 		case v.IsFailed():
-			o.output.Fatal(fmt.Errorf("Domain name %s failed validation, delete and re-request certificate to try again", v.DomainName), "Could not validate certificate")
+			o.output.Fatal(nil, "[%s] failed validation", v.DomainName)
 			return
 		default:
-			o.output.Fatal(fmt.Errorf("Domain name %s in unexpected status %s", v.DomainName, Humanize(v.Status)), "Could not validate certificate")
-			return
+			o.output.Warn("[%s] unexpected status: %s", v.DomainName, strings.ToLower(Humanize(v.Status)))
 		}
 	}
 }
