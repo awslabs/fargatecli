@@ -70,7 +70,7 @@ email and Google Hangouts at john@pignata.com.
 
 ## Licensing
 
-This project is released under an [Apache 2.0][apache] license.
+This project is released under the [Apache 2.0 license][apache].
 
 ## Code of Conduct
 
