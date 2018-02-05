@@ -1,3 +1,26 @@
+## 0.3.0 (Unreleased)
+
+### Enhancements
+
+- Console output reworked for consistency and brevity
+- macOS users get emoji as a type prefix in console output :tada: -- disable
+  with --no-emoji if you're not into fun
+- Requests and responses from AWS are displayed in full when --verbose is
+  passed
+
+### Bug Fixes
+
+- Environment variable service commands now return a polite error message when
+  invoked without the service name. ([#22][issue-22])
+- Certificate import command re-implemented to work correctly. Previously calls
+  to this command always returned "private key not supported" as we were
+  incorrectly encoding it to base64 before passing it to the AWS SDK.
+
+### Chores
+
+- Utilize `dep` for dependency management
+- Add contributor guide, updated license to repo
+
 ## 0.2.3 (2018-01-19)
 
 ### Features
@@ -64,3 +87,4 @@
 [issue-8]: https://github.com/jpignata/fargate/issues/8
 [issue-11]: https://github.com/jpignata/fargate/issues/11
 [issue-14]: https://github.com/jpignata/fargate/issues/14
+[issue-22]: https://github.com/jpignata/fargate/issues/22
