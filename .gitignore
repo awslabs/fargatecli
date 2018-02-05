@@ -2,3 +2,4 @@
 bin
 fargate
 dist
+vendor

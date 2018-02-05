@@ -1,0 +1,54 @@
+
+# Gopkg.toml example
+#
+# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#  name = "github.com/x/y"
+#  version = "2.4.0"
+
+
+[[constraint]]
+  name = "github.com/aws/aws-sdk-go"
+  version = "1.12.70"
+
+[[constraint]]
+  name = "github.com/golang/mock"
+  revision = "b3e60bcdc577185fce3cf625fc96b62857ce5574"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/hashicorp/golang-lru"
+
+[[constraint]]
+  name = "github.com/kyokomi/emoji"
+  version = "1.5.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/mgutz/ansi"
+
+[[constraint]]
+  name = "github.com/spf13/cobra"
+  revision = "ccaecb155a2177302cb56cae929251a256d0f646"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/time"
