@@ -33,7 +33,7 @@ type CreateLoadBalancerInput struct {
 	SecurityGroupIds []string
 }
 
-func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
+func (elbv2 SDKClient) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
 	console.Debug("Creating ELB load balancer")
 	input := &awselbv2.CreateLoadBalancerInput{
 		Name:    aws.String(i.Name),
@@ -45,7 +45,7 @@ func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
 		input.SetSecurityGroups(aws.StringSlice(i.SecurityGroupIds))
 	}
 
-	resp, err := elbv2.svc.CreateLoadBalancer(input)
+	resp, err := elbv2.client.CreateLoadBalancer(input)
 
 	if err != nil || len(resp.LoadBalancers) != 1 {
 		console.ErrorExit(err, "Could not create ELB load balancer")
@@ -54,7 +54,7 @@ func (elbv2 *ELBV2) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
 	return aws.StringValue(resp.LoadBalancers[0].LoadBalancerArn)
 }
 
-func (elbv2 *ELBV2) DescribeLoadBalancer(lbName string) LoadBalancer {
+func (elbv2 SDKClient) DescribeLoadBalancer(lbName string) LoadBalancer {
 	loadBalancers := elbv2.DescribeLoadBalancers(
 		DescribeLoadBalancersInput{
 			Names: []string{lbName},
@@ -68,7 +68,7 @@ func (elbv2 *ELBV2) DescribeLoadBalancer(lbName string) LoadBalancer {
 	return loadBalancers[0]
 }
 
-func (elbv2 *ELBV2) DescribeLoadBalancerByArn(lbArn string) LoadBalancer {
+func (elbv2 SDKClient) DescribeLoadBalancerByArn(lbArn string) LoadBalancer {
 	loadBalancers := elbv2.DescribeLoadBalancers(
 		DescribeLoadBalancersInput{
 			Arns: []string{lbArn},
@@ -82,9 +82,9 @@ func (elbv2 *ELBV2) DescribeLoadBalancerByArn(lbArn string) LoadBalancer {
 	return loadBalancers[0]
 }
 
-func (elbv2 *ELBV2) DeleteLoadBalancer(lbName string) {
+func (elbv2 SDKClient) DeleteLoadBalancer(lbName string) {
 	loadBalancer := elbv2.DescribeLoadBalancer(lbName)
-	_, err := elbv2.svc.DeleteLoadBalancer(
+	_, err := elbv2.client.DeleteLoadBalancer(
 		&awselbv2.DeleteLoadBalancerInput{
 			LoadBalancerArn: aws.String(loadBalancer.Arn),
 		},
@@ -95,7 +95,7 @@ func (elbv2 *ELBV2) DeleteLoadBalancer(lbName string) {
 	}
 }
 
-func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBalancer {
+func (elbv2 SDKClient) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBalancer {
 	var loadBalancers []LoadBalancer
 
 	input := &awselbv2.DescribeLoadBalancersInput{}
@@ -108,7 +108,7 @@ func (elbv2 *ELBV2) DescribeLoadBalancers(i DescribeLoadBalancersInput) []LoadBa
 		input.SetLoadBalancerArns(aws.StringSlice(i.Arns))
 	}
 
-	err := elbv2.svc.DescribeLoadBalancersPages(
+	err := elbv2.client.DescribeLoadBalancersPages(
 		input,
 		func(resp *awselbv2.DescribeLoadBalancersOutput, lastPage bool) bool {
 			for _, loadBalancer := range resp.LoadBalancers {

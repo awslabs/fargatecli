@@ -1,16 +1,25 @@
 package elbv2
 
+//go:generate mockgen -package client -destination=mock/client/client.go github.com/jpignata/fargate/elbv2 Client
+//go:generate mockgen -package sdk -source ../vendor/github.com/aws/aws-sdk-go/service/elbv2/elbv2iface/interface.go -destination=mock/sdk/elbv2iface.go github.com/aws/aws-sdk-go/service/elbv2/elbv2iface ELBV2API
+
 import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/elbv2"
+	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
 )
 
-type ELBV2 struct {
-	svc *elbv2.ELBV2
+// Client represents a method for accessing Elastic Load Balancing (v2).
+type Client interface{}
+
+// SDKClient implements access to Elastic Load Balancing (v2) via the AWS SDK.
+type SDKClient struct {
+	client elbv2iface.ELBV2API
 }
 
-func New(sess *session.Session) ELBV2 {
-	return ELBV2{
-		svc: elbv2.New(sess),
+// New returns an SDKClient configured with the given session.
+func New(sess *session.Session) SDKClient {
+	return SDKClient{
+		client: elbv2.New(sess),
 	}
 }

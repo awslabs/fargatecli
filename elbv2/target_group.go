@@ -19,10 +19,10 @@ type TargetGroup struct {
 	LoadBalancerArn string
 }
 
-func (elbv2 *ELBV2) CreateTargetGroup(input *CreateTargetGroupInput) string {
+func (elbv2 SDKClient) CreateTargetGroup(input *CreateTargetGroupInput) string {
 	console.Debug("Creating ELB target group")
 
-	resp, err := elbv2.svc.CreateTargetGroup(
+	resp, err := elbv2.client.CreateTargetGroup(
 		&awselbv2.CreateTargetGroupInput{
 			Name:       aws.String(input.Name),
 			Port:       aws.Int64(input.Port),
@@ -43,20 +43,20 @@ func (elbv2 *ELBV2) CreateTargetGroup(input *CreateTargetGroupInput) string {
 	return targetGroupArn
 }
 
-func (elbv2 *ELBV2) DeleteTargetGroup(targetGroupName string) {
+func (elbv2 SDKClient) DeleteTargetGroup(targetGroupName string) {
 	console.Debug("Deleting ELB target group")
 
 	targetGroup := elbv2.describeTargetGroupByName(targetGroupName)
 
-	elbv2.svc.DeleteTargetGroup(
+	elbv2.client.DeleteTargetGroup(
 		&awselbv2.DeleteTargetGroupInput{
 			TargetGroupArn: targetGroup.TargetGroupArn,
 		},
 	)
 }
 
-func (elbv2 *ELBV2) DeleteTargetGroupByArn(targetGroupArn string) {
-	_, err := elbv2.svc.DeleteTargetGroup(
+func (elbv2 SDKClient) DeleteTargetGroupByArn(targetGroupArn string) {
+	_, err := elbv2.client.DeleteTargetGroup(
 		&awselbv2.DeleteTargetGroupInput{
 			TargetGroupArn: aws.String(targetGroupArn),
 		},
@@ -67,8 +67,8 @@ func (elbv2 *ELBV2) DeleteTargetGroupByArn(targetGroupArn string) {
 	}
 }
 
-func (elbv2 *ELBV2) GetTargetGroupArn(targetGroupName string) string {
-	resp, _ := elbv2.svc.DescribeTargetGroups(
+func (elbv2 SDKClient) GetTargetGroupArn(targetGroupName string) string {
+	resp, _ := elbv2.client.DescribeTargetGroups(
 		&awselbv2.DescribeTargetGroupsInput{
 			Names: aws.StringSlice([]string{targetGroupName}),
 		},
@@ -81,7 +81,7 @@ func (elbv2 *ELBV2) GetTargetGroupArn(targetGroupName string) string {
 	return ""
 }
 
-func (elbv2 *ELBV2) GetTargetGroupLoadBalancerArn(targetGroupArn string) string {
+func (elbv2 SDKClient) GetTargetGroupLoadBalancerArn(targetGroupArn string) string {
 	targetGroup := elbv2.describeTargetGroupByArn(targetGroupArn)
 
 	if len(targetGroup.LoadBalancerArns) > 0 {
@@ -91,10 +91,10 @@ func (elbv2 *ELBV2) GetTargetGroupLoadBalancerArn(targetGroupArn string) string 
 	}
 }
 
-func (elbv2 *ELBV2) DescribeTargetGroups(targetGroupArns []string) []TargetGroup {
+func (elbv2 SDKClient) DescribeTargetGroups(targetGroupArns []string) []TargetGroup {
 	var targetGroups []TargetGroup
 
-	resp, err := elbv2.svc.DescribeTargetGroups(
+	resp, err := elbv2.client.DescribeTargetGroups(
 		&awselbv2.DescribeTargetGroupsInput{
 			TargetGroupArns: aws.StringSlice(targetGroupArns),
 		},
@@ -120,8 +120,8 @@ func (elbv2 *ELBV2) DescribeTargetGroups(targetGroupArns []string) []TargetGroup
 	return targetGroups
 }
 
-func (elbv2 *ELBV2) describeTargetGroupByName(targetGroupName string) *awselbv2.TargetGroup {
-	resp, err := elbv2.svc.DescribeTargetGroups(
+func (elbv2 SDKClient) describeTargetGroupByName(targetGroupName string) *awselbv2.TargetGroup {
+	resp, err := elbv2.client.DescribeTargetGroups(
 		&awselbv2.DescribeTargetGroupsInput{
 			Names: aws.StringSlice([]string{targetGroupName}),
 		},
@@ -138,8 +138,8 @@ func (elbv2 *ELBV2) describeTargetGroupByName(targetGroupName string) *awselbv2.
 	return resp.TargetGroups[0]
 }
 
-func (elbv2 *ELBV2) describeTargetGroupByArn(targetGroupArn string) *awselbv2.TargetGroup {
-	resp, err := elbv2.svc.DescribeTargetGroups(
+func (elbv2 SDKClient) describeTargetGroupByArn(targetGroupArn string) *awselbv2.TargetGroup {
+	resp, err := elbv2.client.DescribeTargetGroups(
 		&awselbv2.DescribeTargetGroupsInput{
 			TargetGroupArns: aws.StringSlice([]string{targetGroupArn}),
 		},

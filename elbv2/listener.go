@@ -51,7 +51,7 @@ func (input *CreateListenerInput) SetCertificateArns(arns []string) {
 	input.CertificateArns = arns
 }
 
-func (elbv2 *ELBV2) CreateListener(i *CreateListenerInput) string {
+func (elbv2 SDKClient) CreateListener(i *CreateListenerInput) string {
 	console.Debug("Creating ELB listener [%s:%s]", i.Protocol, i.Port)
 
 	action := &awselbv2.Action{
@@ -80,7 +80,7 @@ func (elbv2 *ELBV2) CreateListener(i *CreateListenerInput) string {
 		input.SetCertificates(certificates)
 	}
 
-	resp, err := elbv2.svc.CreateListener(input)
+	resp, err := elbv2.client.CreateListener(input)
 
 	if err != nil || len(resp.Listeners) != 1 {
 		console.ErrorExit(err, "Could not create ELB listener")
@@ -89,19 +89,19 @@ func (elbv2 *ELBV2) CreateListener(i *CreateListenerInput) string {
 	return aws.StringValue(resp.Listeners[0].ListenerArn)
 }
 
-func (elbv2 *ELBV2) ModifyLoadBalancerDefaultAction(lbArn, targetGroupArn string) {
+func (elbv2 SDKClient) ModifyLoadBalancerDefaultAction(lbArn, targetGroupArn string) {
 	for _, listener := range elbv2.GetListeners(lbArn) {
 		elbv2.ModifyListenerDefaultAction(listener.Arn, targetGroupArn)
 	}
 }
 
-func (elbv2 *ELBV2) ModifyListenerDefaultAction(listenerArn, targetGroupArn string) {
+func (elbv2 SDKClient) ModifyListenerDefaultAction(listenerArn, targetGroupArn string) {
 	action := &awselbv2.Action{
 		TargetGroupArn: aws.String(targetGroupArn),
 		Type:           aws.String(awselbv2.ActionTypeEnumForward),
 	}
 
-	elbv2.svc.ModifyListener(
+	elbv2.client.ModifyListener(
 		&awselbv2.ModifyListenerInput{
 			ListenerArn:    aws.String(listenerArn),
 			DefaultActions: []*awselbv2.Action{action},
@@ -109,7 +109,7 @@ func (elbv2 *ELBV2) ModifyListenerDefaultAction(listenerArn, targetGroupArn stri
 	)
 }
 
-func (elbv2 *ELBV2) AddRule(lbArn, targetGroupArn string, rule Rule) {
+func (elbv2 SDKClient) AddRule(lbArn, targetGroupArn string, rule Rule) {
 	console.Debug("Adding ELB listener rule [%s=%s]", rule.Type, rule.Value)
 
 	listeners := elbv2.GetListeners(lbArn)
@@ -119,7 +119,7 @@ func (elbv2 *ELBV2) AddRule(lbArn, targetGroupArn string, rule Rule) {
 	}
 }
 
-func (elbv2 *ELBV2) AddRuleToListener(listenerArn, targetGroupArn string, rule Rule) {
+func (elbv2 SDKClient) AddRuleToListener(listenerArn, targetGroupArn string, rule Rule) {
 	var ruleType string
 
 	if rule.Type == "HOST" {
@@ -139,7 +139,7 @@ func (elbv2 *ELBV2) AddRuleToListener(listenerArn, targetGroupArn string, rule R
 		Type:           aws.String(awselbv2.ActionTypeEnumForward),
 	}
 
-	elbv2.svc.CreateRule(
+	elbv2.client.CreateRule(
 		&awselbv2.CreateRuleInput{
 			Priority:    aws.Int64(priority),
 			ListenerArn: aws.String(listenerArn),
@@ -149,10 +149,10 @@ func (elbv2 *ELBV2) AddRuleToListener(listenerArn, targetGroupArn string, rule R
 	)
 }
 
-func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
+func (elbv2 SDKClient) DescribeRules(listenerArn string) []Rule {
 	var rules []Rule
 
-	resp, err := elbv2.svc.DescribeRules(
+	resp, err := elbv2.client.DescribeRules(
 		&awselbv2.DescribeRulesInput{
 			ListenerArn: aws.String(listenerArn),
 		},
@@ -202,10 +202,10 @@ func (elbv2 *ELBV2) DescribeRules(listenerArn string) []Rule {
 	return rules
 }
 
-func (elbv2 *ELBV2) GetHighestPriorityFromListener(listenerArn string) int64 {
+func (elbv2 SDKClient) GetHighestPriorityFromListener(listenerArn string) int64 {
 	var priorities []int
 
-	resp, err := elbv2.svc.DescribeRules(
+	resp, err := elbv2.client.DescribeRules(
 		&awselbv2.DescribeRulesInput{
 			ListenerArn: aws.String(listenerArn),
 		},
@@ -225,14 +225,14 @@ func (elbv2 *ELBV2) GetHighestPriorityFromListener(listenerArn string) int64 {
 	return int64(priorities[len(priorities)-1])
 }
 
-func (elbv2 *ELBV2) GetListeners(lbArn string) []Listener {
+func (elbv2 SDKClient) GetListeners(lbArn string) []Listener {
 	var listeners []Listener
 
 	input := &awselbv2.DescribeListenersInput{
 		LoadBalancerArn: aws.String(lbArn),
 	}
 
-	err := elbv2.svc.DescribeListenersPages(
+	err := elbv2.client.DescribeListenersPages(
 		input,
 		func(resp *awselbv2.DescribeListenersOutput, lastPage bool) bool {
 			for _, l := range resp.Listeners {
@@ -263,8 +263,8 @@ func (elbv2 *ELBV2) GetListeners(lbArn string) []Listener {
 	return listeners
 }
 
-func (elbv2 *ELBV2) DeleteRule(ruleArn string) {
-	_, err := elbv2.svc.DeleteRule(
+func (elbv2 SDKClient) DeleteRule(ruleArn string) {
+	_, err := elbv2.client.DeleteRule(
 		&awselbv2.DeleteRuleInput{
 			RuleArn: aws.String(ruleArn),
 		},
