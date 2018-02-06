@@ -10,7 +10,9 @@ import (
 )
 
 // Client represents a method for accessing Elastic Load Balancing (v2).
-type Client interface{}
+type Client interface {
+	DescribeLoadBalancersByName([]string) (LoadBalancers, error)
+}
 
 // SDKClient implements access to Elastic Load Balancing (v2) via the AWS SDK.
 type SDKClient struct {
