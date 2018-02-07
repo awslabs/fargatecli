@@ -12,11 +12,11 @@ type MockListCertificatesPagesClient struct {
 }
 
 func (m MockListCertificatesPagesClient) ListCertificatesPages(in *acm.ListCertificatesInput, fn func(*acm.ListCertificatesOutput, bool) bool) error {
-	fn(m.Resp, true)
-
 	if m.Error != nil {
 		return m.Error
 	}
+
+	fn(m.Resp, true)
 
 	return nil
 }
