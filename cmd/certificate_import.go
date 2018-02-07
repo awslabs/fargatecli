@@ -112,9 +112,12 @@ for more details.`,
 )
 
 func init() {
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportCertificate, "certificate", "c", "", "Filename of the certificate to import")
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportKey, "key", "k", "", "Filename of the private key used to generate the certificate")
-	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "", "Filename of intermediate certificate chain")
+	certificateImportCmd.Flags().StringVarP(&flagCertificateImportCertificate, "certificate", "c", "",
+		"Filename of the certificate to import")
+	certificateImportCmd.Flags().StringVarP(&flagCertificateImportKey, "key", "k", "",
+		"Filename of the private key used to generate the certificate")
+	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "",
+		"Filename of intermediate certificate chain")
 
 	certificateCmd.AddCommand(certificateImportCmd)
 }
