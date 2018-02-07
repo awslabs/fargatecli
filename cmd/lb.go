@@ -23,17 +23,17 @@ func (o lbOperation) findLb(lbName string) (elbv2.LoadBalancer, error) {
 
 	switch {
 	case len(loadBalancers) == 0:
-		return elbv2.LoadBalancer{}, ErrLbNotFound
+		return elbv2.LoadBalancer{}, errLbNotFound
 	case len(loadBalancers) > 1:
-		return elbv2.LoadBalancer{}, ErrLbTooManyFound
+		return elbv2.LoadBalancer{}, errLbTooManyFound
 	}
 
 	return loadBalancers[0], nil
 }
 
 var (
-	ErrLbNotFound     = errors.New("Load balancer not found")
-	ErrLbTooManyFound = errors.New("Too many load balancers found")
+	errLbNotFound     = errors.New("Load balancer not found")
+	errLbTooManyFound = errors.New("Too many load balancers found")
 
 	lbCmd = &cobra.Command{
 		Use:   "lb",
