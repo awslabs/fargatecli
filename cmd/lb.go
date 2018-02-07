@@ -31,19 +31,19 @@ func (o lbOperation) findLb(lbName string) (elbv2.LoadBalancer, error) {
 	return loadBalancers[0], nil
 }
 
-var lbCmd = &cobra.Command{
-	Use:   "lb",
-	Short: "Manage load balancers",
-	Long: `Manage load balancers
+var (
+	ErrLbNotFound     = errors.New("Load balancer not found")
+	ErrLbTooManyFound = errors.New("Too many load balancers found")
+
+	lbCmd = &cobra.Command{
+		Use:   "lb",
+		Short: "Manage load balancers",
+		Long: `Manage load balancers
 
 Load balancers distribute incoming traffic between the tasks within a service
 for HTTP/HTTPS and TCP applications. HTTP/HTTPS load balancers can route to
 multiple services based upon rules you specify when you create a new service.`,
-}
-
-var (
-	ErrLbNotFound     = errors.New("Load balancer not found")
-	ErrLbTooManyFound = errors.New("Too many load balancers found")
+	}
 )
 
 func init() {

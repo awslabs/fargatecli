@@ -35,17 +35,17 @@ func (o certificateOperation) findCertificate(domainName string, output Output) 
 var (
 	errCertificateNotFound     = errors.New("Certificate not found")
 	errCertificateTooManyFound = errors.New("Too many certificates found")
-)
 
-var certificateCmd = &cobra.Command{
-	Use:   "certificate",
-	Short: "Manage certificates",
-	Long: `Manages certificate
+	certificateCmd = &cobra.Command{
+		Use:   "certificate",
+		Short: "Manage certificates",
+		Long: `Manages certificate
 
 Certificates are TLS certificates issued by or imported into AWS Certificate
 Manager for use in securing traffic between load balancers and end users. ACM
 provides TLS certificates free of charge for use within AWS resources.`,
-}
+	}
+)
 
 func init() {
 	rootCmd.AddCommand(certificateCmd)

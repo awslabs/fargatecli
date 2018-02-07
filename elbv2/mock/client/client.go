@@ -6,6 +6,7 @@ package client
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	elbv2 "github.com/jpignata/fargate/elbv2"
 	reflect "reflect"
 )
 
@@ -30,4 +31,17 @@ func NewMockClient(ctrl *gomock.Controller) *MockClient {
 // EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
+}
+
+// DescribeLoadBalancersByName mocks base method
+func (m *MockClient) DescribeLoadBalancersByName(arg0 []string) (elbv2.LoadBalancers, error) {
+	ret := m.ctrl.Call(m, "DescribeLoadBalancersByName", arg0)
+	ret0, _ := ret[0].(elbv2.LoadBalancers)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DescribeLoadBalancersByName indicates an expected call of DescribeLoadBalancersByName
+func (mr *MockClientMockRecorder) DescribeLoadBalancersByName(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeLoadBalancersByName", reflect.TypeOf((*MockClient)(nil).DescribeLoadBalancersByName), arg0)
 }

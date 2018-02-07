@@ -40,12 +40,11 @@ func (o lbAliasOperation) execute() {
 
 		o.output.Debug("Created alias record [ChangeID=%s]", id)
 		o.output.Info("Created alias record (%s -> %s)", o.aliasDomain, loadBalancer.DNSName)
-		return
+	} else {
+		o.output.Warn("Could not find hosted zone for %s", o.aliasDomain)
+		o.output.Say("If you're hosting this domain elsewhere or in another AWS account, please manually create the alias record:", 1)
+		o.output.Say("%s -> %s", 1, o.aliasDomain, loadBalancer.DNSName)
 	}
-
-	o.output.Warn("Could not find hosted zone for %s", o.aliasDomain)
-	o.output.Say("If you're hosting this domain elsewhere or in another AWS account, please manually create the alias record:", 1)
-	o.output.Say("%s -> %s", 1, o.aliasDomain, loadBalancer.DNSName)
 }
 
 var lbAliasCmd = &cobra.Command{

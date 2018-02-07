@@ -17,7 +17,11 @@ type HostedZone struct {
 }
 
 func (h HostedZone) isSuperDomainOf(fqdn string) bool {
-	return strings.HasSuffix(fqdn+".", h.Name)
+	if !strings.HasSuffix(fqdn, ".") {
+		fqdn = fqdn + "."
+	}
+
+	return strings.HasSuffix(fqdn, h.Name)
 }
 
 // HostedZones is a collection of HostedZones.
