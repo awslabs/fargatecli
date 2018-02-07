@@ -38,7 +38,7 @@ type ServiceCreateOperation struct {
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
 	var msgs []string
 
-	port := inflatePort(inputPort)
+	port, _ := inflatePort(inputPort)
 	validProtocols := regexp.MustCompile(validProtocolsPattern)
 
 	if !validProtocols.MatchString(port.Protocol) {

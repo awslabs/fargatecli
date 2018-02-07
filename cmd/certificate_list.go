@@ -35,15 +35,17 @@ func (o certificateListOperation) execute() {
 }
 
 func (o certificateListOperation) find() ([]acm.Certificate, error) {
+	var (
+		wg                   sync.WaitGroup
+		inflatedCertificates []acm.Certificate
+	)
+
 	o.output.Debug("Listing certificates [API=acm Action=ListCertificates")
 	certificates, err := o.acm.ListCertificates()
 
 	if err != nil {
 		return []acm.Certificate{}, err
 	}
-
-	var wg sync.WaitGroup
-	var inflatedCertificates []acm.Certificate
 
 	results := make(chan acm.Certificate, len(certificates))
 	errs := make(chan error, len(certificates))

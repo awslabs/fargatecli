@@ -13,7 +13,7 @@ type lbOperation struct {
 	elbv2 elbv2.Client
 }
 
-func (o lbOperation) findLb(lbName string) (elbv2.LoadBalancer, error) {
+func (o lbOperation) findLb(lbName string, output Output) (elbv2.LoadBalancer, error) {
 	output.Debug("Finding load balancer[API=elb2 Action=DescribeLoadBalancers]")
 	loadBalancers, err := o.elbv2.DescribeLoadBalancersByName([]string{lbName})
 

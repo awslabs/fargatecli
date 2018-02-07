@@ -2,118 +2,166 @@ package cmd
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 
 	"github.com/jpignata/fargate/acm"
 	"github.com/jpignata/fargate/console"
-	EC2 "github.com/jpignata/fargate/ec2"
-	ELBV2 "github.com/jpignata/fargate/elbv2"
+	"github.com/jpignata/fargate/ec2"
+	"github.com/jpignata/fargate/elbv2"
 	"github.com/spf13/cobra"
 )
 
-const (
-	minPort int64 = 1
-	maxPort int64 = 65535
-)
-
-type LbCreateOperation struct {
+type lbCreateOperation struct {
 	certificateOperation
-	LoadBalancerName string
-	CertificateArns  []string
-	Ports            []Port
-	Type             string
-	SecurityGroupIds []string
-	SubnetIds        []string
+	elbv2            elbv2.SDKClient
+	ec2              ec2.EC2
+	loadBalancerName string
+	certificateArns  []string
+	ports            []Port
+	lbType           string
+	securityGroupIds []string
+	subnetIds        []string
+	output           Output
 }
 
-func (o *LbCreateOperation) SetCertificateArns(certificateDomainNames []string) {
-	var certificateArns []string
-
-	for _, certificateDomainName := range certificateDomainNames {
-		certificate, _ := o.findCertificate(certificateDomainName, output)
-
-		if certificate.IsIssued() {
-			certificateArns = append(certificateArns, certificate.Arn)
-		} else {
-			err := fmt.Errorf("Certificate is in state %s", Humanize(certificate.Status))
-			console.ErrorExit(err, "Couldn't use certificate %s", certificateDomainName)
-		}
-	}
-
-	o.CertificateArns = certificateArns
-}
-
-func (o *LbCreateOperation) SetPorts(inputPorts []string) {
-	var msgs []string
-	var protocols []string
-
-	ports := inflatePorts(inputPorts)
-	validProtocols := regexp.MustCompile(validProtocolsPattern)
+func (o *lbCreateOperation) setPorts(inputPorts []string) []error {
+	var (
+		errs      []error
+		protocols []string
+	)
 
 	if len(inputPorts) == 0 {
-		msgs = append(msgs, fmt.Sprintf("at least one --port must be specified"))
+		return append(errs, fmt.Errorf("at least one --port must be specified"))
+	}
+
+	ports, errs := inflatePorts(inputPorts)
+
+	if len(errs) > 0 {
+		return errs
 	}
 
 	for _, port := range ports {
-		if !validProtocols.MatchString(port.Protocol) {
-			msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
-		}
-
-		if port.Port < minPort || port.Port > maxPort {
-			msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
-		}
-
-		if port.Protocol == protocolTcp {
-			for _, protocol := range protocols {
-				if protocol == protocolHttp || protocol == protocolHttps {
-					msgs = append(msgs, "load balancers do not support comingled groups of TCP and HTTP/HTTPS ports")
-				}
-			}
-		}
-
-		if port.Protocol == protocolHttp || port.Protocol == protocolHttps {
-			for _, protocol := range protocols {
-				if protocol == protocolTcp {
-					msgs = append(msgs, "load balancers do not support comingled groups of TCP and HTTP/HTTPS ports")
-				}
-			}
-		}
-
+		errs = append(errs, validatePort(port)...)
 		protocols = append(protocols, port.Protocol)
 	}
 
-	if len(msgs) > 0 {
-		console.ErrorExit(fmt.Errorf(strings.Join(msgs, ", ")), "Invalid command line flags")
+	for _, protocol := range protocols {
+		if protocol == "TCP" {
+			for _, protocol := range protocols {
+				if protocol == "HTTP" || protocol == "HTTPS" {
+					return append(errs, fmt.Errorf("load balancers do not support commingled TCP and HTTP/HTTPS ports"))
+				}
+			}
+		}
 	}
 
-	o.Ports = ports
+	if len(errs) == 0 {
+		o.ports = ports
+	}
+
+	return errs
 }
 
-func (o *LbCreateOperation) SetTypeFromPorts() {
-	if o.Ports[0].Protocol == protocolHttp || o.Ports[0].Protocol == protocolHttps {
-		o.Type = typeApplication
-	} else if o.Ports[0].Protocol == protocolTcp {
-		o.Type = typeNetwork
-	} else {
-		console.ErrorExit(fmt.Errorf("Could not infer type; check port settings"), "Invalid command line flags")
+func (o *lbCreateOperation) InferType() error {
+	var err error
+
+	switch o.ports[0].Protocol {
+	case "HTTP", "HTTPS":
+		o.lbType = "application"
+	case "TCP":
+		o.lbType = "network"
+	default:
+		err = fmt.Errorf("Could not infer type; check port settings")
 	}
+
+	return err
 }
 
-func (o *LbCreateOperation) SetSecurityGroupIds(securityGroupIds []string) {
-	if o.Type != typeApplication {
-		console.IssueExit("Security groups can only be specified for HTTP/HTTPS load balancers")
+func (o *lbCreateOperation) setCertificateArns(certificateDomainNames []string) []error {
+	var (
+		certificateArns []string
+		errs            []error
+	)
+
+	for _, certificateDomainName := range certificateDomainNames {
+		if certificate, err := o.findCertificate(certificateDomainName, output); err == nil {
+			if certificate.IsIssued() {
+				certificateArns = append(certificateArns, certificate.Arn)
+			} else {
+				errs = append(errs, fmt.Errorf("Certificate %s is in state %s", certificateDomainName, Humanize(certificate.Status)))
+			}
+		} else {
+			errs = append(errs, err)
+		}
 	}
 
-	o.SecurityGroupIds = securityGroupIds
+	if len(errs) == 0 {
+		o.certificateArns = certificateArns
+	}
+
+	return errs
 }
 
-func (o *LbCreateOperation) SetSubnetIds(subnetIds []string) {
-	if o.Type == typeApplication && len(subnetIds) < 2 {
-		console.IssueExit("HTTP/HTTPS load balancers require two subnet IDs from unique availability zones")
+func (o *lbCreateOperation) setSubnetIDs(subnetIds []string) error {
+	if o.lbType == "application" && len(subnetIds) < 2 {
+		return fmt.Errorf("HTTP/HTTPS load balancers require two subnet IDs from unique availability zones")
 	}
 
-	o.SubnetIds = subnetIds
+	o.subnetIds = subnetIds
+	return nil
+}
+
+func (o *lbCreateOperation) setSecurityGroupIDs(securityGroupIds []string) error {
+	if o.lbType != "application" {
+		return fmt.Errorf("Security groups can only be specified for HTTP/HTTPS load balancers")
+	}
+
+	o.securityGroupIds = securityGroupIds
+	return nil
+}
+
+func (o *lbCreateOperation) execute() {
+	if len(o.securityGroupIds) == 0 {
+		o.securityGroupIds = []string{o.ec2.GetDefaultSecurityGroupId()}
+	}
+
+	if len(o.subnetIds) == 0 {
+		o.subnetIds = o.ec2.GetDefaultVpcSubnetIds()
+	}
+
+	vpcID := o.ec2.GetSubnetVpcId(o.subnetIds[0])
+	loadBalancerArn := o.elbv2.CreateLoadBalancer(
+		&elbv2.CreateLoadBalancerInput{
+			Name:             o.loadBalancerName,
+			SecurityGroupIds: o.securityGroupIds,
+			SubnetIds:        o.subnetIds,
+			Type:             o.lbType,
+		},
+	)
+	defaultTargetGroupArn := o.elbv2.CreateTargetGroup(
+		&elbv2.CreateTargetGroupInput{
+			Name:     fmt.Sprintf(defaultTargetGroupFormat, o.loadBalancerName),
+			Port:     o.ports[0].Port,
+			Protocol: o.ports[0].Protocol,
+			VpcId:    vpcID,
+		},
+	)
+
+	for _, port := range o.ports {
+		input := &elbv2.CreateListenerInput{
+			Protocol:              port.Protocol,
+			Port:                  port.Port,
+			LoadBalancerArn:       loadBalancerArn,
+			DefaultTargetGroupArn: defaultTargetGroupArn,
+		}
+
+		if port.Protocol == "HTTPS" {
+			input.SetCertificateArns(o.certificateArns)
+		}
+
+		o.elbv2.CreateListener(input)
+	}
+
+	console.Info("Created load balancer %s", o.loadBalancerName)
 }
 
 var (
@@ -121,13 +169,12 @@ var (
 	flagLbCreatePorts            []string
 	flagLbCreateSecurityGroupIds []string
 	flagLbCreateSubnetIds        []string
-)
 
-var lbCreateCmd = &cobra.Command{
-	Use:   "create <load-balancer-name> --port <port-expression>",
-	Args:  cobra.ExactArgs(1),
-	Short: "Create a load balancer",
-	Long: `Create a load balancer
+	lbCreateCmd = &cobra.Command{
+		Use:   "create <load-balancer-name> --port <port-expression>",
+		Args:  cobra.ExactArgs(1),
+		Short: "Create a load balancer",
+		Long: `Create a load balancer
 
 At least one port must be specified for the load balancer listener via the
 --port flag and a port expression of protocol:port-number. For example, if you
@@ -154,32 +201,53 @@ passing the --security-group-id flag with a security group ID. To add multiple
 security groups, pass --security-group-id with a security group ID multiple
 times. If --security-group-id is omitted, a permissive security group will be
 applied to the load balancer.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		operation := &LbCreateOperation{
-			certificateOperation: certificateOperation{
-				acm: acm.New(sess),
-			},
-			LoadBalancerName: args[0],
-		}
+		Run: func(cmd *cobra.Command, args []string) {
+			var errs []error
 
-		if len(flagLbCreateCertificates) > 0 {
-			operation.SetCertificateArns(flagLbCreateCertificates)
-		}
+			operation := &lbCreateOperation{
+				certificateOperation: certificateOperation{
+					acm: acm.New(sess),
+				},
+				ec2:              ec2.New(sess),
+				elbv2:            elbv2.New(sess),
+				loadBalancerName: args[0],
+				output:           output,
+			}
 
-		operation.SetPorts(flagLbCreatePorts)
-		operation.SetTypeFromPorts()
+			if errs := operation.setPorts(flagLbCreatePorts); len(errs) > 0 {
+				errs = append(errs, errs...)
+			}
 
-		if len(flagLbCreateSecurityGroupIds) > 0 {
-			operation.SetSecurityGroupIds(flagLbCreateSecurityGroupIds)
-		}
+			if err := operation.InferType(); err != nil {
+				errs = append(errs, err)
+			}
 
-		if len(flagLbCreateSubnetIds) > 0 {
-			operation.SetSubnetIds(flagLbCreateSubnetIds)
-		}
+			if len(flagLbCreateCertificates) > 0 {
+				if errs := operation.setCertificateArns(flagLbCreateCertificates); len(errs) > 0 {
+					errs = append(errs, errs...)
+				}
+			}
 
-		createLoadBalancer(operation)
-	},
-}
+			if len(flagLbCreateSecurityGroupIds) > 0 {
+				if err := operation.setSecurityGroupIDs(flagLbCreateSecurityGroupIds); err != nil {
+					errs = append(errs, err)
+				}
+			}
+
+			if len(flagLbCreateSubnetIds) > 0 {
+				if err := operation.setSubnetIDs(flagLbCreateSubnetIds); err != nil {
+					errs = append(errs, err)
+				}
+			}
+
+			if len(errs) == 0 {
+				operation.execute()
+			} else {
+				output.Fatals(errs, "Invalid command line flags")
+			}
+		},
+	}
+)
 
 func init() {
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreateCertificates, "certificate", "c", []string{},
@@ -192,52 +260,4 @@ func init() {
 		"ID of a subnet to place the load balancer (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)
-}
-
-func createLoadBalancer(operation *LbCreateOperation) {
-	elbv2 := ELBV2.New(sess)
-	ec2 := EC2.New(sess)
-
-	if len(operation.SecurityGroupIds) == 0 {
-		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
-	}
-
-	if len(operation.SubnetIds) == 0 {
-		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
-	}
-
-	vpcId := ec2.GetSubnetVpcId(operation.SubnetIds[0])
-	loadBalancerArn := elbv2.CreateLoadBalancer(
-		&ELBV2.CreateLoadBalancerInput{
-			Name:             operation.LoadBalancerName,
-			SecurityGroupIds: operation.SecurityGroupIds,
-			SubnetIds:        operation.SubnetIds,
-			Type:             operation.Type,
-		},
-	)
-	defaultTargetGroupArn := elbv2.CreateTargetGroup(
-		&ELBV2.CreateTargetGroupInput{
-			Name:     fmt.Sprintf(defaultTargetGroupFormat, operation.LoadBalancerName),
-			Port:     operation.Ports[0].Port,
-			Protocol: operation.Ports[0].Protocol,
-			VpcId:    vpcId,
-		},
-	)
-
-	for _, port := range operation.Ports {
-		input := &ELBV2.CreateListenerInput{
-			Protocol:              port.Protocol,
-			Port:                  port.Port,
-			LoadBalancerArn:       loadBalancerArn,
-			DefaultTargetGroupArn: defaultTargetGroupArn,
-		}
-
-		if port.Protocol == protocolHttps {
-			input.SetCertificateArns(operation.CertificateArns)
-		}
-
-		elbv2.CreateListener(input)
-	}
-
-	console.Info("Created load balancer %s", operation.LoadBalancerName)
 }
