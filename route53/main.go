@@ -21,7 +21,7 @@ type SDKClient struct {
 	client route53iface.Route53API
 }
 
-// New returns an SDKClient configured with the current session.
+// New returns an SDKClient configured with the given session.
 func New(sess *session.Session) SDKClient {
 	return SDKClient{
 		client: route53.New(sess),
