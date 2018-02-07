@@ -538,7 +538,7 @@ Create a load balancer alias record
 
 Create an alias record to the load balancer for domains that are hosted within
 Amazon Route 53 and within the same AWS account. If you're using another DNS
-provider or host your domains in a differnt account, you will need to manually
+provider or host your domains in a different account, you will need to manually
 create this record.
 
 ##### fargate lb info
