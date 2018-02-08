@@ -92,12 +92,12 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 			for _, listener := range listeners {
 				var ruleOutput []string
 
-				rules := elbv2.DescribeRules(listener.Arn)
+				rules := elbv2.DescribeRules(listener.ARN)
 
 				sort.Slice(rules, func(i, j int) bool { return rules[i].Priority > rules[j].Priority })
 
 				for _, rule := range rules {
-					if rule.TargetGroupArn == service.TargetGroupArn {
+					if rule.TargetGroupARN == service.TargetGroupArn {
 						ruleOutput = append(ruleOutput, rule.String())
 					}
 				}
@@ -105,8 +105,8 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 				console.KeyValue("    "+listener.String(), "\n")
 				console.KeyValue("      Rules", "%s\n", strings.Join(ruleOutput, ", "))
 
-				if len(listener.CertificateArns) > 0 {
-					certificateDomains := acm.ListCertificateDomainNames(listener.CertificateArns)
+				if len(listener.CertificateARNs) > 0 {
+					certificateDomains := acm.ListCertificateDomainNames(listener.CertificateARNs)
 					console.KeyValue("      Certificates", "%s\n", strings.Join(certificateDomains, ", "))
 				}
 			}

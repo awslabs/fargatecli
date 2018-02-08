@@ -33,8 +33,8 @@ func (o certificateOperation) findCertificate(domainName string, output Output) 
 }
 
 var (
-	errCertificateNotFound     = errors.New("Certificate not found")
-	errCertificateTooManyFound = errors.New("Too many certificates found")
+	errCertificateNotFound     = errors.New("certificate not found")
+	errCertificateTooManyFound = errors.New("too many certificates found")
 
 	certificateCmd = &cobra.Command{
 		Use:   "certificate",

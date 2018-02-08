@@ -23,7 +23,7 @@ func (o certificateInfoOperation) execute() {
 		case errCertificateTooManyFound:
 			o.output.Fatal(nil, "Multiple certificates found for %s", o.domainName)
 		default:
-			o.output.Fatal(nil, "Could not find certificate for %s", o.domainName)
+			o.output.Fatal(err, "Could not find certificate for %s", o.domainName)
 		}
 
 		return

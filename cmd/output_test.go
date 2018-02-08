@@ -24,7 +24,7 @@ func ExampleConsoleOutput_Fatal() {
 	consoleOutput.Fatal(err, "Houston, we've had a problem.")
 	// Output:
 	// [!] Houston, we've had a problem.
-	//     OXY2_TANK_EXPLOSION
+	//     - OXY2_TANK_EXPLOSION
 }
 
 func ExampleConsoleOutput_Fatals() {
@@ -36,9 +36,9 @@ func ExampleConsoleOutput_Fatals() {
 	consoleOutput.Fatals(errs, "Houston, we've had a problem.")
 	// Output:
 	// [!] Houston, we've had a problem.
-	//     OXY2_TANK_EXPLOSION
-	//     PRIM_FUEL_CELL_FAILURE
-	//     SEC_FUEL_CELL_FAILURE
+	//     - OXY2_TANK_EXPLOSION
+	//     - PRIM_FUEL_CELL_FAILURE
+	//     - SEC_FUEL_CELL_FAILURE
 }
 
 func ExampleConsoleOutput_KeyValue() {

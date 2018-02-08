@@ -57,11 +57,11 @@ func validatePort(port Port) []error {
 	var errs []error
 
 	if !validProtocol.MatchString(port.Protocol) {
-		errs = append(errs, fmt.Errorf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
+		errs = append(errs, fmt.Errorf("Invalid protocol %s (specify TCP, HTTP, or HTTPS)", port.Protocol))
 	}
 
 	if port.Port < 1 || port.Port > 65535 {
-		errs = append(errs, fmt.Errorf("Invalid port %d [specify within 1 - 65535]", port.Port))
+		errs = append(errs, fmt.Errorf("Invalid port %d (specify within 1 - 65535)", port.Port))
 	}
 
 	return errs

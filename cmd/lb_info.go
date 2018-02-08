@@ -46,17 +46,17 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 	console.KeyValue("Status", "%s\n", Humanize(loadBalancer.State))
 	console.KeyValue("Type", "%s\n", Humanize(loadBalancer.Type))
 	console.KeyValue("DNS Name", "%s\n", loadBalancer.DNSName)
-	console.KeyValue("Subnets", "%s\n", strings.Join(loadBalancer.SubnetIds, ", "))
-	console.KeyValue("Security Groups", "%s\n", strings.Join(loadBalancer.SecurityGroupIds, ", "))
+	console.KeyValue("Subnets", "%s\n", strings.Join(loadBalancer.SubnetIDs, ", "))
+	console.KeyValue("Security Groups", "%s\n", strings.Join(loadBalancer.SecurityGroupIDs, ", "))
 	console.KeyValue("Ports", "\n")
 
-	for _, listener := range elbv2.GetListeners(loadBalancer.Arn) {
+	for _, listener := range elbv2.GetListeners(loadBalancer.ARN) {
 		var ruleCount int
 
 		console.KeyValue("  "+listener.String(), "\n")
 
-		if len(listener.CertificateArns) > 0 {
-			certificateDomains := acm.ListCertificateDomainNames(listener.CertificateArns)
+		if len(listener.CertificateARNs) > 0 {
+			certificateDomains := acm.ListCertificateDomainNames(listener.CertificateARNs)
 			console.KeyValue("    Certificates", "%s\n", strings.Join(certificateDomains, ", "))
 		}
 
@@ -65,19 +65,19 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 
 		console.KeyValue("    Rules", "\n")
 
-		rules := elbv2.DescribeRules(listener.Arn)
+		rules := elbv2.DescribeRules(listener.ARN)
 
 		sort.Slice(rules, func(i, j int) bool { return rules[i].Priority > rules[j].Priority })
 
 		for _, rule := range rules {
-			serviceName := fmt.Sprintf("Unknown (%s)", rule.TargetGroupArn)
+			serviceName := fmt.Sprintf("Unknown (%s)", rule.TargetGroupARN)
 
-			if strings.Contains(rule.TargetGroupArn, fmt.Sprintf("/%s-default/", loadBalancer.Name)) {
+			if strings.Contains(rule.TargetGroupARN, fmt.Sprintf("/%s-default/", loadBalancer.Name)) {
 				continue
 			}
 
 			for _, service := range services {
-				if service.TargetGroupArn == rule.TargetGroupArn {
+				if service.TargetGroupArn == rule.TargetGroupARN {
 					serviceName = service.Name
 				}
 			}

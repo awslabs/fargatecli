@@ -32,8 +32,8 @@ func (o lbOperation) findLb(lbName string, output Output) (elbv2.LoadBalancer, e
 }
 
 var (
-	errLbNotFound     = errors.New("Load balancer not found")
-	errLbTooManyFound = errors.New("Too many load balancers found")
+	errLbNotFound     = errors.New("load balancer not found")
+	errLbTooManyFound = errors.New("too many load balancers found")
 
 	lbCmd = &cobra.Command{
 		Use:   "lb",

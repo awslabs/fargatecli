@@ -44,15 +44,15 @@ func listServices() {
 		for _, targetGroup := range elbv2.DescribeTargetGroups(targetGroupArns) {
 			targetGroups[targetGroup.Arn] = targetGroup
 
-			if targetGroup.LoadBalancerArn != "" {
-				loadBalancerArns = append(loadBalancerArns, targetGroup.LoadBalancerArn)
+			if targetGroup.LoadBalancerARN != "" {
+				loadBalancerArns = append(loadBalancerArns, targetGroup.LoadBalancerARN)
 			}
 		}
 	}
 
 	if len(loadBalancerArns) > 0 {
-		for _, loadBalancer := range elbv2.DescribeLoadBalancers(ELBV2.DescribeLoadBalancersInput{Arns: loadBalancerArns}) {
-			loadBalancers[loadBalancer.Arn] = loadBalancer
+		for _, loadBalancer := range elbv2.DescribeLoadBalancers(ELBV2.DescribeLoadBalancersInput{ARNs: loadBalancerArns}) {
+			loadBalancers[loadBalancer.ARN] = loadBalancer
 		}
 	}
 
@@ -66,7 +66,7 @@ func listServices() {
 
 			if service.TargetGroupArn != "" {
 				tg := targetGroups[service.TargetGroupArn]
-				lb := loadBalancers[tg.LoadBalancerArn]
+				lb := loadBalancers[tg.LoadBalancerARN]
 
 				loadBalancer = lb.Name
 			}

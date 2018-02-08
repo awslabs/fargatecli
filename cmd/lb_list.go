@@ -38,7 +38,7 @@ func listLoadBalancers() {
 	for _, loadBalancer := range loadBalancers {
 		var listeners []string
 
-		for _, listener := range elbv2.GetListeners(loadBalancer.Arn) {
+		for _, listener := range elbv2.GetListeners(loadBalancer.ARN) {
 			listeners = append(listeners, listener.String())
 		}
 

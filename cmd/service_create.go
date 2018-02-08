@@ -89,7 +89,7 @@ func (o *ServiceCreateOperation) SetLoadBalancer(lb string) {
 	}
 
 	o.LoadBalancerName = lb
-	o.LoadBalancerArn = loadBalancer.Arn
+	o.LoadBalancerArn = loadBalancer.ARN
 }
 
 func (o *ServiceCreateOperation) SetRules(inputRules []string) {
@@ -280,11 +280,12 @@ func createService(operation *ServiceCreateOperation) {
 	logGroupName := cwl.CreateLogGroup(serviceLogGroupFormat, operation.ServiceName)
 
 	if len(operation.SecurityGroupIds) == 0 {
-		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
+		defaultSecurityGroupID, _ := ec2.GetDefaultSecurityGroupID()
+		operation.SecurityGroupIds = []string{defaultSecurityGroupID}
 	}
 
 	if len(operation.SubnetIds) == 0 {
-		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
+		operation.SubnetIds, _ = ec2.GetDefaultSubnetIDs()
 	}
 
 	if operation.Image == "" {
@@ -313,13 +314,13 @@ func createService(operation *ServiceCreateOperation) {
 	}
 
 	if operation.LoadBalancerArn != "" {
-		vpcId := ec2.GetSubnetVpcId(operation.SubnetIds[0])
-		targetGroupArn = elbv2.CreateTargetGroup(
-			&ELBV2.CreateTargetGroupInput{
+		vpcId, _ := ec2.GetSubnetVPCID(operation.SubnetIds[0])
+		targetGroupArn, _ = elbv2.CreateTargetGroup(
+			ELBV2.CreateTargetGroupInput{
 				Name:     fmt.Sprintf("%s-%s", clusterName, operation.ServiceName),
 				Port:     operation.Port.Port,
 				Protocol: operation.Port.Protocol,
-				VpcId:    vpcId,
+				VPCID:    vpcId,
 			},
 		)
 

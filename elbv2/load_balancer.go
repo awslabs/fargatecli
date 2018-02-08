@@ -13,26 +13,26 @@ type LoadBalancer struct {
 	Name             string
 	State            string
 	StateReason      string
-	Arn              string
+	ARN              string
 	Type             string
 	HostedZoneId     string
-	SecurityGroupIds []string
-	SubnetIds        []string
-	VpcId            string
+	SecurityGroupIDs []string
+	SubnetIDs        []string
+	VPCID            string
 }
 
 type LoadBalancers []LoadBalancer
 
 type DescribeLoadBalancersInput struct {
 	Names []string
-	Arns  []string
+	ARNs  []string
 }
 
 type CreateLoadBalancerInput struct {
 	Name             string
-	SubnetIds        []string
+	SubnetIDs        []string
+	SecurityGroupIDs []string
 	Type             string
-	SecurityGroupIds []string
 }
 
 func (elbv2 SDKClient) DescribeLoadBalancersByName(lbNames []string) (LoadBalancers, error) {
@@ -41,23 +41,23 @@ func (elbv2 SDKClient) DescribeLoadBalancersByName(lbNames []string) (LoadBalanc
 	input := &awselbv2.DescribeLoadBalancersInput{Names: aws.StringSlice(lbNames)}
 	handler := func(resp *awselbv2.DescribeLoadBalancersOutput, lastPage bool) bool {
 		for _, loadBalancer := range resp.LoadBalancers {
-			var subnetIds []string
+			var subnetIDs []string
 
 			for _, availabilityZone := range loadBalancer.AvailabilityZones {
-				subnetIds = append(subnetIds, aws.StringValue(availabilityZone.SubnetId))
+				subnetIDs = append(subnetIDs, aws.StringValue(availabilityZone.SubnetId))
 			}
 
 			loadBalancers = append(loadBalancers,
 				LoadBalancer{
-					Arn:              aws.StringValue(loadBalancer.LoadBalancerArn),
+					ARN:              aws.StringValue(loadBalancer.LoadBalancerArn),
 					DNSName:          aws.StringValue(loadBalancer.DNSName),
 					HostedZoneId:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
-					VpcId:            aws.StringValue(loadBalancer.VpcId),
+					VPCID:            aws.StringValue(loadBalancer.VpcId),
 					Name:             aws.StringValue(loadBalancer.LoadBalancerName),
-					SecurityGroupIds: aws.StringValueSlice(loadBalancer.SecurityGroups),
+					SecurityGroupIDs: aws.StringValueSlice(loadBalancer.SecurityGroups),
 					State:            aws.StringValue(loadBalancer.State.Code),
 					StateReason:      aws.StringValue(loadBalancer.State.Reason),
-					SubnetIds:        subnetIds,
+					SubnetIDs:        subnetIDs,
 					Type:             aws.StringValue(loadBalancer.Type),
 				},
 			)
@@ -71,25 +71,24 @@ func (elbv2 SDKClient) DescribeLoadBalancersByName(lbNames []string) (LoadBalanc
 	return loadBalancers, err
 }
 
-func (elbv2 SDKClient) CreateLoadBalancer(i *CreateLoadBalancerInput) string {
-	console.Debug("Creating ELB load balancer")
-	input := &awselbv2.CreateLoadBalancerInput{
+func (elbv2 SDKClient) CreateLoadBalancer(i CreateLoadBalancerInput) (string, error) {
+	sdki := &awselbv2.CreateLoadBalancerInput{
 		Name:    aws.String(i.Name),
-		Subnets: aws.StringSlice(i.SubnetIds),
+		Subnets: aws.StringSlice(i.SubnetIDs),
 		Type:    aws.String(i.Type),
 	}
 
 	if i.Type == awselbv2.LoadBalancerTypeEnumApplication {
-		input.SetSecurityGroups(aws.StringSlice(i.SecurityGroupIds))
+		sdki.SetSecurityGroups(aws.StringSlice(i.SecurityGroupIDs))
 	}
 
-	resp, err := elbv2.client.CreateLoadBalancer(input)
+	resp, err := elbv2.client.CreateLoadBalancer(sdki)
 
-	if err != nil || len(resp.LoadBalancers) != 1 {
-		console.ErrorExit(err, "Could not create ELB load balancer")
+	if err != nil {
+		return "", err
 	}
 
-	return aws.StringValue(resp.LoadBalancers[0].LoadBalancerArn)
+	return aws.StringValue(resp.LoadBalancers[0].LoadBalancerArn), nil
 }
 
 func (elbv2 SDKClient) DescribeLoadBalancer(lbName string) LoadBalancer {
@@ -106,15 +105,15 @@ func (elbv2 SDKClient) DescribeLoadBalancer(lbName string) LoadBalancer {
 	return loadBalancers[0]
 }
 
-func (elbv2 SDKClient) DescribeLoadBalancerByArn(lbArn string) LoadBalancer {
+func (elbv2 SDKClient) DescribeLoadBalancerByArn(lbARN string) LoadBalancer {
 	loadBalancers := elbv2.DescribeLoadBalancers(
 		DescribeLoadBalancersInput{
-			Arns: []string{lbArn},
+			ARNs: []string{lbARN},
 		},
 	)
 
 	if len(loadBalancers) == 0 {
-		console.ErrorExit(fmt.Errorf("%s not found", lbArn), "Could not find ELB load balancer")
+		console.ErrorExit(fmt.Errorf("%s not found", lbARN), "Could not find ELB load balancer")
 	}
 
 	return loadBalancers[0]
@@ -124,7 +123,7 @@ func (elbv2 SDKClient) DeleteLoadBalancer(lbName string) {
 	loadBalancer := elbv2.DescribeLoadBalancer(lbName)
 	_, err := elbv2.client.DeleteLoadBalancer(
 		&awselbv2.DeleteLoadBalancerInput{
-			LoadBalancerArn: aws.String(loadBalancer.Arn),
+			LoadBalancerArn: aws.String(loadBalancer.ARN),
 		},
 	)
 
@@ -142,8 +141,8 @@ func (elbv2 SDKClient) DescribeLoadBalancers(i DescribeLoadBalancersInput) []Loa
 		input.SetNames(aws.StringSlice(i.Names))
 	}
 
-	if len(i.Arns) > 0 {
-		input.SetLoadBalancerArns(aws.StringSlice(i.Arns))
+	if len(i.ARNs) > 0 {
+		input.SetLoadBalancerArns(aws.StringSlice(i.ARNs))
 	}
 
 	err := elbv2.client.DescribeLoadBalancersPages(
@@ -158,15 +157,15 @@ func (elbv2 SDKClient) DescribeLoadBalancers(i DescribeLoadBalancersInput) []Loa
 
 				loadBalancers = append(loadBalancers,
 					LoadBalancer{
-						Arn:              aws.StringValue(loadBalancer.LoadBalancerArn),
+						ARN:              aws.StringValue(loadBalancer.LoadBalancerArn),
 						DNSName:          aws.StringValue(loadBalancer.DNSName),
 						HostedZoneId:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
-						VpcId:            aws.StringValue(loadBalancer.VpcId),
+						VPCID:            aws.StringValue(loadBalancer.VpcId),
 						Name:             aws.StringValue(loadBalancer.LoadBalancerName),
-						SecurityGroupIds: aws.StringValueSlice(loadBalancer.SecurityGroups),
+						SecurityGroupIDs: aws.StringValueSlice(loadBalancer.SecurityGroups),
 						State:            aws.StringValue(loadBalancer.State.Code),
 						StateReason:      aws.StringValue(loadBalancer.State.Reason),
-						SubnetIds:        subnetIds,
+						SubnetIDs:        subnetIds,
 						Type:             aws.StringValue(loadBalancer.Type),
 					},
 				)

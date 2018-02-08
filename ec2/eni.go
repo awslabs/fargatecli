@@ -12,10 +12,10 @@ type Eni struct {
 	SecurityGroupIds []string
 }
 
-func (ec2 *EC2) DescribeNetworkInterfaces(eniIds []string) map[string]Eni {
+func (ec2 SDKClient) DescribeNetworkInterfaces(eniIds []string) map[string]Eni {
 	enis := make(map[string]Eni)
 
-	resp, err := ec2.svc.DescribeNetworkInterfaces(
+	resp, err := ec2.client.DescribeNetworkInterfaces(
 		&awsec2.DescribeNetworkInterfacesInput{
 			NetworkInterfaceIds: aws.StringSlice(eniIds),
 		},

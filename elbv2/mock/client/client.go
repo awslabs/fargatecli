@@ -33,6 +33,45 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
+// CreateListener mocks base method
+func (m *MockClient) CreateListener(arg0 elbv2.CreateListenerInput) (string, error) {
+	ret := m.ctrl.Call(m, "CreateListener", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateListener indicates an expected call of CreateListener
+func (mr *MockClientMockRecorder) CreateListener(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateListener", reflect.TypeOf((*MockClient)(nil).CreateListener), arg0)
+}
+
+// CreateLoadBalancer mocks base method
+func (m *MockClient) CreateLoadBalancer(arg0 elbv2.CreateLoadBalancerInput) (string, error) {
+	ret := m.ctrl.Call(m, "CreateLoadBalancer", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateLoadBalancer indicates an expected call of CreateLoadBalancer
+func (mr *MockClientMockRecorder) CreateLoadBalancer(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLoadBalancer", reflect.TypeOf((*MockClient)(nil).CreateLoadBalancer), arg0)
+}
+
+// CreateTargetGroup mocks base method
+func (m *MockClient) CreateTargetGroup(arg0 elbv2.CreateTargetGroupInput) (string, error) {
+	ret := m.ctrl.Call(m, "CreateTargetGroup", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTargetGroup indicates an expected call of CreateTargetGroup
+func (mr *MockClientMockRecorder) CreateTargetGroup(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTargetGroup", reflect.TypeOf((*MockClient)(nil).CreateTargetGroup), arg0)
+}
+
 // DescribeLoadBalancersByName mocks base method
 func (m *MockClient) DescribeLoadBalancersByName(arg0 []string) (elbv2.LoadBalancers, error) {
 	ret := m.ctrl.Call(m, "DescribeLoadBalancersByName", arg0)
