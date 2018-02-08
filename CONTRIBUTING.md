@@ -28,12 +28,7 @@ email and Google Hangouts at john@pignata.com.
   ```
 
 - Install [`dep`][dep] if not present on your system. See their [installation
-  instructions][dep-install] and [releases page][dep-releases] for details. You
-  can also install the latest through `go install`
-
-  ```console
-  go install github.com/golang/dep
-  ```
+  instructions][dep-install] and [releases page][dep-releases] for details.
 
 - Install the source code from GitHub
 
