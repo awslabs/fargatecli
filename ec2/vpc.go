@@ -13,6 +13,7 @@ const (
 	defaultSecurityGroupDescription = "Default Fargate CLI SG"
 )
 
+// GetDefaultSubnetIDs finds and returns the subnet IDs marked as default.
 func (ec2 SDKClient) GetDefaultSubnetIDs() ([]string, error) {
 	var subnetIDs []string
 
@@ -38,6 +39,7 @@ func (ec2 SDKClient) GetDefaultSubnetIDs() ([]string, error) {
 	return subnetIDs, nil
 }
 
+// GetDefaultSecurityGroupID returns the ID of the permissive security group created by default.
 func (ec2 SDKClient) GetDefaultSecurityGroupID() (string, error) {
 	resp, err := ec2.client.DescribeSecurityGroups(
 		&awsec2.DescribeSecurityGroupsInput{
@@ -58,6 +60,7 @@ func (ec2 SDKClient) GetDefaultSecurityGroupID() (string, error) {
 	return aws.StringValue(resp.SecurityGroups[0].GroupId), nil
 }
 
+// GetSubnetVPCID returns the VPC ID for a given subnet ID.
 func (ec2 SDKClient) GetSubnetVPCID(subnetID string) (string, error) {
 	resp, err := ec2.client.DescribeSubnets(
 		&awsec2.DescribeSubnetsInput{
@@ -75,6 +78,7 @@ func (ec2 SDKClient) GetSubnetVPCID(subnetID string) (string, error) {
 	}
 }
 
+// CreateDefaultSecurityGroup creates a new security group for use as the default.
 func (ec2 SDKClient) CreateDefaultSecurityGroup() (string, error) {
 	resp, err := ec2.client.CreateSecurityGroup(
 		&awsec2.CreateSecurityGroupInput{
@@ -90,6 +94,7 @@ func (ec2 SDKClient) CreateDefaultSecurityGroup() (string, error) {
 	return aws.StringValue(resp.GroupId), nil
 }
 
+// AuthorizeAllSecurityGroupIngress configures a security group to allow all ingress traffic.
 func (ec2 SDKClient) AuthorizeAllSecurityGroupIngress(groupId string) error {
 	_, err := ec2.client.AuthorizeSecurityGroupIngress(
 		&awsec2.AuthorizeSecurityGroupIngressInput{

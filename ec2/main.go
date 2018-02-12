@@ -9,18 +9,21 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 )
 
+// Client represents a method for accessing EC2.
 type Client interface {
+	AuthorizeAllSecurityGroupIngress(string) error
+	CreateDefaultSecurityGroup() (string, error)
+	GetDefaultSecurityGroupID() (string, error)
 	GetDefaultSubnetIDs() ([]string, error)
 	GetSubnetVPCID(string) (string, error)
-	GetDefaultSecurityGroupID() (string, error)
-	CreateDefaultSecurityGroup() (string, error)
-	AuthorizeAllSecurityGroupIngress(string) error
 }
 
+// SDKClient implements access to EC2 via the AWS SDK.
 type SDKClient struct {
 	client ec2iface.EC2API
 }
 
+// New returns an SDKClient configured with the given session.
 func New(sess *session.Session) SDKClient {
 	return SDKClient{
 		client: ec2.New(sess),
