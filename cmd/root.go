@@ -29,7 +29,6 @@ const (
 	runtimeMacOS          = "darwin"
 	typeApplication       = "application"
 	typeNetwork           = "network"
-	validProtocolsPattern = "(?i)\\ATCP|HTTP(S)?\\z"
 	validRuleTypesPattern = "(?i)^host|path$"
 )
 
@@ -55,19 +54,6 @@ var (
 	sess        *session.Session
 	verbose     bool
 )
-
-type Port struct {
-	Port     int64
-	Protocol string
-}
-
-func (p *Port) Empty() bool {
-	return p.Port == 0 && p.Protocol == ""
-}
-
-func (p *Port) String() string {
-	return fmt.Sprintf("%s:%d", p.Protocol, p.Port)
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "fargate",

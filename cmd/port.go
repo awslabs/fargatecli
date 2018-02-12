@@ -7,24 +7,37 @@ import (
 	"strings"
 )
 
+type Port struct {
+	Number   int64
+	Protocol string
+}
+
+func (p *Port) Empty() bool {
+	return p.Number == 0 && p.Protocol == ""
+}
+
+func (p *Port) String() string {
+	return fmt.Sprintf("%s:%d", p.Protocol, p.Number)
+}
+
 var validProtocol = regexp.MustCompile("(?i)\\ATCP|HTTP(S)?\\z")
 
 func inflatePort(portExpr string) (Port, error) {
 	switch {
 	case portExpr == "80":
-		return Port{Protocol: "HTTP", Port: 80}, nil
+		return Port{80, "HTTP"}, nil
 	case portExpr == "443":
-		return Port{Protocol: "HTTPS", Port: 443}, nil
+		return Port{443, "HTTPS"}, nil
 	case strings.Index(portExpr, ":") > 1:
 		parts := strings.Split(portExpr, ":")
 		protocol := strings.ToUpper(parts[0])
-		port, err := strconv.ParseInt(parts[1], 10, 64)
+		number, err := strconv.ParseInt(parts[1], 10, 64)
 
 		if err != nil {
 			return Port{}, err
 		}
 
-		return Port{Protocol: protocol, Port: port}, nil
+		return Port{number, protocol}, nil
 	default:
 		port, err := strconv.ParseInt(portExpr, 10, 64)
 
@@ -32,7 +45,7 @@ func inflatePort(portExpr string) (Port, error) {
 			return Port{}, err
 		}
 
-		return Port{Protocol: "TCP", Port: port}, nil
+		return Port{port, "TCP"}, nil
 	}
 }
 
@@ -60,8 +73,8 @@ func validatePort(port Port) []error {
 		errs = append(errs, fmt.Errorf("Invalid protocol %s (specify TCP, HTTP, or HTTPS)", port.Protocol))
 	}
 
-	if port.Port < 1 || port.Port > 65535 {
-		errs = append(errs, fmt.Errorf("Invalid port %d (specify within 1 - 65535)", port.Port))
+	if port.Number < 1 || port.Number > 65535 {
+		errs = append(errs, fmt.Errorf("Invalid port %d (specify within 1 - 65535)", port.Number))
 	}
 
 	return errs

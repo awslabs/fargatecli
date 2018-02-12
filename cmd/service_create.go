@@ -39,14 +39,13 @@ func (o *ServiceCreateOperation) SetPort(inputPort string) {
 	var msgs []string
 
 	port, _ := inflatePort(inputPort)
-	validProtocols := regexp.MustCompile(validProtocolsPattern)
 
-	if !validProtocols.MatchString(port.Protocol) {
+	if !validProtocol.MatchString(port.Protocol) {
 		msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
 	}
 
-	if port.Port < 1 || port.Port > 65535 {
-		msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
+	if port.Number < 1 || port.Number > 65535 {
+		msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Number))
 	}
 
 	if len(msgs) > 0 {
@@ -318,7 +317,7 @@ func createService(operation *ServiceCreateOperation) {
 		targetGroupArn, _ = elbv2.CreateTargetGroup(
 			ELBV2.CreateTargetGroupInput{
 				Name:     fmt.Sprintf("%s-%s", clusterName, operation.ServiceName),
-				Port:     operation.Port.Port,
+				Port:     operation.Port.Number,
 				Protocol: operation.Port.Protocol,
 				VPCID:    vpcId,
 			},
@@ -341,7 +340,7 @@ func createService(operation *ServiceCreateOperation) {
 			Image:            operation.Image,
 			Memory:           operation.Memory,
 			Name:             operation.ServiceName,
-			Port:             operation.Port.Port,
+			Port:             operation.Port.Number,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
 			TaskRole:         operation.TaskRole,
@@ -354,7 +353,7 @@ func createService(operation *ServiceCreateOperation) {
 			Cluster:           clusterName,
 			DesiredCount:      operation.Num,
 			Name:              operation.ServiceName,
-			Port:              operation.Port.Port,
+			Port:              operation.Port.Number,
 			SecurityGroupIds:  operation.SecurityGroupIds,
 			SubnetIds:         operation.SubnetIds,
 			TargetGroupArn:    targetGroupArn,

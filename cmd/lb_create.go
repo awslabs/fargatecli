@@ -199,7 +199,7 @@ func (o *lbCreateOperation) execute() {
 	defaultTargetGroupARN, err := o.elbv2.CreateTargetGroup(
 		elbv2.CreateTargetGroupInput{
 			Name:     defaultTargetGroupName,
-			Port:     o.ports[0].Port,
+			Port:     o.ports[0].Number,
 			Protocol: o.ports[0].Protocol,
 			VPCID:    o.vpcID,
 		},
@@ -213,13 +213,13 @@ func (o *lbCreateOperation) execute() {
 	o.output.Debug("Created target group [ARN=%s]", defaultTargetGroupARN)
 
 	for _, port := range o.ports {
-		o.output.Debug("Creating listener [Port=%s Protocol=%s]", port.Port, port.Protocol)
+		o.output.Debug("Creating listener [Port=%s Protocol=%s]", port.Number, port.Protocol)
 		listenerARN, err := o.elbv2.CreateListener(
 			elbv2.CreateListenerInput{
 				CertificateARNs:       o.certificateARNs,
 				DefaultTargetGroupARN: defaultTargetGroupARN,
 				LoadBalancerARN:       loadBalancerArn,
-				Port:                  port.Port,
+				Port:                  port.Number,
 				Protocol:              port.Protocol,
 			},
 		)
