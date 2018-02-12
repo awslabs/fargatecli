@@ -113,6 +113,7 @@ func (o *lbCreateOperation) setSubnetIDs(subnetIDs []string) error {
 		return fmt.Errorf("HTTP/HTTPS load balancers require two subnet IDs from unique availability zones")
 	}
 
+	o.output.Debug("Finding VPC ID [API=ec2 Action=DescribeSubnets]")
 	vpcID, err := o.ec2.GetSubnetVPCID(subnetIDs[0])
 
 	if err != nil {
@@ -136,6 +137,7 @@ func (o *lbCreateOperation) setSecurityGroupIDs(securityGroupIDs []string) error
 }
 
 func (o *lbCreateOperation) setDefaultSecurityGroupID() error {
+	o.output.Debug("Finding default security group [API=ec2 Action=DescribeSecurityGroups]")
 	defaultSecurityGroupID, err := o.ec2.GetDefaultSecurityGroupID()
 
 	if err != nil {
@@ -143,12 +145,16 @@ func (o *lbCreateOperation) setDefaultSecurityGroupID() error {
 	}
 
 	if defaultSecurityGroupID == "" {
+		o.output.Debug("Creating default security group [API=ec2 Action=CreateSecurityGroup]")
 		defaultSecurityGroupID, err = o.ec2.CreateDefaultSecurityGroup()
 
 		if err != nil {
 			return err
 		}
 
+		o.output.Debug("Created default security group [ID=%s]", defaultSecurityGroupID)
+
+		o.output.Debug("Configuring default security group [API=ec2 Action=AuthorizeSecurityGroupIngress]")
 		if err := o.ec2.AuthorizeAllSecurityGroupIngress(defaultSecurityGroupID); err != nil {
 			return err
 		}
@@ -160,12 +166,14 @@ func (o *lbCreateOperation) setDefaultSecurityGroupID() error {
 }
 
 func (o *lbCreateOperation) setDefaultSubnetIDs() error {
+	o.output.Debug("Finding default subnets [API=ec2 Action=DescribeSubnets]")
 	subnetIDs, err := o.ec2.GetDefaultSubnetIDs()
 
 	if err != nil {
 		return err
 	}
 
+	o.output.Debug("Finding VPC ID [API=ec2 Action=DescribeSubnets]")
 	vpcID, err := o.ec2.GetSubnetVPCID(subnetIDs[0])
 
 	if err != nil {
