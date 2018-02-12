@@ -31,7 +31,15 @@ func (o lbAliasOperation) execute() {
 
 	if hostedZone, ok := hostedZones.FindSuperDomainOf(o.aliasDomain); ok {
 		o.output.Debug("Creating alias record [API=route53 Action=CreateResourceRecordSet]")
-		id, err := o.route53.CreateAlias(hostedZone, "A", o.aliasDomain, loadBalancer.DNSName, loadBalancer.HostedZoneId)
+		id, err := o.route53.CreateAlias(
+			route53.CreateAliasInput{
+				HostedZoneID:       hostedZone.ID,
+				RecordType:         "A",
+				Name:               o.aliasDomain,
+				Target:             loadBalancer.DNSName,
+				TargetHostedZoneID: loadBalancer.HostedZoneId,
+			},
+		)
 
 		if err != nil {
 			o.output.Fatal(err, "Could not alias load balancer")

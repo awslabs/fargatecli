@@ -11,8 +11,8 @@ import (
 
 // Client represents a method for accessing Amazon Route 53.
 type Client interface {
-	CreateAlias(HostedZone, string, string, string, string) (string, error)
-	CreateResourceRecord(HostedZone, string, string, string) (string, error)
+	CreateAlias(CreateAliasInput) (string, error)
+	CreateResourceRecord(CreateResourceRecordInput) (string, error)
 	ListHostedZones() (HostedZones, error)
 }
 

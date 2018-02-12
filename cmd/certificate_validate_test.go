@@ -54,15 +54,17 @@ func TestCertificateValidateOperation(t *testing.T) {
 	mockACMClient := acmclient.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
+	createResourceRecordInput := route53.CreateResourceRecordInput{
+		HostedZoneID: hostedZones[0].ID,
+		RecordType:   resourceRecordType,
+		Name:         resourceRecordName,
+		Value:        resourceRecordValue,
+	}
+
 	mockACMClient.EXPECT().ListCertificates().Return(certificates, nil)
 	mockACMClient.EXPECT().InflateCertificate(certificates[0]).Return(certificate, nil)
 	mockRoute53Client.EXPECT().ListHostedZones().Return(hostedZones, nil)
-	mockRoute53Client.EXPECT().CreateResourceRecord(
-		hostedZones[0],
-		resourceRecordType,
-		resourceRecordName,
-		resourceRecordValue,
-	).Return("/change/1", nil)
+	mockRoute53Client.EXPECT().CreateResourceRecord(createResourceRecordInput).Return("/change/1", nil)
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
@@ -419,15 +421,17 @@ func TestCertificateValidateOperationRecordSetError(t *testing.T) {
 	mockACMClient := acmclient.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
+	createResourceRecordInput := route53.CreateResourceRecordInput{
+		HostedZoneID: hostedZones[0].ID,
+		RecordType:   resourceRecordType,
+		Name:         resourceRecordName,
+		Value:        resourceRecordValue,
+	}
+
 	mockACMClient.EXPECT().ListCertificates().Return(certificates, nil)
 	mockACMClient.EXPECT().InflateCertificate(certificates[0]).Return(certificate, nil)
 	mockRoute53Client.EXPECT().ListHostedZones().Return(hostedZones, nil)
-	mockRoute53Client.EXPECT().CreateResourceRecord(
-		hostedZones[0],
-		resourceRecordType,
-		resourceRecordName,
-		resourceRecordValue,
-	).Return("", errors.New("boom"))
+	mockRoute53Client.EXPECT().CreateResourceRecord(createResourceRecordInput).Return("", errors.New("boom"))
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{

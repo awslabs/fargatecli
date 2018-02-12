@@ -44,6 +44,14 @@ func TestLbAliasOperation(t *testing.T) {
 	mockRoute53Client := route53client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
+	createAliasInput := route53.CreateAliasInput{
+		HostedZoneID:       hostedZone.ID,
+		RecordType:         "A",
+		Name:               domainName,
+		Target:             dnsName,
+		TargetHostedZoneID: hostedZoneID,
+	}
+
 	operation := lbAliasOperation{
 		lbOperation: lbOperation{
 			elbv2: mockELBV2Client,
@@ -56,7 +64,7 @@ func TestLbAliasOperation(t *testing.T) {
 
 	mockELBV2Client.EXPECT().DescribeLoadBalancersByName([]string{"web"}).Return(elbv2.LoadBalancers{lb}, nil)
 	mockRoute53Client.EXPECT().ListHostedZones().Return(route53.HostedZones{hostedZone}, nil)
-	mockRoute53Client.EXPECT().CreateAlias(hostedZone, "A", domainName, dnsName, hostedZoneID).Return("ID", nil)
+	mockRoute53Client.EXPECT().CreateAlias(createAliasInput).Return("ID", nil)
 
 	operation.execute()
 
@@ -137,6 +145,14 @@ func TestLbAliasOperationAliasError(t *testing.T) {
 	mockRoute53Client := route53client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
+	createAliasInput := route53.CreateAliasInput{
+		HostedZoneID:       hostedZone.ID,
+		RecordType:         "A",
+		Name:               domainName,
+		Target:             dnsName,
+		TargetHostedZoneID: hostedZoneID,
+	}
+
 	operation := lbAliasOperation{
 		lbOperation: lbOperation{
 			elbv2: mockELBV2Client,
@@ -149,7 +165,7 @@ func TestLbAliasOperationAliasError(t *testing.T) {
 
 	mockELBV2Client.EXPECT().DescribeLoadBalancersByName([]string{"web"}).Return(elbv2.LoadBalancers{lb}, nil)
 	mockRoute53Client.EXPECT().ListHostedZones().Return(route53.HostedZones{hostedZone}, nil)
-	mockRoute53Client.EXPECT().CreateAlias(hostedZone, "A", domainName, dnsName, hostedZoneID).Return("", errors.New("boom"))
+	mockRoute53Client.EXPECT().CreateAlias(createAliasInput).Return("", errors.New("boom"))
 
 	operation.execute()
 

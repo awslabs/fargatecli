@@ -45,7 +45,14 @@ func (o certificateValidateOperation) execute() {
 		case v.IsPendingValidation():
 			if zone, ok := hostedZones.FindSuperDomainOf(v.DomainName); ok {
 				o.output.Debug("Creating resource record [API=route53 Action=ChangeResourceRecordSets HostedZone=%s]", zone.ID)
-				id, err := o.route53.CreateResourceRecord(zone, v.ResourceRecord.Type, v.ResourceRecord.Name, v.ResourceRecord.Value)
+				id, err := o.route53.CreateResourceRecord(
+					route53.CreateResourceRecordInput{
+						HostedZoneID: zone.ID,
+						RecordType:   v.ResourceRecord.Type,
+						Name:         v.ResourceRecord.Name,
+						Value:        v.ResourceRecord.Value,
+					},
+				)
 
 				if err != nil {
 					o.output.Fatal(err, "Could not validate certificate")
