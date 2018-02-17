@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	defaultSecurityGroupName        = "fargate-default"
-	defaultSecurityGroupDescription = "Default Fargate CLI SG"
+	defaultSecurityGroupName            = "fargate-default"
+	defaultSecurityGroupDescription     = "Default Fargate CLI SG"
+	defaultSecurityGroupIngressCIDR     = "0.0.0.0/0"
+	defaultSecurityGroupIngressProtocol = "-1"
 )
 
 // GetDefaultSubnetIDs finds and returns the subnet IDs marked as default.
@@ -69,10 +71,10 @@ func (ec2 SDKClient) GetSubnetVPCID(subnetID string) (string, error) {
 	)
 
 	switch {
+	case err != nil:
+		return "", fmt.Errorf("could not find VPC ID for subnet ID %s: %v", subnetID, err)
 	case len(resp.Subnets) == 0:
 		return "", fmt.Errorf("could not find VPC ID: subnet ID %s not found", subnetID)
-	case err != nil:
-		return "", fmt.Errorf("could not find VPC ID for subnet %s: %v", subnetID, err)
 	default:
 		return aws.StringValue(resp.Subnets[0].VpcId), nil
 	}
@@ -95,12 +97,12 @@ func (ec2 SDKClient) CreateDefaultSecurityGroup() (string, error) {
 }
 
 // AuthorizeAllSecurityGroupIngress configures a security group to allow all ingress traffic.
-func (ec2 SDKClient) AuthorizeAllSecurityGroupIngress(groupId string) error {
+func (ec2 SDKClient) AuthorizeAllSecurityGroupIngress(groupID string) error {
 	_, err := ec2.client.AuthorizeSecurityGroupIngress(
 		&awsec2.AuthorizeSecurityGroupIngressInput{
-			CidrIp:     aws.String("0.0.0.0/0"),
-			GroupId:    aws.String(groupId),
-			IpProtocol: aws.String("-1"),
+			CidrIp:     aws.String(defaultSecurityGroupIngressCIDR),
+			GroupId:    aws.String(groupID),
+			IpProtocol: aws.String(defaultSecurityGroupIngressProtocol),
 		},
 	)
 
