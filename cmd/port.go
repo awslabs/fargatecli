@@ -25,28 +25,31 @@ var validProtocol = regexp.MustCompile("(?i)\\ATCP|HTTP(S)?\\z")
 func inflatePort(portExpr string) (Port, error) {
 	switch {
 	case portExpr == "80":
-		return Port{80, "HTTP"}, nil
+		return buildPort(portExpr, "HTTP")
 	case portExpr == "443":
-		return Port{443, "HTTPS"}, nil
+		return buildPort(portExpr, "HTTPS")
 	case strings.Index(portExpr, ":") > 1:
 		parts := strings.Split(portExpr, ":")
-		protocol := strings.ToUpper(parts[0])
-		number, err := strconv.ParseInt(parts[1], 10, 64)
+		protocol, number := strings.ToUpper(parts[0]), parts[1]
 
-		if err != nil {
-			return Port{}, err
-		}
-
-		return Port{number, protocol}, nil
+		return buildPort(number, protocol)
 	default:
-		port, err := strconv.ParseInt(portExpr, 10, 64)
+		return buildPort(portExpr, "TCP")
+	}
+}
 
-		if err != nil {
+func buildPort(inputNumber, inputProtocol string) (Port, error) {
+	number, err := strconv.ParseInt(inputNumber, 10, 64)
+
+	if err != nil {
+		if _, ok := err.(*strconv.NumError); ok {
+			return Port{}, fmt.Errorf("could not parse port number from %s", inputNumber)
+		} else {
 			return Port{}, err
 		}
-
-		return Port{port, "TCP"}, nil
 	}
+
+	return Port{number, inputProtocol}, nil
 }
 
 func inflatePorts(portExprs []string) ([]Port, []error) {
@@ -54,28 +57,24 @@ func inflatePorts(portExprs []string) ([]Port, []error) {
 	var errs []error
 
 	for _, portExpr := range portExprs {
-		port, err := inflatePort(portExpr)
-
-		if err != nil {
+		if port, err := inflatePort(portExpr); err == nil {
+			ports = append(ports, port)
+		} else {
 			errs = append(errs, err)
 		}
-
-		ports = append(ports, port)
 	}
 
 	return ports, errs
 }
 
-func validatePort(port Port) []error {
-	var errs []error
-
+func validatePort(port Port) (errs []error) {
 	if !validProtocol.MatchString(port.Protocol) {
-		errs = append(errs, fmt.Errorf("Invalid protocol %s (specify TCP, HTTP, or HTTPS)", port.Protocol))
+		errs = append(errs, fmt.Errorf("invalid protocol %s (specify TCP, HTTP, or HTTPS)", port.Protocol))
 	}
 
 	if port.Number < 1 || port.Number > 65535 {
-		errs = append(errs, fmt.Errorf("Invalid port %d (specify within 1 - 65535)", port.Number))
+		errs = append(errs, fmt.Errorf("invalid port %d (specify within 1 - 65535)", port.Number))
 	}
 
-	return errs
+	return
 }

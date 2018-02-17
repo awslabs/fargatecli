@@ -2,6 +2,8 @@ package cmd
 
 import (
 	//"errors"
+	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -86,5 +88,135 @@ func TestLBCreateOperation(t *testing.T) {
 
 	if expected, got := "Created load balancer lb", mockOutput.InfoMsgs[0]; expected != got {
 		t.Errorf("expected %s, got %s", expected, got)
+	}
+}
+
+func TestSetPorts(t *testing.T) {
+	tests := []struct {
+		inputPorts  []string
+		outputPorts []Port
+	}{
+		{[]string{"80"}, []Port{Port{80, "HTTP"}}},
+		{[]string{"http:80"}, []Port{Port{80, "HTTP"}}},
+		{[]string{"hTTp:80"}, []Port{Port{80, "HTTP"}}},
+		{[]string{"HTTP:80"}, []Port{Port{80, "HTTP"}}},
+		{[]string{"443"}, []Port{Port{443, "HTTPS"}}},
+		{[]string{"https:443"}, []Port{Port{443, "HTTPS"}}},
+		{[]string{"hTTpS:443"}, []Port{Port{443, "HTTPS"}}},
+		{[]string{"HTTPS:443"}, []Port{Port{443, "HTTPS"}}},
+		{[]string{"8080"}, []Port{Port{8080, "TCP"}}},
+		{[]string{"tcp:8080"}, []Port{Port{8080, "TCP"}}},
+		{[]string{"HTTP:8080"}, []Port{Port{8080, "HTTP"}}},
+		{[]string{"80", "443"}, []Port{Port{80, "HTTP"}, Port{443, "HTTPS"}}},
+		{[]string{"tcp:3386", "TCP:5000"}, []Port{Port{3386, "TCP"}, Port{5000, "TCP"}}},
+	}
+
+	for _, test := range tests {
+		operation := lbCreateOperation{}
+		errs := operation.setPorts(test.inputPorts)
+
+		if len(errs) > 0 {
+			t.Fatalf("expected no errors, got %v", errs)
+		}
+
+		if !reflect.DeepEqual(operation.ports, test.outputPorts) {
+			t.Errorf("expected ports %v, got %v", test.outputPorts, operation.ports)
+		}
+	}
+}
+
+func TestSetPortsMissing(t *testing.T) {
+	o := lbCreateOperation{}
+	errs := o.setPorts([]string{})
+
+	if len(errs) != 1 {
+		t.Fatalf("expected error, got none")
+	}
+
+	if expected := errors.New("at least one --port must be specified"); errs[0].Error() != expected.Error() {
+		t.Errorf("expected error %v, got %v", expected, errs[0])
+	}
+}
+
+func TestSetPortsCommingled(t *testing.T) {
+	o := lbCreateOperation{}
+	errs := o.setPorts([]string{"HTTP:80", "TCP:3386"})
+
+	if len(errs) != 1 {
+		t.Fatalf("expected error, got none")
+	}
+
+	if expected := errors.New("load balancers do not support commingled TCP and HTTP/HTTPS ports"); errs[0].Error() != expected.Error() {
+		t.Errorf("expected error %v, got %v", expected, errs[0])
+	}
+}
+
+func TestSetPortsCantInflate(t *testing.T) {
+	o := lbCreateOperation{}
+	errs := o.setPorts([]string{"bargle"})
+
+	if len(errs) != 1 {
+		t.Fatalf("expected error, got none")
+	}
+
+	if expected := errors.New("could not parse port number from bargle"); errs[0].Error() != expected.Error() {
+		t.Errorf("expected error %v, got %v", expected, errs[0])
+	}
+}
+
+func TestInferType(t *testing.T) {
+	tests := []struct {
+		inputPorts []string
+		lbType     string
+	}{
+		{[]string{"80"}, "application"},
+		{[]string{"443"}, "application"},
+		{[]string{"80", "443"}, "application"},
+		{[]string{"8080"}, "network"},
+		{[]string{"1"}, "network"},
+		{[]string{"5000", "2112"}, "network"},
+	}
+
+	for _, test := range tests {
+		o := lbCreateOperation{}
+
+		o.setPorts(test.inputPorts)
+		err := o.inferType()
+
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+
+		if o.lbType != test.lbType {
+			t.Errorf("expected %s, got %s", test.lbType, o.lbType)
+		}
+	}
+}
+
+func TestInferTypeNoPorts(t *testing.T) {
+	o := lbCreateOperation{}
+	err := o.inferType()
+
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
+	if o.lbType != "" {
+		t.Errorf("expected type to not be inferred, got %s", o.lbType)
+	}
+}
+
+func TestInferTypeInvalidProtocol(t *testing.T) {
+	o := lbCreateOperation{
+		ports: []Port{Port{80, "INTERWEB"}},
+	}
+	err := o.inferType()
+
+	if err == nil {
+		t.Fatalf("expected error, got none")
+	}
+
+	if expected := "could not infer type from port settings"; err.Error() != expected {
+		t.Errorf("expected error %s, got %v", expected, err)
 	}
 }
