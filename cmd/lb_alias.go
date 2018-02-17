@@ -15,7 +15,7 @@ type lbAliasOperation struct {
 }
 
 func (o lbAliasOperation) execute() {
-	loadBalancer, err := o.findLb(o.lbName, o.output)
+	loadBalancer, err := o.findLB(o.lbName, o.output)
 
 	if err != nil {
 		o.output.Fatal(err, "Could not alias load balancer")

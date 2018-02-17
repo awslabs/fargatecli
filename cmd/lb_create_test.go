@@ -22,7 +22,7 @@ var (
 	}
 )
 
-func TestLbCreateOperation(t *testing.T) {
+func TestLBCreateOperation(t *testing.T) {
 	lbName := "lb"
 	lbType := "application"
 	lbARN := "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/lb/50dc6c495c0c9188"

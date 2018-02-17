@@ -244,10 +244,10 @@ func (o *lbCreateOperation) execute() {
 }
 
 var (
-	flagLbCreateCertificates     []string
-	flagLbCreatePorts            []string
-	flagLbCreateSecurityGroupIDs []string
-	flagLbCreateSubnetIDs        []string
+	flagLBCreateCertificates     []string
+	flagLBCreatePorts            []string
+	flagLBCreateSecurityGroupIDs []string
+	flagLBCreateSubnetIDs        []string
 
 	lbCreateCmd = &cobra.Command{
 		Use:   "create <load-balancer-name> --port <port-expression>",
@@ -293,7 +293,7 @@ applied to the load balancer.`,
 				output:           output,
 			}
 
-			if errs := operation.setPorts(flagLbCreatePorts); len(errs) > 0 {
+			if errs := operation.setPorts(flagLBCreatePorts); len(errs) > 0 {
 				errors = append(errors, errs...)
 			}
 
@@ -301,14 +301,14 @@ applied to the load balancer.`,
 				errors = append(errors, err)
 			}
 
-			if len(flagLbCreateCertificates) > 0 {
-				if errs := operation.setCertificateARNs(flagLbCreateCertificates); len(errs) > 0 {
+			if len(flagLBCreateCertificates) > 0 {
+				if errs := operation.setCertificateARNs(flagLBCreateCertificates); len(errs) > 0 {
 					errors = append(errors, errs...)
 				}
 			}
 
-			if len(flagLbCreateSecurityGroupIDs) > 0 {
-				if err := operation.setSecurityGroupIDs(flagLbCreateSecurityGroupIDs); err != nil {
+			if len(flagLBCreateSecurityGroupIDs) > 0 {
+				if err := operation.setSecurityGroupIDs(flagLBCreateSecurityGroupIDs); err != nil {
 					errors = append(errors, err)
 				}
 			} else {
@@ -317,8 +317,8 @@ applied to the load balancer.`,
 				}
 			}
 
-			if len(flagLbCreateSubnetIDs) > 0 {
-				if err := operation.setSubnetIDs(flagLbCreateSubnetIDs); err != nil {
+			if len(flagLBCreateSubnetIDs) > 0 {
+				if err := operation.setSubnetIDs(flagLBCreateSubnetIDs); err != nil {
 					errors = append(errors, err)
 				}
 			}
@@ -333,13 +333,13 @@ applied to the load balancer.`,
 )
 
 func init() {
-	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreateCertificates, "certificate", "c", []string{},
+	lbCreateCmd.Flags().StringSliceVarP(&flagLBCreateCertificates, "certificate", "c", []string{},
 		"Name of certificate to add (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreatePorts, "port", "p", []string{},
+	lbCreateCmd.Flags().StringSliceVarP(&flagLBCreatePorts, "port", "p", []string{},
 		"Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSecurityGroupIDs, "security-group-id", []string{},
+	lbCreateCmd.Flags().StringSliceVar(&flagLBCreateSecurityGroupIDs, "security-group-id", []string{},
 		"ID of a security group to apply to the load balancer (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSubnetIDs, "subnet-id", []string{},
+	lbCreateCmd.Flags().StringSliceVar(&flagLBCreateSubnetIDs, "subnet-id", []string{},
 		"ID of a subnet to place the load balancer (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)

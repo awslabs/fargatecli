@@ -31,7 +31,7 @@ var (
 	}
 )
 
-func TestLbAliasOperation(t *testing.T) {
+func TestLBAliasOperation(t *testing.T) {
 	domainName := "example.com."
 	lbName := "web"
 	dnsName := "my-load-balancer-424835706.us-west-2.elb.amazonaws.com"
@@ -73,7 +73,7 @@ func TestLbAliasOperation(t *testing.T) {
 	}
 }
 
-func TestLbAliasOperationFindLbError(t *testing.T) {
+func TestLBAliasOperationFindLBError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -102,7 +102,7 @@ func TestLbAliasOperationFindLbError(t *testing.T) {
 	}
 }
 
-func TestLbAliasOperationListHostedZonesError(t *testing.T) {
+func TestLBAliasOperationListHostedZonesError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -132,7 +132,7 @@ func TestLbAliasOperationListHostedZonesError(t *testing.T) {
 	}
 }
 
-func TestLbAliasOperationAliasError(t *testing.T) {
+func TestLBAliasOperationAliasError(t *testing.T) {
 	domainName := "example.com."
 	lbName := "web"
 	dnsName := "my-load-balancer-424835706.us-west-2.elb.amazonaws.com"
@@ -176,7 +176,7 @@ func TestLbAliasOperationAliasError(t *testing.T) {
 	}
 }
 
-func TestLbAliasOperationHostedZoneNotFound(t *testing.T) {
+func TestLBAliasOperationHostedZoneNotFound(t *testing.T) {
 	domainName := "example.com."
 	lbName := "web"
 
