@@ -25,12 +25,12 @@ func TestCertificateValidateOperation(t *testing.T) {
 	}
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -111,7 +111,7 @@ func TestCertificateValidateOperationFindCertificateError(t *testing.T) {
 func TestCertificateValidateOperationListHostedZonesError(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 			Status:     "PENDING_VALIDATION",
 		},
@@ -147,12 +147,12 @@ func TestCertificateValidateOperationListHostedZonesError(t *testing.T) {
 func TestCertificateValidateOperationInvalidState(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:         "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:         "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName:  "example.com",
 		Status:      "FAILED",
 		Type:        "AMAZON_ISSUED",
@@ -194,12 +194,12 @@ func TestCertificateValidateOperationInvalidState(t *testing.T) {
 func TestCertificateValidateOperationZoneNotFound(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -241,12 +241,12 @@ func TestCertificateValidateOperationZoneNotFound(t *testing.T) {
 func TestCertificateValidateOperationValidationSuccess(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -288,12 +288,12 @@ func TestCertificateValidateOperationValidationSuccess(t *testing.T) {
 func TestCertificateValidateOperationValidationFailed(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -335,12 +335,12 @@ func TestCertificateValidateOperationValidationFailed(t *testing.T) {
 func TestCertificateValidateOperationValidationUnknown(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -392,12 +392,12 @@ func TestCertificateValidateOperationRecordSetError(t *testing.T) {
 	}
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",

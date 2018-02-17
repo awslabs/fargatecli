@@ -179,9 +179,9 @@ func TestCertificateValidationResourceRecordString(t *testing.T) {
 
 func TestCertificatesGetCertificates(t *testing.T) {
 	certificates := Certificates{
-		Certificate{DomainName: "staging.example.com", Arn: "staging.example.com-1"},
-		Certificate{DomainName: "www.example.com", Arn: "www.example.com-1"},
-		Certificate{DomainName: "www.example.com", Arn: "www.example.com-2"},
+		Certificate{DomainName: "staging.example.com", ARN: "staging.example.com-1"},
+		Certificate{DomainName: "www.example.com", ARN: "www.example.com-1"},
+		Certificate{DomainName: "www.example.com", ARN: "www.example.com-2"},
 	}
 
 	var empty Certificates
@@ -202,7 +202,7 @@ func TestCertificatesGetCertificates(t *testing.T) {
 }
 
 func TestRequestCertificate(t *testing.T) {
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	domainName := "*.example.com"
 	aliases := []string{"example-other.com"}
 	validationMethod := "DNS"
@@ -219,7 +219,7 @@ func TestRequestCertificate(t *testing.T) {
 		SubjectAlternativeNames: aws.StringSlice(aliases),
 	}
 	o := &awsacm.RequestCertificateOutput{
-		CertificateArn: aws.String(certificateArn),
+		CertificateArn: aws.String(certificateARN),
 	}
 
 	mockACMAPI.EXPECT().RequestCertificate(i).Return(o, nil)
@@ -230,8 +230,8 @@ func TestRequestCertificate(t *testing.T) {
 		t.Errorf("Error; %+v", err)
 	}
 
-	if arn != certificateArn {
-		t.Errorf("Invalid certificate ARN; want: %s, got: %s", certificateArn, arn)
+	if arn != certificateARN {
+		t.Errorf("Invalid certificate ARN; want: %s, got: %s", certificateARN, arn)
 	}
 }
 
@@ -317,7 +317,7 @@ func TestListCertificatesError(t *testing.T) {
 }
 
 func TestDeleteCertificate(t *testing.T) {
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -325,12 +325,12 @@ func TestDeleteCertificate(t *testing.T) {
 	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
 
 	acm := SDKClient{client: mockACMAPI}
-	i := &awsacm.DeleteCertificateInput{CertificateArn: aws.String(certificateArn)}
+	i := &awsacm.DeleteCertificateInput{CertificateArn: aws.String(certificateARN)}
 	o := &awsacm.DeleteCertificateOutput{}
 
 	mockACMAPI.EXPECT().DeleteCertificate(i).Return(o, nil)
 
-	err := acm.DeleteCertificate(certificateArn)
+	err := acm.DeleteCertificate(certificateARN)
 
 	if err != nil {
 		t.Errorf("Error; %+v", err)
@@ -338,7 +338,7 @@ func TestDeleteCertificate(t *testing.T) {
 }
 
 func TestDeleteCertificateError(t *testing.T) {
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -346,12 +346,12 @@ func TestDeleteCertificateError(t *testing.T) {
 	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
 
 	acm := SDKClient{client: mockACMAPI}
-	i := &awsacm.DeleteCertificateInput{CertificateArn: aws.String(certificateArn)}
+	i := &awsacm.DeleteCertificateInput{CertificateArn: aws.String(certificateARN)}
 	o := &awsacm.DeleteCertificateOutput{}
 
 	mockACMAPI.EXPECT().DeleteCertificate(i).Return(o, errors.New(":-("))
 
-	err := acm.DeleteCertificate(certificateArn)
+	err := acm.DeleteCertificate(certificateARN)
 
 	if err == nil {
 		t.Error("Expected error, got nil")
@@ -397,11 +397,11 @@ func TestInflateCertificate(t *testing.T) {
 			},
 			Certificate{
 				DomainName: "www.example.com",
-				Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+				ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			},
 			Certificate{
 				DomainName:              "www.example.com",
-				Arn:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+				ARN:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 				Type:                    "AMAZON_ISSUED",
 				Status:                  "PENDING_VALIDATION",
 				SubjectAlternativeNames: []string{"staging.example.com"},
@@ -442,11 +442,11 @@ func TestInflateCertificate(t *testing.T) {
 			},
 			Certificate{
 				DomainName: "staging.example.com",
-				Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+				ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			},
 			Certificate{
 				DomainName:              "staging.example.com",
-				Arn:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+				ARN:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 				Type:                    "AMAZON_ISSUED",
 				Status:                  "FAILED",
 				SubjectAlternativeNames: []string{},
@@ -465,7 +465,7 @@ func TestInflateCertificate(t *testing.T) {
 
 		acm := SDKClient{client: mockACMAPI}
 		i := &awsacm.DescribeCertificateInput{
-			CertificateArn: aws.String(test.InCertificate.Arn),
+			CertificateArn: aws.String(test.InCertificate.ARN),
 		}
 
 		mockACMAPI.EXPECT().DescribeCertificate(i).Return(test.DescribeCertificateOutput, nil)
@@ -480,8 +480,8 @@ func TestInflateCertificate(t *testing.T) {
 			t.Errorf("Expected DomainName %s, got %s", test.OutCertificate.DomainName, certificate.DomainName)
 		}
 
-		if certificate.Arn != test.OutCertificate.Arn {
-			t.Errorf("Expected Arn %s, got %s", test.OutCertificate.Arn, certificate.Arn)
+		if certificate.ARN != test.OutCertificate.ARN {
+			t.Errorf("Expected Arn %s, got %s", test.OutCertificate.ARN, certificate.ARN)
 		}
 
 		if certificate.Type != test.OutCertificate.Type {
@@ -518,7 +518,7 @@ func TestInflateCertificate(t *testing.T) {
 
 func TestInflateCertificateError(t *testing.T) {
 	inCertificate := Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "www.example.com",
 	}
 
@@ -528,7 +528,7 @@ func TestInflateCertificateError(t *testing.T) {
 	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
 
 	acm := SDKClient{client: mockACMAPI}
-	i := &awsacm.DescribeCertificateInput{CertificateArn: aws.String(inCertificate.Arn)}
+	i := &awsacm.DescribeCertificateInput{CertificateArn: aws.String(inCertificate.ARN)}
 	o := &awsacm.DescribeCertificateOutput{}
 
 	mockACMAPI.EXPECT().DescribeCertificate(i).Return(o, errors.New(":-("))
@@ -548,7 +548,7 @@ func TestImportCertificate(t *testing.T) {
 	dummy := make([]byte, 10)
 	rand.Read(dummy)
 
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -562,7 +562,7 @@ func TestImportCertificate(t *testing.T) {
 		PrivateKey:       dummy,
 	}
 	o := &awsacm.ImportCertificateOutput{
-		CertificateArn: aws.String(certificateArn),
+		CertificateArn: aws.String(certificateARN),
 	}
 
 	mockACMAPI.EXPECT().ImportCertificate(i).Return(o, nil)
@@ -573,8 +573,8 @@ func TestImportCertificate(t *testing.T) {
 		t.Errorf("Expected no error, got %s", err)
 	}
 
-	if arn != certificateArn {
-		t.Errorf("Expected ARN == %s, got: %s", certificateArn, arn)
+	if arn != certificateARN {
+		t.Errorf("Expected ARN == %s, got: %s", certificateARN, arn)
 	}
 }
 

@@ -11,10 +11,10 @@ import (
 )
 
 func TestCertificateDestroyOperation(t *testing.T) {
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	domainName := "example.com"
 	certificate := acm.Certificate{
-		Arn:        certificateArn,
+		ARN:        certificateARN,
 		DomainName: domainName,
 	}
 
@@ -26,7 +26,7 @@ func TestCertificateDestroyOperation(t *testing.T) {
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
 	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
-	mockClient.EXPECT().DeleteCertificate(certificateArn).Return(nil)
+	mockClient.EXPECT().DeleteCertificate(certificateARN).Return(nil)
 
 	certificateDestroyOperation{
 		certificateOperation: certificateOperation{
@@ -76,15 +76,15 @@ func TestCertificateDestroyOperationCertNotFound(t *testing.T) {
 }
 
 func TestCertificateDestroyOperationMoreThanOneCertFound(t *testing.T) {
-	certificateArn1 := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
-	certificateArn2 := "arn:aws:acm:us-east-1:123456789012:certificate/abcdef01-2345-6789-0abc-def012345678"
+	certificateARN1 := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN2 := "arn:aws:acm:us-east-1:123456789012:certificate/abcdef01-2345-6789-0abc-def012345678"
 	domainName := "example.com"
 	certificate1 := acm.Certificate{
-		Arn:        certificateArn1,
+		ARN:        certificateARN1,
 		DomainName: domainName,
 	}
 	certificate2 := acm.Certificate{
-		Arn:        certificateArn2,
+		ARN:        certificateARN2,
 		DomainName: domainName,
 	}
 
@@ -142,10 +142,10 @@ func TestCertificateDestroyOperationListError(t *testing.T) {
 }
 
 func TestCertificateDestroyOperationDeleteError(t *testing.T) {
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	domainName := "example.com"
 	certificate := acm.Certificate{
-		Arn:        certificateArn,
+		ARN:        certificateARN,
 		DomainName: domainName,
 	}
 
@@ -157,7 +157,7 @@ func TestCertificateDestroyOperationDeleteError(t *testing.T) {
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
 	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
-	mockClient.EXPECT().DeleteCertificate(certificateArn).Return(errors.New(":-("))
+	mockClient.EXPECT().DeleteCertificate(certificateARN).Return(errors.New(":-("))
 
 	certificateDestroyOperation{
 		certificateOperation: certificateOperation{

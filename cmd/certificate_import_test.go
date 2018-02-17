@@ -12,7 +12,7 @@ import (
 )
 
 func TestCertificateImportOperation(t *testing.T) {
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	certificate := readFile("testdata/certificate.crt", t)
 	privateKey := readFile("testdata/private.key", t)
 	certificateChain := readFile("testdata/chain.crt", t)
@@ -23,7 +23,7 @@ func TestCertificateImportOperation(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().ImportCertificate(certificate, privateKey, certificateChain).Return(certificateArn, nil)
+	mockClient.EXPECT().ImportCertificate(certificate, privateKey, certificateChain).Return(certificateARN, nil)
 
 	certificateImportOperation{
 		acm:                  mockClient,
@@ -44,14 +44,14 @@ func TestCertificateImportOperation(t *testing.T) {
 	}
 
 	if !strings.Contains(mockOutput.InfoMsgs[0], "Imported certificate") {
-		t.Errorf("Expected info output to say 'Imported certificate [ARN=%s]', got: %s", certificateArn, mockOutput.InfoMsgs[0])
+		t.Errorf("Expected info output to say 'Imported certificate [ARN=%s]', got: %s", certificateARN, mockOutput.InfoMsgs[0])
 	}
 }
 
 func TestCertificateImportOperationSansChain(t *testing.T) {
 	var certificateChain []byte
 
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	certificate := readFile("testdata/certificate.crt", t)
 	privateKey := readFile("testdata/private.key", t)
 
@@ -61,7 +61,7 @@ func TestCertificateImportOperationSansChain(t *testing.T) {
 	mockClient := client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockClient.EXPECT().ImportCertificate(certificate, privateKey, certificateChain).Return(certificateArn, nil)
+	mockClient.EXPECT().ImportCertificate(certificate, privateKey, certificateChain).Return(certificateARN, nil)
 
 	certificateImportOperation{
 		acm:             mockClient,
@@ -81,7 +81,7 @@ func TestCertificateImportOperationSansChain(t *testing.T) {
 	}
 
 	if !strings.Contains(mockOutput.InfoMsgs[0], "Imported certificate") {
-		t.Errorf("Expected info output to say 'Imported certificate [ARN=%s]', got: %s", certificateArn, mockOutput.InfoMsgs[0])
+		t.Errorf("Expected info output to say 'Imported certificate [ARN=%s]', got: %s", certificateARN, mockOutput.InfoMsgs[0])
 	}
 }
 

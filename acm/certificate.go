@@ -10,7 +10,7 @@ import (
 
 // Certificate is a certificate hosted in AWS Certificate Manager.
 type Certificate struct {
-	Arn                     string
+	ARN                     string
 	Status                  string
 	SubjectAlternativeNames []string
 	DomainName              string
@@ -160,7 +160,7 @@ func (acm SDKClient) ImportCertificate(certificate, privateKey, certificateChain
 func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 	resp, err := acm.client.DescribeCertificate(
 		&awsacm.DescribeCertificateInput{
-			CertificateArn: aws.String(c.Arn),
+			CertificateArn: aws.String(c.ARN),
 		},
 	)
 
@@ -200,7 +200,7 @@ func (acm SDKClient) ListCertificates() (Certificates, error) {
 	handler := func(resp *awsacm.ListCertificatesOutput, lastPage bool) bool {
 		for _, cs := range resp.CertificateSummaryList {
 			c := Certificate{
-				Arn:        aws.StringValue(cs.CertificateArn),
+				ARN:        aws.StringValue(cs.CertificateArn),
 				DomainName: aws.StringValue(cs.DomainName),
 			}
 
@@ -236,14 +236,14 @@ func (acm SDKClient) RequestCertificate(domainName string, aliases []string) (st
 }
 
 // ListCertificateDomainNames is bunk and will be refactored out of existence soon.
-func (acm *SDKClient) ListCertificateDomainNames(certificateArns []string) []string {
+func (acm *SDKClient) ListCertificateDomainNames(certificateARNs []string) []string {
 	var domainNames []string
 
 	certificates, _ := acm.ListCertificates()
 
 	for _, certificate := range certificates {
-		for _, certificateArn := range certificateArns {
-			if certificate.Arn == certificateArn {
+		for _, certificateARN := range certificateARNs {
+			if certificate.ARN == certificateARN {
 				domainNames = append(domainNames, certificate.DomainName)
 			}
 		}

@@ -28,8 +28,8 @@ func (o certificateDestroyOperation) execute() {
 		}
 	}
 
-	o.output.Debug("Deleting certificate [API=acm Action=DeleteCertificate ARN=%s]", certificate.Arn)
-	if err := o.acm.DeleteCertificate(certificate.Arn); err != nil {
+	o.output.Debug("Deleting certificate [API=acm Action=DeleteCertificate ARN=%s]", certificate.ARN)
+	if err := o.acm.DeleteCertificate(certificate.ARN); err != nil {
 		o.output.Fatal(err, "Could not destroy certificate")
 		return
 	}

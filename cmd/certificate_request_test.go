@@ -11,7 +11,7 @@ import (
 )
 
 func TestCertificateRequestOperation(t *testing.T) {
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	domainName := "example.com"
 	aliases := []string{"www.example.com"}
 
@@ -28,7 +28,7 @@ func TestCertificateRequestOperation(t *testing.T) {
 		output:     mockOutput,
 	}
 
-	mockClient.EXPECT().RequestCertificate(domainName, aliases).Return(certificateArn, nil)
+	mockClient.EXPECT().RequestCertificate(domainName, aliases).Return(certificateARN, nil)
 
 	operation.execute()
 

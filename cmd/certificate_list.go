@@ -58,7 +58,7 @@ func (o certificateListOperation) find() ([]acm.Certificate, error) {
 			defer wg.Done()
 
 			if err := limiter.Wait(context.Background()); err == nil {
-				o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", c.Arn)
+				o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", c.ARN)
 				certificate, err := o.acm.InflateCertificate(c)
 
 				if err != nil {

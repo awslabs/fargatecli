@@ -17,7 +17,7 @@ var (
 	certificates = acm.Certificates{
 		acm.Certificate{
 			DomainName: "example.com",
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		},
 	}
 )

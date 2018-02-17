@@ -13,11 +13,11 @@ import (
 func TestFindCertificate(t *testing.T) {
 	certificate := acm.Certificate{
 		DomainName: "www.example.com",
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 	}
 	inflatedCertificate := acm.Certificate{
 		DomainName: "www.example.com",
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		Status:     "ISSUED",
 		Type:       "AMAZON_ISSUED",
 	}
@@ -70,8 +70,8 @@ func TestFindCertificateNotFound(t *testing.T) {
 
 func TestFindCertificateTooManyFound(t *testing.T) {
 	certificates := acm.Certificates{
-		acm.Certificate{DomainName: "www.example.com", Arn: "arn:1"},
-		acm.Certificate{DomainName: "www.example.com", Arn: "arn:2"},
+		acm.Certificate{DomainName: "www.example.com", ARN: "arn:1"},
+		acm.Certificate{DomainName: "www.example.com", ARN: "arn:2"},
 	}
 
 	mockCtrl := gomock.NewController(t)

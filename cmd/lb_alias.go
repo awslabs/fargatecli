@@ -37,7 +37,7 @@ func (o lbAliasOperation) execute() {
 				RecordType:         "A",
 				Name:               o.aliasDomain,
 				Target:             loadBalancer.DNSName,
-				TargetHostedZoneID: loadBalancer.HostedZoneId,
+				TargetHostedZoneID: loadBalancer.HostedZoneID,
 			},
 		)
 

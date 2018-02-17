@@ -15,7 +15,7 @@ type LoadBalancer struct {
 	StateReason      string
 	ARN              string
 	Type             string
-	HostedZoneId     string
+	HostedZoneID     string
 	SecurityGroupIDs []string
 	SubnetIDs        []string
 	VPCID            string
@@ -51,7 +51,7 @@ func (elbv2 SDKClient) DescribeLoadBalancersByName(lbNames []string) (LoadBalanc
 				LoadBalancer{
 					ARN:              aws.StringValue(loadBalancer.LoadBalancerArn),
 					DNSName:          aws.StringValue(loadBalancer.DNSName),
-					HostedZoneId:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
+					HostedZoneID:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
 					VPCID:            aws.StringValue(loadBalancer.VpcId),
 					Name:             aws.StringValue(loadBalancer.LoadBalancerName),
 					SecurityGroupIDs: aws.StringValueSlice(loadBalancer.SecurityGroups),
@@ -159,7 +159,7 @@ func (elbv2 SDKClient) DescribeLoadBalancers(i DescribeLoadBalancersInput) []Loa
 					LoadBalancer{
 						ARN:              aws.StringValue(loadBalancer.LoadBalancerArn),
 						DNSName:          aws.StringValue(loadBalancer.DNSName),
-						HostedZoneId:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
+						HostedZoneID:     aws.StringValue(loadBalancer.CanonicalHostedZoneId),
 						VPCID:            aws.StringValue(loadBalancer.VpcId),
 						Name:             aws.StringValue(loadBalancer.LoadBalancerName),
 						SecurityGroupIDs: aws.StringValueSlice(loadBalancer.SecurityGroups),

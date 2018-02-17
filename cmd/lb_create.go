@@ -76,7 +76,7 @@ func (o *lbCreateOperation) inferType() error {
 	return nil
 }
 
-func (o *lbCreateOperation) setCertificateArns(certificateDomainNames []string) []error {
+func (o *lbCreateOperation) setCertificateARNs(certificateDomainNames []string) []error {
 	var (
 		certificateARNs []string
 		errs            []error
@@ -85,7 +85,7 @@ func (o *lbCreateOperation) setCertificateArns(certificateDomainNames []string) 
 	for _, certificateDomainName := range certificateDomainNames {
 		if certificate, err := o.findCertificate(certificateDomainName, output); err == nil {
 			if certificate.IsIssued() {
-				certificateARNs = append(certificateARNs, certificate.Arn)
+				certificateARNs = append(certificateARNs, certificate.ARN)
 			} else {
 				errs = append(errs, fmt.Errorf("certificate %s is in state %s", certificateDomainName, Humanize(certificate.Status)))
 			}
@@ -189,7 +189,7 @@ func (o *lbCreateOperation) setDefaultSubnetIDs() error {
 func (o *lbCreateOperation) execute() {
 	defaultTargetGroupName := fmt.Sprintf(defaultTargetGroupFormat, o.loadBalancerName)
 
-	loadBalancerArn, err := o.elbv2.CreateLoadBalancer(
+	loadBalancerARN, err := o.elbv2.CreateLoadBalancer(
 		elbv2.CreateLoadBalancerInput{
 			Name:             o.loadBalancerName,
 			SecurityGroupIDs: o.securityGroupIDs,
@@ -226,7 +226,7 @@ func (o *lbCreateOperation) execute() {
 			elbv2.CreateListenerInput{
 				CertificateARNs:       o.certificateARNs,
 				DefaultTargetGroupARN: defaultTargetGroupARN,
-				LoadBalancerARN:       loadBalancerArn,
+				LoadBalancerARN:       loadBalancerARN,
 				Port:                  port.Number,
 				Protocol:              port.Protocol,
 			},
@@ -246,8 +246,8 @@ func (o *lbCreateOperation) execute() {
 var (
 	flagLbCreateCertificates     []string
 	flagLbCreatePorts            []string
-	flagLbCreateSecurityGroupIds []string
-	flagLbCreateSubnetIds        []string
+	flagLbCreateSecurityGroupIDs []string
+	flagLbCreateSubnetIDs        []string
 
 	lbCreateCmd = &cobra.Command{
 		Use:   "create <load-balancer-name> --port <port-expression>",
@@ -302,13 +302,13 @@ applied to the load balancer.`,
 			}
 
 			if len(flagLbCreateCertificates) > 0 {
-				if errs := operation.setCertificateArns(flagLbCreateCertificates); len(errs) > 0 {
+				if errs := operation.setCertificateARNs(flagLbCreateCertificates); len(errs) > 0 {
 					errors = append(errors, errs...)
 				}
 			}
 
-			if len(flagLbCreateSecurityGroupIds) > 0 {
-				if err := operation.setSecurityGroupIDs(flagLbCreateSecurityGroupIds); err != nil {
+			if len(flagLbCreateSecurityGroupIDs) > 0 {
+				if err := operation.setSecurityGroupIDs(flagLbCreateSecurityGroupIDs); err != nil {
 					errors = append(errors, err)
 				}
 			} else {
@@ -317,8 +317,8 @@ applied to the load balancer.`,
 				}
 			}
 
-			if len(flagLbCreateSubnetIds) > 0 {
-				if err := operation.setSubnetIDs(flagLbCreateSubnetIds); err != nil {
+			if len(flagLbCreateSubnetIDs) > 0 {
+				if err := operation.setSubnetIDs(flagLbCreateSubnetIDs); err != nil {
 					errors = append(errors, err)
 				}
 			}
@@ -337,9 +337,9 @@ func init() {
 		"Name of certificate to add (can be specified multiple times)")
 	lbCreateCmd.Flags().StringSliceVarP(&flagLbCreatePorts, "port", "p", []string{},
 		"Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSecurityGroupIds, "security-group-id", []string{},
+	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSecurityGroupIDs, "security-group-id", []string{},
 		"ID of a security group to apply to the load balancer (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSubnetIds, "subnet-id", []string{},
+	lbCreateCmd.Flags().StringSliceVar(&flagLbCreateSubnetIDs, "subnet-id", []string{},
 		"ID of a subnet to place the load balancer (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)

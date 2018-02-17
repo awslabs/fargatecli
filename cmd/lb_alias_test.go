@@ -16,7 +16,7 @@ var (
 	lb = elbv2.LoadBalancer{
 		ARN:              "arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188",
 		DNSName:          "my-load-balancer-424835706.us-west-2.elb.amazonaws.com",
-		HostedZoneId:     "Z2P70J7EXAMPLE",
+		HostedZoneID:     "Z2P70J7EXAMPLE",
 		VPCID:            "vpc-3ac0fb5f",
 		Name:             "web",
 		SecurityGroupIDs: []string{"sg-5943793c"},

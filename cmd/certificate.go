@@ -28,7 +28,7 @@ func (o certificateOperation) findCertificate(domainName string, output Output) 
 		return acm.Certificate{}, errCertificateTooManyFound
 	}
 
-	output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", certificates[0].Arn)
+	output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", certificates[0].ARN)
 	return o.acm.InflateCertificate(certificates[0])
 }
 
