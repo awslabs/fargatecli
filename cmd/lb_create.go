@@ -275,7 +275,7 @@ applied to the load balancer.`,
 			elbv2.New(sess),
 		)
 
-		if len(errs) >= 0 {
+		if len(errs) > 0 {
 			output.Fatals(errs, "Invalid command line flags")
 			return
 		}
