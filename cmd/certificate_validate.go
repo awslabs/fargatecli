@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/jpignata/fargate/acm"
 	"github.com/jpignata/fargate/route53"
@@ -17,7 +16,7 @@ type certificateValidateOperation struct {
 }
 
 func (o certificateValidateOperation) execute() {
-	certificate, err := o.findCertificate(o.domainName, o.output)
+	certificate, err := o.findCertificate(o.domainName)
 
 	if err != nil {
 		o.output.Fatal(err, "Could not validate certificate")
@@ -25,10 +24,7 @@ func (o certificateValidateOperation) execute() {
 	}
 
 	if !certificate.IsPendingValidation() {
-		o.output.Fatal(
-			fmt.Errorf("Certificate %s is in state %s", o.domainName, strings.ToLower(Humanize(certificate.Status))),
-			"Could not validate certificate",
-		)
+		o.output.Fatal(fmt.Errorf("certificate %s is in state %s", o.domainName, Humanize(certificate.Status)), "Could not validate certificate")
 		return
 	}
 
@@ -45,7 +41,14 @@ func (o certificateValidateOperation) execute() {
 		case v.IsPendingValidation():
 			if zone, ok := hostedZones.FindSuperDomainOf(v.DomainName); ok {
 				o.output.Debug("Creating resource record [API=route53 Action=ChangeResourceRecordSets HostedZone=%s]", zone.ID)
-				id, err := o.route53.CreateResourceRecord(zone, v.ResourceRecord.Type, v.ResourceRecord.Name, v.ResourceRecord.Value)
+				id, err := o.route53.CreateResourceRecord(
+					route53.CreateResourceRecordInput{
+						HostedZoneID: zone.ID,
+						RecordType:   v.ResourceRecord.Type,
+						Name:         v.ResourceRecord.Name,
+						Value:        v.ResourceRecord.Value,
+					},
+				)
 
 				if err != nil {
 					o.output.Fatal(err, "Could not validate certificate")
@@ -63,7 +66,7 @@ func (o certificateValidateOperation) execute() {
 			o.output.Fatal(nil, "[%s] failed validation", v.DomainName)
 			return
 		default:
-			o.output.Warn("[%s] unexpected status: %s", v.DomainName, strings.ToLower(Humanize(v.Status)))
+			o.output.Warn("[%s] unexpected status: %s", v.DomainName, Humanize(v.Status))
 		}
 	}
 }
@@ -85,12 +88,10 @@ AWS Certificate Manager may take up to several hours after the DNS records are
 created to complete validation and issue the certificate.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateValidateOperation{
-			certificateOperation: certificateOperation{
-				acm: acm.New(sess),
-			},
-			domainName: args[0],
-			output:     output,
-			route53:    route53.New(sess),
+			certificateOperation: certificateOperation{acm: acm.New(sess), output: output},
+			domainName:           args[0],
+			output:               output,
+			route53:              route53.New(sess),
 		}.execute()
 	},
 }

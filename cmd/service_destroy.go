@@ -45,30 +45,30 @@ func destroyService(operation *ServiceDestroyOperation) {
 
 	if service.TargetGroupArn != "" {
 		loadBalancerArn := elbv2.GetTargetGroupLoadBalancerArn(service.TargetGroupArn)
-		loadBalancer := elbv2.DescribeLoadBalancerByArn(loadBalancerArn)
+		loadBalancer := elbv2.DescribeLoadBalancerByARN(loadBalancerArn)
 		listeners := elbv2.GetListeners(loadBalancerArn)
 
 		for _, listener := range listeners {
-			for _, rule := range elbv2.DescribeRules(listener.Arn) {
-				if rule.TargetGroupArn == service.TargetGroupArn {
+			for _, rule := range elbv2.DescribeRules(listener.ARN) {
+				if rule.TargetGroupARN == service.TargetGroupArn {
 					if rule.IsDefault {
 						defaultTargetGroupName := fmt.Sprintf(defaultTargetGroupFormat, loadBalancer.Name)
 						defaultTargetGroupArn := elbv2.GetTargetGroupArn(defaultTargetGroupName)
 
 						if defaultTargetGroupArn == "" {
-							defaultTargetGroupArn = elbv2.CreateTargetGroup(
-								&ELBV2.CreateTargetGroupInput{
+							defaultTargetGroupArn, _ = elbv2.CreateTargetGroup(
+								ELBV2.CreateTargetGroupInput{
 									Name:     defaultTargetGroupName,
 									Port:     listeners[0].Port,
 									Protocol: listeners[0].Protocol,
-									VpcId:    loadBalancer.VpcId,
+									VPCID:    loadBalancer.VPCID,
 								},
 							)
 						}
 
-						elbv2.ModifyListenerDefaultAction(listener.Arn, defaultTargetGroupArn)
+						elbv2.ModifyListenerDefaultAction(listener.ARN, defaultTargetGroupArn)
 					} else {
-						elbv2.DeleteRule(rule.Arn)
+						elbv2.DeleteRule(rule.ARN)
 					}
 				}
 			}

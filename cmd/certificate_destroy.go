@@ -12,7 +12,7 @@ type certificateDestroyOperation struct {
 }
 
 func (o certificateDestroyOperation) execute() {
-	certificate, err := o.findCertificate(o.domainName, o.output)
+	certificate, err := o.findCertificate(o.domainName)
 
 	if err != nil {
 		switch err {
@@ -28,8 +28,8 @@ func (o certificateDestroyOperation) execute() {
 		}
 	}
 
-	o.output.Debug("Deleting certificate [API=acm Action=DeleteCertificate ARN=%s]", certificate.Arn)
-	if err := o.acm.DeleteCertificate(certificate.Arn); err != nil {
+	o.output.Debug("Deleting certificate [API=acm Action=DeleteCertificate ARN=%s]", certificate.ARN)
+	if err := o.acm.DeleteCertificate(certificate.ARN); err != nil {
 		o.output.Fatal(err, "Could not destroy certificate")
 		return
 	}
@@ -47,11 +47,9 @@ any other AWS resources.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateDestroyOperation{
-			certificateOperation: certificateOperation{
-				acm: acm.New(sess),
-			},
-			domainName: args[0],
-			output:     output,
+			certificateOperation: certificateOperation{acm: acm.New(sess), output: output},
+			domainName:           args[0],
+			output:               output,
 		}.execute()
 	},
 }

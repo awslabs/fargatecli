@@ -13,13 +13,13 @@ import (
 
 func TestCertificateInfoOperation(t *testing.T) {
 	domainName := "example.com"
-	certificateArn := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 	inCertificate := acm.Certificate{
-		Arn:        certificateArn,
+		ARN:        certificateARN,
 		DomainName: domainName,
 	}
 	outCertificate := acm.Certificate{
-		Arn:                     certificateArn,
+		ARN:                     certificateARN,
 		DomainName:              domainName,
 		Type:                    "AMAZON_ISSUED",
 		Status:                  "PENDING_VALIDATION",
@@ -49,7 +49,8 @@ func TestCertificateInfoOperation(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: domainName,
 		output:     mockOutput,
@@ -70,6 +71,8 @@ func TestCertificateInfoOperation(t *testing.T) {
 	}
 
 	if mockOutput.KeyValueMsgs["Status"] != "Pending Validation" {
+		t.Logf(mockOutput.KeyValueMsgs["Status"])
+		t.Logf(Titleize(mockOutput.KeyValueMsgs["Status"]))
 		t.Errorf("Expected Status == Pending Validation, got %s", mockOutput.KeyValueMsgs["Status"])
 	}
 
@@ -126,7 +129,8 @@ func TestCertificateInfoOperationNotFound(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -156,7 +160,8 @@ func TestCertificateInfoOperationListError(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -177,7 +182,7 @@ func TestCertificateInfoOperationListError(t *testing.T) {
 
 func TestCertificateInfoOperationDescribeError(t *testing.T) {
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 	}
 	certificateList := acm.Certificates{certificate}
@@ -193,7 +198,8 @@ func TestCertificateInfoOperationDescribeError(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,

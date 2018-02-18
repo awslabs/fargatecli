@@ -12,11 +12,11 @@ type MockListHostedZonesPagesClient struct {
 }
 
 func (m MockListHostedZonesPagesClient) ListHostedZonesPages(in *route53.ListHostedZonesInput, fn func(*route53.ListHostedZonesOutput, bool) bool) error {
-	fn(m.Resp, true)
-
 	if m.Error != nil {
 		return m.Error
 	}
+
+	fn(m.Resp, true)
 
 	return nil
 }

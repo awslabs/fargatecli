@@ -29,8 +29,9 @@ const (
 	runtimeMacOS          = "darwin"
 	typeApplication       = "application"
 	typeNetwork           = "network"
-	validProtocolsPattern = "(?i)\\ATCP|HTTP(S)?\\z"
 	validRuleTypesPattern = "(?i)^host|path$"
+
+	describeRequestLimitRate = 10
 )
 
 var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings
@@ -55,19 +56,6 @@ var (
 	sess        *session.Session
 	verbose     bool
 )
-
-type Port struct {
-	Port     int64
-	Protocol string
-}
-
-func (p *Port) Empty() bool {
-	return p.Port == 0 && p.Protocol == ""
-}
-
-func (p *Port) String() string {
-	return fmt.Sprintf("%s:%d", p.Protocol, p.Port)
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "fargate",
@@ -184,61 +172,6 @@ func init() {
 	if runtime.GOOS == runtimeMacOS {
 		rootCmd.PersistentFlags().BoolVar(&noEmoji, "no-emoji", false, "Disable emoji output")
 	}
-}
-
-func inflatePort(src string) (port Port) {
-	ports := inflatePorts([]string{src})
-	return ports[0]
-}
-
-func inflatePorts(src []string) (ports []Port) {
-	for _, portRaw := range src {
-		if portRaw == "80" {
-			ports = append(ports,
-				Port{
-					Port:     80,
-					Protocol: "HTTP",
-				},
-			)
-		} else if portRaw == "443" {
-			ports = append(ports,
-				Port{
-					Port:     443,
-					Protocol: "HTTPS",
-				},
-			)
-		} else if strings.Index(portRaw, ":") > 1 {
-			portRawContents := strings.Split(portRaw, ":")
-			protocol := strings.ToUpper(portRawContents[0])
-			port, err := strconv.ParseInt(portRawContents[1], 10, 64)
-
-			if err != nil {
-				console.ErrorExit(err, "Invalid command line flags")
-			}
-
-			ports = append(ports,
-				Port{
-					Port:     port,
-					Protocol: protocol,
-				},
-			)
-		} else {
-			port, err := strconv.ParseInt(portRaw, 10, 64)
-
-			if err != nil {
-				console.ErrorExit(err, "Invalid command line flags")
-			}
-
-			ports = append(ports,
-				Port{
-					Port:     port,
-					Protocol: "TCP",
-				},
-			)
-		}
-	}
-
-	return
 }
 
 func extractEnvVars(inputEnvVars []string) []ECS.EnvVar {

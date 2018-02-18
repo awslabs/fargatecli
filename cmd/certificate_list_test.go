@@ -14,13 +14,13 @@ import (
 func TestCertificateListOperation(t *testing.T) {
 	certificateList := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 
 	certificate := acm.Certificate{
-		Arn:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName:              "example.com",
 		Type:                    "AMAZON_ISSUED",
 		Status:                  "PENDING_VALIDATION",
@@ -76,27 +76,27 @@ func TestCertificateListOperation(t *testing.T) {
 func TestCertificateListOperationOrdered(t *testing.T) {
 	certificateList := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-f",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-f",
 			DomainName: "f.com",
 		},
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-c",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-c",
 			DomainName: "c.com",
 		},
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-a",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-a",
 			DomainName: "a.com",
 		},
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-d",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-d",
 			DomainName: "d.com",
 		},
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-e",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-e",
 			DomainName: "e.com",
 		},
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-b",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012-b",
 			DomainName: "b.com",
 		},
 	}
@@ -190,7 +190,7 @@ func TestCertificateListOperationListError(t *testing.T) {
 
 func TestCertificateListOperationDescribeError(t *testing.T) {
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 	}
 	certificateList := acm.Certificates{certificate}

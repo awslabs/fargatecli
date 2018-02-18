@@ -11,8 +11,6 @@ import (
 	"golang.org/x/time/rate"
 )
 
-const describeRequestLimitRate = 10
-
 type certificateListOperation struct {
 	acm    acm.Client
 	output Output
@@ -34,16 +32,18 @@ func (o certificateListOperation) execute() {
 	o.display(certificates)
 }
 
-func (o certificateListOperation) find() ([]acm.Certificate, error) {
-	o.output.Debug("Listing certificates [API=acm Action=ListCertificates")
+func (o certificateListOperation) find() (acm.Certificates, error) {
+	var (
+		wg                   sync.WaitGroup
+		inflatedCertificates acm.Certificates
+	)
+
+	o.output.Debug("Listing certificates [API=acm Action=ListCertificates]")
 	certificates, err := o.acm.ListCertificates()
 
 	if err != nil {
-		return []acm.Certificate{}, err
+		return acm.Certificates{}, err
 	}
-
-	var wg sync.WaitGroup
-	var inflatedCertificates []acm.Certificate
 
 	results := make(chan acm.Certificate, len(certificates))
 	errs := make(chan error, len(certificates))
@@ -56,7 +56,7 @@ func (o certificateListOperation) find() ([]acm.Certificate, error) {
 			defer wg.Done()
 
 			if err := limiter.Wait(context.Background()); err == nil {
-				o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", c.Arn)
+				o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", c.ARN)
 				certificate, err := o.acm.InflateCertificate(c)
 
 				if err != nil {
@@ -97,8 +97,8 @@ func (o certificateListOperation) display(certificates []acm.Certificate) {
 		rows = append(rows,
 			[]string{
 				certificate.DomainName,
-				Humanize(certificate.Type),
-				Humanize(certificate.Status),
+				Titleize(certificate.Type),
+				Titleize(certificate.Status),
 				strings.Join(certificate.SubjectAlternativeNames, ", "),
 			},
 		)

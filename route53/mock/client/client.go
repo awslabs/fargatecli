@@ -34,29 +34,29 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 }
 
 // CreateAlias mocks base method
-func (m *MockClient) CreateAlias(arg0 route53.HostedZone, arg1, arg2, arg3, arg4 string) (string, error) {
-	ret := m.ctrl.Call(m, "CreateAlias", arg0, arg1, arg2, arg3, arg4)
+func (m *MockClient) CreateAlias(arg0 route53.CreateAliasInput) (string, error) {
+	ret := m.ctrl.Call(m, "CreateAlias", arg0)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateAlias indicates an expected call of CreateAlias
-func (mr *MockClientMockRecorder) CreateAlias(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAlias", reflect.TypeOf((*MockClient)(nil).CreateAlias), arg0, arg1, arg2, arg3, arg4)
+func (mr *MockClientMockRecorder) CreateAlias(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAlias", reflect.TypeOf((*MockClient)(nil).CreateAlias), arg0)
 }
 
 // CreateResourceRecord mocks base method
-func (m *MockClient) CreateResourceRecord(arg0 route53.HostedZone, arg1, arg2, arg3 string) (string, error) {
-	ret := m.ctrl.Call(m, "CreateResourceRecord", arg0, arg1, arg2, arg3)
+func (m *MockClient) CreateResourceRecord(arg0 route53.CreateResourceRecordInput) (string, error) {
+	ret := m.ctrl.Call(m, "CreateResourceRecord", arg0)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateResourceRecord indicates an expected call of CreateResourceRecord
-func (mr *MockClientMockRecorder) CreateResourceRecord(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateResourceRecord", reflect.TypeOf((*MockClient)(nil).CreateResourceRecord), arg0, arg1, arg2, arg3)
+func (mr *MockClientMockRecorder) CreateResourceRecord(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateResourceRecord", reflect.TypeOf((*MockClient)(nil).CreateResourceRecord), arg0)
 }
 
 // ListHostedZones mocks base method

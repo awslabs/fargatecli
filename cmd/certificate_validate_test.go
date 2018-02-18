@@ -25,12 +25,12 @@ func TestCertificateValidateOperation(t *testing.T) {
 	}
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -54,19 +54,22 @@ func TestCertificateValidateOperation(t *testing.T) {
 	mockACMClient := acmclient.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
+	createResourceRecordInput := route53.CreateResourceRecordInput{
+		HostedZoneID: hostedZones[0].ID,
+		RecordType:   resourceRecordType,
+		Name:         resourceRecordName,
+		Value:        resourceRecordValue,
+	}
+
 	mockACMClient.EXPECT().ListCertificates().Return(certificates, nil)
 	mockACMClient.EXPECT().InflateCertificate(certificates[0]).Return(certificate, nil)
 	mockRoute53Client.EXPECT().ListHostedZones().Return(hostedZones, nil)
-	mockRoute53Client.EXPECT().CreateResourceRecord(
-		hostedZones[0],
-		resourceRecordType,
-		resourceRecordName,
-		resourceRecordValue,
-	).Return("/change/1", nil)
+	mockRoute53Client.EXPECT().CreateResourceRecord(createResourceRecordInput).Return("/change/1", nil)
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -92,7 +95,8 @@ func TestCertificateValidateOperationFindCertificateError(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -109,7 +113,7 @@ func TestCertificateValidateOperationFindCertificateError(t *testing.T) {
 func TestCertificateValidateOperationListHostedZonesError(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 			Status:     "PENDING_VALIDATION",
 		},
@@ -128,7 +132,8 @@ func TestCertificateValidateOperationListHostedZonesError(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -145,12 +150,12 @@ func TestCertificateValidateOperationListHostedZonesError(t *testing.T) {
 func TestCertificateValidateOperationInvalidState(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:         "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:         "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName:  "example.com",
 		Status:      "FAILED",
 		Type:        "AMAZON_ISSUED",
@@ -168,7 +173,8 @@ func TestCertificateValidateOperationInvalidState(t *testing.T) {
 	mockACMClient.EXPECT().InflateCertificate(certificates[0]).Return(certificate, nil)
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -184,20 +190,20 @@ func TestCertificateValidateOperationInvalidState(t *testing.T) {
 		t.Errorf("Expected fatal output == 'Could not validate certificate', got: %s", mockOutput.FatalMsgs[0])
 	}
 
-	if mockOutput.FatalMsgs[0].Errors[0].Error() != "Certificate example.com is in state failed" {
-		t.Errorf("Expected error == 'Certificate example.com is in state failed', got: %s", mockOutput.FatalMsgs[0].Errors[0])
+	if mockOutput.FatalMsgs[0].Errors[0].Error() != "certificate example.com is in state failed" {
+		t.Errorf("Expected error == 'certificate example.com is in state failed', got: %s", mockOutput.FatalMsgs[0].Errors[0])
 	}
 }
 
 func TestCertificateValidateOperationZoneNotFound(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -222,7 +228,8 @@ func TestCertificateValidateOperationZoneNotFound(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -239,12 +246,12 @@ func TestCertificateValidateOperationZoneNotFound(t *testing.T) {
 func TestCertificateValidateOperationValidationSuccess(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -269,7 +276,8 @@ func TestCertificateValidateOperationValidationSuccess(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -286,12 +294,12 @@ func TestCertificateValidateOperationValidationSuccess(t *testing.T) {
 func TestCertificateValidateOperationValidationFailed(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -316,7 +324,8 @@ func TestCertificateValidateOperationValidationFailed(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -333,12 +342,12 @@ func TestCertificateValidateOperationValidationFailed(t *testing.T) {
 func TestCertificateValidateOperationValidationUnknown(t *testing.T) {
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -363,7 +372,8 @@ func TestCertificateValidateOperationValidationUnknown(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -390,12 +400,12 @@ func TestCertificateValidateOperationRecordSetError(t *testing.T) {
 	}
 	certificates := acm.Certificates{
 		acm.Certificate{
-			Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 			DomainName: "example.com",
 		},
 	}
 	certificate := acm.Certificate{
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "example.com",
 		Status:     "PENDING_VALIDATION",
 		Type:       "AMAZON_ISSUED",
@@ -419,19 +429,22 @@ func TestCertificateValidateOperationRecordSetError(t *testing.T) {
 	mockACMClient := acmclient.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
+	createResourceRecordInput := route53.CreateResourceRecordInput{
+		HostedZoneID: hostedZones[0].ID,
+		RecordType:   resourceRecordType,
+		Name:         resourceRecordName,
+		Value:        resourceRecordValue,
+	}
+
 	mockACMClient.EXPECT().ListCertificates().Return(certificates, nil)
 	mockACMClient.EXPECT().InflateCertificate(certificates[0]).Return(certificate, nil)
 	mockRoute53Client.EXPECT().ListHostedZones().Return(hostedZones, nil)
-	mockRoute53Client.EXPECT().CreateResourceRecord(
-		hostedZones[0],
-		resourceRecordType,
-		resourceRecordName,
-		resourceRecordValue,
-	).Return("", errors.New("boom"))
+	mockRoute53Client.EXPECT().CreateResourceRecord(createResourceRecordInput).Return("", errors.New("boom"))
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,

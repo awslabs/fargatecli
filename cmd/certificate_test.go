@@ -13,11 +13,11 @@ import (
 func TestFindCertificate(t *testing.T) {
 	certificate := acm.Certificate{
 		DomainName: "www.example.com",
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 	}
 	inflatedCertificate := acm.Certificate{
 		DomainName: "www.example.com",
-		Arn:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		Status:     "ISSUED",
 		Type:       "AMAZON_ISSUED",
 	}
@@ -32,9 +32,10 @@ func TestFindCertificate(t *testing.T) {
 	mockClient.EXPECT().InflateCertificate(certificate).Return(inflatedCertificate, nil)
 
 	operation := certificateOperation{
-		acm: mockClient,
+		acm:    mockClient,
+		output: mockOutput,
 	}
-	foundCertificate, err := operation.findCertificate("www.example.com", mockOutput)
+	foundCertificate, err := operation.findCertificate("www.example.com")
 
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
@@ -55,9 +56,10 @@ func TestFindCertificateNotFound(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, nil)
 
 	operation := certificateOperation{
-		acm: mockClient,
+		acm:    mockClient,
+		output: mockOutput,
 	}
-	foundCertificate, err := operation.findCertificate("www.example.com", mockOutput)
+	foundCertificate, err := operation.findCertificate("www.example.com")
 
 	if err != errCertificateNotFound {
 		t.Errorf("Expected errCertificateNotFound, got %v", err)
@@ -70,8 +72,8 @@ func TestFindCertificateNotFound(t *testing.T) {
 
 func TestFindCertificateTooManyFound(t *testing.T) {
 	certificates := acm.Certificates{
-		acm.Certificate{DomainName: "www.example.com", Arn: "arn:1"},
-		acm.Certificate{DomainName: "www.example.com", Arn: "arn:2"},
+		acm.Certificate{DomainName: "www.example.com", ARN: "arn:1"},
+		acm.Certificate{DomainName: "www.example.com", ARN: "arn:2"},
 	}
 
 	mockCtrl := gomock.NewController(t)
@@ -83,9 +85,10 @@ func TestFindCertificateTooManyFound(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(certificates, nil)
 
 	operation := certificateOperation{
-		acm: mockClient,
+		acm:    mockClient,
+		output: mockOutput,
 	}
-	foundCertificate, err := operation.findCertificate("www.example.com", mockOutput)
+	foundCertificate, err := operation.findCertificate("www.example.com")
 
 	if err != errCertificateTooManyFound {
 		t.Errorf("Expected errCertificateTooManyFound, got %v", err)

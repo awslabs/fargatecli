@@ -23,7 +23,7 @@ type SDKClient struct {
 	client acmiface.ACMAPI
 }
 
-// New returns an SDKClient configured with the current session.
+// New returns an SDKClient configured with the given session.
 func New(sess *session.Session) SDKClient {
 	return SDKClient{
 		client: acm.New(sess),

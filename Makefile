@@ -6,7 +6,7 @@ mocks:
 	go generate $(PACKAGES)
 
 test:
-	go test $(PACKAGES)
+	go test -cover $(PACKAGES)
 
 build:
 	go build -o bin/fargate main.go

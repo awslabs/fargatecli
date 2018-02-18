@@ -17,7 +17,11 @@ type HostedZone struct {
 }
 
 func (h HostedZone) isSuperDomainOf(fqdn string) bool {
-	return strings.HasSuffix(fqdn+".", h.Name)
+	if !strings.HasSuffix(fqdn, ".") {
+		fqdn = fqdn + "."
+	}
+
+	return strings.HasSuffix(fqdn, h.Name)
 }
 
 // HostedZones is a collection of HostedZones.
@@ -40,17 +44,27 @@ func (h HostedZones) FindSuperDomainOf(fqdn string) (HostedZone, bool) {
 	return HostedZone{}, false
 }
 
+// CreateAliasInput holds configuration parameters for CreateAlias.
+type CreateAliasInput struct {
+	HostedZoneID, Name, RecordType, Target, TargetHostedZoneID string
+}
+
+// CreateResourceRecordInput holds configuration parameters for CreateResourceRecord.
+type CreateResourceRecordInput struct {
+	HostedZoneID, RecordType, Name, Value string
+}
+
 // CreateResourceRecord creates a DNS record in an Amazon Route 53 hosted zone.
-func (route53 SDKClient) CreateResourceRecord(h HostedZone, recordType, name, value string) (string, error) {
+func (route53 SDKClient) CreateResourceRecord(i CreateResourceRecordInput) (string, error) {
 	change := &awsroute53.Change{
 		Action: aws.String(awsroute53.ChangeActionUpsert),
 		ResourceRecordSet: &awsroute53.ResourceRecordSet{
-			Name: aws.String(name),
-			Type: aws.String(recordType),
+			Name: aws.String(i.Name),
+			Type: aws.String(i.RecordType),
 			TTL:  aws.Int64(defaultTTL),
 			ResourceRecords: []*awsroute53.ResourceRecord{
 				&awsroute53.ResourceRecord{
-					Value: aws.String(value),
+					Value: aws.String(i.Value),
 				},
 			},
 		},
@@ -58,7 +72,7 @@ func (route53 SDKClient) CreateResourceRecord(h HostedZone, recordType, name, va
 
 	resp, err := route53.client.ChangeResourceRecordSets(
 		&awsroute53.ChangeResourceRecordSetsInput{
-			HostedZoneId: aws.String(h.ID),
+			HostedZoneId: aws.String(i.HostedZoneID),
 			ChangeBatch: &awsroute53.ChangeBatch{
 				Changes: []*awsroute53.Change{change},
 			},
@@ -69,23 +83,23 @@ func (route53 SDKClient) CreateResourceRecord(h HostedZone, recordType, name, va
 }
 
 // CreateAlias creates an alias record in an Amazon Route 53 hosted zone.
-func (route53 SDKClient) CreateAlias(h HostedZone, recordType, name, target, targetHostedZoneID string) (string, error) {
+func (route53 SDKClient) CreateAlias(i CreateAliasInput) (string, error) {
 	change := &awsroute53.Change{
 		Action: aws.String(awsroute53.ChangeActionUpsert),
 		ResourceRecordSet: &awsroute53.ResourceRecordSet{
-			Name: aws.String(name),
-			Type: aws.String(recordType),
+			Name: aws.String(i.Name),
+			Type: aws.String(i.RecordType),
 			AliasTarget: &awsroute53.AliasTarget{
-				DNSName:              aws.String(target),
+				DNSName:              aws.String(i.Target),
 				EvaluateTargetHealth: aws.Bool(false),
-				HostedZoneId:         aws.String(targetHostedZoneID),
+				HostedZoneId:         aws.String(i.TargetHostedZoneID),
 			},
 		},
 	}
 
 	resp, err := route53.client.ChangeResourceRecordSets(
 		&awsroute53.ChangeResourceRecordSetsInput{
-			HostedZoneId: aws.String(h.ID),
+			HostedZoneId: aws.String(i.HostedZoneID),
 			ChangeBatch: &awsroute53.ChangeBatch{
 				Changes: []*awsroute53.Change{change},
 			},

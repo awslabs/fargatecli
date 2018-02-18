@@ -147,11 +147,12 @@ func runTask(operation *TaskRunOperation) {
 	logGroupName := cwl.CreateLogGroup(taskLogGroupFormat, operation.TaskName)
 
 	if len(operation.SecurityGroupIds) == 0 {
-		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
+		defaultSecurityGroupID, _ := ec2.GetDefaultSecurityGroupID()
+		operation.SecurityGroupIds = []string{defaultSecurityGroupID}
 	}
 
 	if len(operation.SubnetIds) == 0 {
-		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
+		operation.SubnetIds, _ = ec2.GetDefaultSubnetIDs()
 	}
 
 	if operation.Image == "" {

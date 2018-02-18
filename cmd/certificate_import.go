@@ -84,12 +84,6 @@ func (o *certificateImportOperation) readFiles() []error {
 	return errs
 }
 
-var (
-	flagCertificateImportCertificate string
-	flagCertificateImportKey         string
-	flagCertificateImportChain       string
-)
-
 var certificateImportCmd = &cobra.Command{
 	Use:   "import --certificate <certificate-file> --key <key-file> [--chain <chain-file>]",
 	Short: "Import a certificate",
@@ -103,18 +97,25 @@ for more details.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateImportOperation{
 			acm:                  acm.New(sess),
+			certificateChainFile: certificateImportFlags.chain,
+			certificateFile:      certificateImportFlags.certificate,
 			output:               output,
-			certificateFile:      flagCertificateImportCertificate,
-			privateKeyFile:       flagCertificateImportKey,
-			certificateChainFile: flagCertificateImportChain,
+			privateKeyFile:       certificateImportFlags.key,
 		}.execute()
 	},
 }
 
+var certificateImportFlags struct {
+	certificate, key, chain string
+}
+
 func init() {
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportCertificate, "certificate", "c", "", "Filename of the certificate to import")
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportKey, "key", "k", "", "Filename of the private key used to generate the certificate")
-	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "", "Filename of intermediate certificate chain")
+	certificateImportCmd.Flags().StringVarP(&certificateImportFlags.certificate, "certificate", "c", "",
+		"Filename of the certificate to import")
+	certificateImportCmd.Flags().StringVarP(&certificateImportFlags.key, "key", "k", "",
+		"Filename of the private key used to generate the certificate")
+	certificateImportCmd.Flags().StringVar(&certificateImportFlags.chain, "chain", "",
+		"Filename of intermediate certificate chain")
 
 	certificateCmd.AddCommand(certificateImportCmd)
 }

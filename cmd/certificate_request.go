@@ -56,8 +56,6 @@ func (o certificateRequestOperation) validate() []error {
 	return errors
 }
 
-var flagCertificateRequestAliases []string
-
 var certificateRequestCmd = &cobra.Command{
 	Use:   "request <domain-name>",
 	Short: "Request a certificate",
@@ -73,15 +71,19 @@ raised by AWS support.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateRequestOperation{
 			acm:        acm.New(sess),
-			aliases:    flagCertificateRequestAliases,
+			aliases:    certificateRequestFlags.aliases,
 			output:     output,
 			domainName: args[0],
 		}.execute()
 	},
 }
 
+var certificateRequestFlags struct {
+	aliases []string
+}
+
 func init() {
-	certificateRequestCmd.Flags().StringSliceVarP(&flagCertificateRequestAliases, "alias", "a", []string{},
+	certificateRequestCmd.Flags().StringSliceVarP(&certificateRequestFlags.aliases, "alias", "a", []string{},
 		`Additional domain names to be included in the certificate (can be specified multiple times)`)
 
 	certificateCmd.AddCommand(certificateRequestCmd)

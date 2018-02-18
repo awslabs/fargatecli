@@ -11,8 +11,8 @@ import (
 
 // Client represents a method for accessing Amazon Route 53.
 type Client interface {
-	CreateAlias(HostedZone, string, string, string, string) (string, error)
-	CreateResourceRecord(HostedZone, string, string, string) (string, error)
+	CreateAlias(CreateAliasInput) (string, error)
+	CreateResourceRecord(CreateResourceRecordInput) (string, error)
 	ListHostedZones() (HostedZones, error)
 }
 
@@ -21,7 +21,7 @@ type SDKClient struct {
 	client route53iface.Route53API
 }
 
-// New returns an SDKClient configured with the current session.
+// New returns an SDKClient configured with the given session.
 func New(sess *session.Session) SDKClient {
 	return SDKClient{
 		client: route53.New(sess),

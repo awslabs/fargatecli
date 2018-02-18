@@ -38,15 +38,14 @@ type ServiceCreateOperation struct {
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
 	var msgs []string
 
-	port := inflatePort(inputPort)
-	validProtocols := regexp.MustCompile(validProtocolsPattern)
+	port, _ := inflatePort(inputPort)
 
-	if !validProtocols.MatchString(port.Protocol) {
+	if !validProtocol.MatchString(port.Protocol) {
 		msgs = append(msgs, fmt.Sprintf("Invalid protocol %s [specify TCP, HTTP, or HTTPS]", port.Protocol))
 	}
 
-	if port.Port < 1 || port.Port > 65535 {
-		msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Port))
+	if port.Number < 1 || port.Number > 65535 {
+		msgs = append(msgs, fmt.Sprintf("Invalid port %d [specify within 1 - 65535]", port.Number))
 	}
 
 	if len(msgs) > 0 {
@@ -89,7 +88,7 @@ func (o *ServiceCreateOperation) SetLoadBalancer(lb string) {
 	}
 
 	o.LoadBalancerName = lb
-	o.LoadBalancerArn = loadBalancer.Arn
+	o.LoadBalancerArn = loadBalancer.ARN
 }
 
 func (o *ServiceCreateOperation) SetRules(inputRules []string) {
@@ -280,11 +279,12 @@ func createService(operation *ServiceCreateOperation) {
 	logGroupName := cwl.CreateLogGroup(serviceLogGroupFormat, operation.ServiceName)
 
 	if len(operation.SecurityGroupIds) == 0 {
-		operation.SecurityGroupIds = []string{ec2.GetDefaultSecurityGroupId()}
+		defaultSecurityGroupID, _ := ec2.GetDefaultSecurityGroupID()
+		operation.SecurityGroupIds = []string{defaultSecurityGroupID}
 	}
 
 	if len(operation.SubnetIds) == 0 {
-		operation.SubnetIds = ec2.GetDefaultVpcSubnetIds()
+		operation.SubnetIds, _ = ec2.GetDefaultSubnetIDs()
 	}
 
 	if operation.Image == "" {
@@ -313,13 +313,13 @@ func createService(operation *ServiceCreateOperation) {
 	}
 
 	if operation.LoadBalancerArn != "" {
-		vpcId := ec2.GetSubnetVpcId(operation.SubnetIds[0])
-		targetGroupArn = elbv2.CreateTargetGroup(
-			&ELBV2.CreateTargetGroupInput{
+		vpcId, _ := ec2.GetSubnetVPCID(operation.SubnetIds[0])
+		targetGroupArn, _ = elbv2.CreateTargetGroup(
+			ELBV2.CreateTargetGroupInput{
 				Name:     fmt.Sprintf("%s-%s", clusterName, operation.ServiceName),
-				Port:     operation.Port.Port,
+				Port:     operation.Port.Number,
 				Protocol: operation.Port.Protocol,
-				VpcId:    vpcId,
+				VPCID:    vpcId,
 			},
 		)
 
@@ -340,7 +340,7 @@ func createService(operation *ServiceCreateOperation) {
 			Image:            operation.Image,
 			Memory:           operation.Memory,
 			Name:             operation.ServiceName,
-			Port:             operation.Port.Port,
+			Port:             operation.Port.Number,
 			LogGroupName:     logGroupName,
 			LogRegion:        region,
 			TaskRole:         operation.TaskRole,
@@ -353,7 +353,7 @@ func createService(operation *ServiceCreateOperation) {
 			Cluster:           clusterName,
 			DesiredCount:      operation.Num,
 			Name:              operation.ServiceName,
-			Port:              operation.Port.Port,
+			Port:              operation.Port.Number,
 			SecurityGroupIds:  operation.SecurityGroupIds,
 			SubnetIds:         operation.SubnetIds,
 			TargetGroupArn:    targetGroupArn,

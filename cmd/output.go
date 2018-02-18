@@ -112,7 +112,7 @@ func (c ConsoleOutput) Fatals(errs []error, msg string, a ...interface{}) {
 	c.Warn(msg, a...)
 
 	for _, err := range errs {
-		c.Say(err.Error(), 1)
+		c.Say("- "+err.Error(), 1)
 	}
 
 	if !c.Test {

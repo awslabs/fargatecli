@@ -14,7 +14,7 @@ type certificateInfoOperation struct {
 }
 
 func (o certificateInfoOperation) execute() {
-	certificate, err := o.findCertificate(o.domainName, o.output)
+	certificate, err := o.findCertificate(o.domainName)
 
 	if err != nil {
 		switch err {
@@ -23,7 +23,7 @@ func (o certificateInfoOperation) execute() {
 		case errCertificateTooManyFound:
 			o.output.Fatal(nil, "Multiple certificates found for %s", o.domainName)
 		default:
-			o.output.Fatal(nil, "Could not find certificate for %s", o.domainName)
+			o.output.Fatal(err, "Could not find certificate for %s", o.domainName)
 		}
 
 		return
@@ -34,8 +34,8 @@ func (o certificateInfoOperation) execute() {
 
 func (o certificateInfoOperation) display(certificate acm.Certificate) {
 	o.output.KeyValue("Domain Name", certificate.DomainName, 0)
-	o.output.KeyValue("Status", Humanize(certificate.Status), 0)
-	o.output.KeyValue("Type", Humanize(certificate.Type), 0)
+	o.output.KeyValue("Status", Titleize(certificate.Status), 0)
+	o.output.KeyValue("Type", Titleize(certificate.Type), 0)
 	o.output.KeyValue("Subject Alternative Names", strings.Join(certificate.SubjectAlternativeNames, ", "), 0)
 
 	if len(certificate.Validations) > 0 {
@@ -44,7 +44,7 @@ func (o certificateInfoOperation) display(certificate acm.Certificate) {
 		}
 
 		for _, v := range certificate.Validations {
-			rows = append(rows, []string{v.DomainName, Humanize(v.Status), v.ResourceRecordString()})
+			rows = append(rows, []string{v.DomainName, Titleize(v.Status), v.ResourceRecordString()})
 		}
 
 		o.output.LineBreak()
@@ -63,11 +63,9 @@ ownership.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateInfoOperation{
-			certificateOperation: certificateOperation{
-				acm: acm.New(sess),
-			},
-			domainName: args[0],
-			output:     output,
+			certificateOperation: certificateOperation{acm: acm.New(sess), output: output},
+			domainName:           args[0],
+			output:               output,
 		}.execute()
 	},
 }

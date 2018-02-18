@@ -131,7 +131,14 @@ func TestCreateResourceRecord(t *testing.T) {
 
 	mockRoute53API.EXPECT().ChangeResourceRecordSets(i).Return(o, nil)
 
-	id, err := route53.CreateResourceRecord(hostedZone, recordType, name, value)
+	id, err := route53.CreateResourceRecord(
+		CreateResourceRecordInput{
+			HostedZoneID: hostedZone.ID,
+			RecordType:   recordType,
+			Name:         name,
+			Value:        value,
+		},
+	)
 
 	if id != "1" {
 		t.Errorf("Expected id == 1, got %s", id)
@@ -183,7 +190,15 @@ func TestCreateAliasRecord(t *testing.T) {
 
 	mockRoute53API.EXPECT().ChangeResourceRecordSets(i).Return(o, nil)
 
-	id, err := route53.CreateAlias(hostedZone, recordType, name, target, targetHostedZoneID)
+	id, err := route53.CreateAlias(
+		CreateAliasInput{
+			HostedZoneID:       hostedZone.ID,
+			RecordType:         recordType,
+			Name:               name,
+			Target:             target,
+			TargetHostedZoneID: targetHostedZoneID,
+		},
+	)
 
 	if id != "2" {
 		t.Errorf("Expected id == 2, got %s", id)
