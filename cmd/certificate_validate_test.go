@@ -186,8 +186,8 @@ func TestCertificateValidateOperationInvalidState(t *testing.T) {
 		t.Errorf("Expected fatal output == 'Could not validate certificate', got: %s", mockOutput.FatalMsgs[0])
 	}
 
-	if mockOutput.FatalMsgs[0].Errors[0].Error() != "Certificate example.com is in state failed" {
-		t.Errorf("Expected error == 'Certificate example.com is in state failed', got: %s", mockOutput.FatalMsgs[0].Errors[0])
+	if mockOutput.FatalMsgs[0].Errors[0].Error() != "certificate example.com is in state failed" {
+		t.Errorf("Expected error == 'certificate example.com is in state failed', got: %s", mockOutput.FatalMsgs[0].Errors[0])
 	}
 }
 

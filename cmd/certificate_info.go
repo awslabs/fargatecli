@@ -34,8 +34,8 @@ func (o certificateInfoOperation) execute() {
 
 func (o certificateInfoOperation) display(certificate acm.Certificate) {
 	o.output.KeyValue("Domain Name", certificate.DomainName, 0)
-	o.output.KeyValue("Status", Humanize(certificate.Status), 0)
-	o.output.KeyValue("Type", Humanize(certificate.Type), 0)
+	o.output.KeyValue("Status", Titleize(certificate.Status), 0)
+	o.output.KeyValue("Type", Titleize(certificate.Type), 0)
 	o.output.KeyValue("Subject Alternative Names", strings.Join(certificate.SubjectAlternativeNames, ", "), 0)
 
 	if len(certificate.Validations) > 0 {
@@ -44,7 +44,7 @@ func (o certificateInfoOperation) display(certificate acm.Certificate) {
 		}
 
 		for _, v := range certificate.Validations {
-			rows = append(rows, []string{v.DomainName, Humanize(v.Status), v.ResourceRecordString()})
+			rows = append(rows, []string{v.DomainName, Titleize(v.Status), v.ResourceRecordString()})
 		}
 
 		o.output.LineBreak()

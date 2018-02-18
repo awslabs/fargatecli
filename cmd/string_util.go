@@ -6,6 +6,13 @@ import "strings"
 func Humanize(s string) string {
 	s = strings.Replace(s, "_", " ", -1)
 	s = strings.ToLower(s)
+
+	return s
+}
+
+// Titleize humanizes a string and returns it in Title Case.
+func Titleize(s string) string {
+	s = Humanize(s)
 	s = strings.Title(s)
 
 	return s

@@ -4,6 +4,11 @@ import "fmt"
 
 func ExampleHumanize() {
 	fmt.Println(Humanize("HELLO_COMPUTER"))
+	// Output: hello computer
+}
+
+func ExampleTitleize() {
+	fmt.Println(Titleize("HELLO_COMPUTER"))
 	// Output: Hello Computer
 }
 

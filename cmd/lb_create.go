@@ -10,17 +10,14 @@ import (
 )
 
 type lbCreateOperation struct {
+	certificateARNs []string
 	certificateOperation
-	certificateARNs  []string
-	ec2              ec2.Client
-	elbv2            elbv2.Client
-	lbType           string
-	loadBalancerName string
-	output           Output
-	ports            []Port
-	securityGroupIDs []string
-	subnetIDs        []string
-	vpcID            string
+	elbv2  elbv2.Client
+	lbType string
+	lbName string
+	output Output
+	ports  []Port
+	vpcOperation
 }
 
 func (o *lbCreateOperation) setPorts(inputPorts []string) []error {
@@ -76,27 +73,27 @@ func (o *lbCreateOperation) inferType() error {
 	return nil
 }
 
-func (o *lbCreateOperation) setCertificateARNs(certificateDomainNames []string) []error {
+func (o *lbCreateOperation) setCertificateARNs(domainNames []string) []error {
 	var (
 		certificateARNs []string
 		errs            []error
 	)
 
-	for _, certificateDomainName := range certificateDomainNames {
-		if certificate, err := o.findCertificate(certificateDomainName, output); err == nil {
+	for _, domainName := range domainNames {
+		if certificate, err := o.findCertificate(domainName, output); err == nil {
 			if certificate.IsIssued() {
 				certificateARNs = append(certificateARNs, certificate.ARN)
 			} else {
-				errs = append(errs, fmt.Errorf("certificate %s is in state %s", certificateDomainName, Humanize(certificate.Status)))
+				errs = append(errs, fmt.Errorf("certificate %s is in state %s", domainName, Humanize(certificate.Status)))
 			}
 		} else {
 			switch err {
 			case errCertificateNotFound:
-				errs = append(errs, fmt.Errorf("no certificate found for %s", certificateDomainName))
+				errs = append(errs, fmt.Errorf("no certificate found for %s", domainName))
 			case errCertificateTooManyFound:
-				errs = append(errs, fmt.Errorf("multiple certificates found for %s", certificateDomainName))
+				errs = append(errs, fmt.Errorf("multiple certificates found for %s", domainName))
 			default:
-				errs = append(errs, err)
+				errs = append(errs, fmt.Errorf("could not find certificate ARN: %v", err))
 			}
 		}
 	}
@@ -108,90 +105,28 @@ func (o *lbCreateOperation) setCertificateARNs(certificateDomainNames []string) 
 	return errs
 }
 
-func (o *lbCreateOperation) setSubnetIDs(subnetIDs []string) error {
-	if o.lbType == "application" && len(subnetIDs) < 2 {
-		return fmt.Errorf("HTTP/HTTPS load balancers require two subnet IDs from unique availability zones")
+func (o lbCreateOperation) validate() (errs []error) {
+	if o.lbName == "" {
+		errs = append(errs, fmt.Errorf("--name is required"))
 	}
 
-	o.output.Debug("Finding VPC ID [API=ec2 Action=DescribeSubnets]")
-	vpcID, err := o.ec2.GetSubnetVPCID(subnetIDs[0])
-
-	if err != nil {
-		return err
+	if o.lbType == "application" && len(o.subnetIDs) < 2 {
+		errs = append(errs, fmt.Errorf("HTTP/HTTPS load balancers require two subnet IDs from unique Availability Zones"))
 	}
 
-	o.subnetIDs = subnetIDs
-	o.vpcID = vpcID
+	if o.lbType == "network" && len(o.securityGroupIDs) > 0 {
+		errs = append(errs, fmt.Errorf("security groups can only be specified for HTTP/HTTPS load balancers"))
+	}
 
-	return nil
+	return
 }
 
-func (o *lbCreateOperation) setSecurityGroupIDs(securityGroupIDs []string) error {
-	if o.lbType != "application" {
-		return fmt.Errorf("security groups can only be specified for HTTP/HTTPS load balancers")
-	}
-
-	o.securityGroupIDs = securityGroupIDs
-
-	return nil
-}
-
-func (o *lbCreateOperation) setDefaultSecurityGroupID() error {
-	o.output.Debug("Finding default security group [API=ec2 Action=DescribeSecurityGroups]")
-	defaultSecurityGroupID, err := o.ec2.GetDefaultSecurityGroupID()
-
-	if err != nil {
-		return err
-	}
-
-	if defaultSecurityGroupID == "" {
-		o.output.Debug("Creating default security group [API=ec2 Action=CreateSecurityGroup]")
-		defaultSecurityGroupID, err = o.ec2.CreateDefaultSecurityGroup()
-
-		if err != nil {
-			return err
-		}
-
-		o.output.Debug("Created default security group [ID=%s]", defaultSecurityGroupID)
-
-		o.output.Debug("Configuring default security group [API=ec2 Action=AuthorizeSecurityGroupIngress]")
-		if err := o.ec2.AuthorizeAllSecurityGroupIngress(defaultSecurityGroupID); err != nil {
-			return err
-		}
-	}
-
-	o.securityGroupIDs = []string{defaultSecurityGroupID}
-
-	return nil
-}
-
-func (o *lbCreateOperation) setDefaultSubnetIDs() error {
-	o.output.Debug("Finding default subnets [API=ec2 Action=DescribeSubnets]")
-	subnetIDs, err := o.ec2.GetDefaultSubnetIDs()
-
-	if err != nil {
-		return err
-	}
-
-	o.output.Debug("Finding VPC ID [API=ec2 Action=DescribeSubnets]")
-	vpcID, err := o.ec2.GetSubnetVPCID(subnetIDs[0])
-
-	if err != nil {
-		return err
-	}
-
-	o.subnetIDs = subnetIDs
-	o.vpcID = vpcID
-
-	return nil
-}
-
-func (o *lbCreateOperation) execute() {
-	defaultTargetGroupName := fmt.Sprintf(defaultTargetGroupFormat, o.loadBalancerName)
+func (o lbCreateOperation) execute() {
+	defaultTargetGroupName := fmt.Sprintf(defaultTargetGroupFormat, o.lbName)
 
 	loadBalancerARN, err := o.elbv2.CreateLoadBalancer(
 		elbv2.CreateLoadBalancerInput{
-			Name:             o.loadBalancerName,
+			Name:             o.lbName,
 			SecurityGroupIDs: o.securityGroupIDs,
 			SubnetIDs:        o.subnetIDs,
 			Type:             o.lbType,
@@ -240,20 +175,67 @@ func (o *lbCreateOperation) execute() {
 		o.output.Debug("Created listener [ARN=%s]", listenerARN)
 	}
 
-	o.output.Info("Created load balancer %s", o.loadBalancerName)
+	o.output.Info("Created load balancer %s", o.lbName)
 }
 
-var (
-	flagLBCreateCertificates     []string
-	flagLBCreatePorts            []string
-	flagLBCreateSecurityGroupIDs []string
-	flagLBCreateSubnetIDs        []string
+func newLBCreateOperation(
+	lbName string,
+	certificates, ports, securityGroupIDs, subnetIDs []string,
+	output Output,
+	acm acm.Client,
+	ec2 ec2.Client,
+	elbv2 elbv2.Client,
+) (operation lbCreateOperation, errors []error) {
+	operation = lbCreateOperation{
+		certificateOperation: certificateOperation{acm: acm},
+		elbv2:                elbv2,
+		lbName:               lbName,
+		output:               output,
+		vpcOperation:         vpcOperation{ec2: ec2, output: output},
+	}
 
-	lbCreateCmd = &cobra.Command{
-		Use:   "create <load-balancer-name> --port <port-expression>",
-		Args:  cobra.ExactArgs(1),
-		Short: "Create a load balancer",
-		Long: `Create a load balancer
+	if errs := operation.setPorts(ports); len(errs) > 0 {
+		errors = append(errors, errs...)
+	}
+
+	if err := operation.inferType(); err != nil {
+		errors = append(errors, err)
+	}
+
+	if len(certificates) > 0 {
+		if errs := operation.setCertificateARNs(certificates); len(errs) > 0 {
+			errors = append(errors, errs...)
+		}
+	}
+
+	if len(subnetIDs) > 0 {
+		if err := operation.setSubnetIDs(subnetIDs); err != nil {
+			errors = append(errors, err)
+		}
+	} else {
+		if err := operation.setDefaultSubnetIDs(); err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	if len(securityGroupIDs) > 0 {
+		operation.setSecurityGroupIDs(securityGroupIDs)
+	} else if operation.lbType == "application" {
+		if err := operation.setDefaultSecurityGroupID(); err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	errors = append(errors, operation.validate()...)
+
+	return
+}
+
+var lbCreateCmd = &cobra.Command{
+	Use:   "create <load-balancer-name> --port <port-expression>",
+	Args:  cobra.ExactArgs(1),
+	Short: "Create a load balancer",
+	Long: `Create a load balancer
 
 At least one port must be specified for the load balancer listener via the
 --port flag and a port expression of protocol:port-number. For example, if you
@@ -280,66 +262,42 @@ passing the --security-group-id flag with a security group ID. To add multiple
 security groups, pass --security-group-id with a security group ID multiple
 times. If --security-group-id is omitted, a permissive security group will be
 applied to the load balancer.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			var errors []error
+	Run: func(cmd *cobra.Command, args []string) {
+		operation, errs := newLBCreateOperation(
+			args[0],
+			lbCreateFlags.certificates,
+			lbCreateFlags.ports,
+			lbCreateFlags.securityGroupIDs,
+			lbCreateFlags.subnetIDs,
+			output,
+			acm.New(sess),
+			ec2.New(sess),
+			elbv2.New(sess),
+		)
 
-			operation := &lbCreateOperation{
-				certificateOperation: certificateOperation{
-					acm: acm.New(sess),
-				},
-				ec2:              ec2.New(sess),
-				elbv2:            elbv2.New(sess),
-				loadBalancerName: args[0],
-				output:           output,
-			}
+		if len(errs) >= 0 {
+			output.Fatals(errs, "Invalid command line flags")
+			return
+		}
 
-			if errs := operation.setPorts(flagLBCreatePorts); len(errs) > 0 {
-				errors = append(errors, errs...)
-			}
+		operation.execute()
+	}}
 
-			if err := operation.inferType(); err != nil {
-				errors = append(errors, err)
-			}
-
-			if len(flagLBCreateCertificates) > 0 {
-				if errs := operation.setCertificateARNs(flagLBCreateCertificates); len(errs) > 0 {
-					errors = append(errors, errs...)
-				}
-			}
-
-			if len(flagLBCreateSecurityGroupIDs) > 0 {
-				if err := operation.setSecurityGroupIDs(flagLBCreateSecurityGroupIDs); err != nil {
-					errors = append(errors, err)
-				}
-			} else {
-				if err := operation.setDefaultSecurityGroupID(); err != nil {
-					errors = append(errors, err)
-				}
-			}
-
-			if len(flagLBCreateSubnetIDs) > 0 {
-				if err := operation.setSubnetIDs(flagLBCreateSubnetIDs); err != nil {
-					errors = append(errors, err)
-				}
-			}
-
-			if len(errors) == 0 {
-				operation.execute()
-			} else {
-				output.Fatals(errors, "Invalid command line flags")
-			}
-		},
-	}
-)
+var lbCreateFlags struct {
+	certificates     []string
+	ports            []string
+	securityGroupIDs []string
+	subnetIDs        []string
+}
 
 func init() {
-	lbCreateCmd.Flags().StringSliceVarP(&flagLBCreateCertificates, "certificate", "c", []string{},
+	lbCreateCmd.Flags().StringSliceVarP(&lbCreateFlags.certificates, "certificate", "c", []string{},
 		"Name of certificate to add (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVarP(&flagLBCreatePorts, "port", "p", []string{},
+	lbCreateCmd.Flags().StringSliceVarP(&lbCreateFlags.ports, "port", "p", []string{},
 		"Port to listen on [e.g., 80, 443, http:8080, https:8443, tcp:1935] (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVar(&flagLBCreateSecurityGroupIDs, "security-group-id", []string{},
+	lbCreateCmd.Flags().StringSliceVar(&lbCreateFlags.securityGroupIDs, "security-group-id", []string{},
 		"ID of a security group to apply to the load balancer (can be specified multiple times)")
-	lbCreateCmd.Flags().StringSliceVar(&flagLBCreateSubnetIDs, "subnet-id", []string{},
+	lbCreateCmd.Flags().StringSliceVar(&lbCreateFlags.subnetIDs, "subnet-id", []string{},
 		"ID of a subnet to place the load balancer (can be specified multiple times)")
 
 	lbCmd.AddCommand(lbCreateCmd)

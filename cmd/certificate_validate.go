@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/jpignata/fargate/acm"
 	"github.com/jpignata/fargate/route53"
@@ -25,10 +24,7 @@ func (o certificateValidateOperation) execute() {
 	}
 
 	if !certificate.IsPendingValidation() {
-		o.output.Fatal(
-			fmt.Errorf("Certificate %s is in state %s", o.domainName, strings.ToLower(Humanize(certificate.Status))),
-			"Could not validate certificate",
-		)
+		o.output.Fatal(fmt.Errorf("certificate %s is in state %s", o.domainName, Humanize(certificate.Status)), "Could not validate certificate")
 		return
 	}
 
@@ -70,7 +66,7 @@ func (o certificateValidateOperation) execute() {
 			o.output.Fatal(nil, "[%s] failed validation", v.DomainName)
 			return
 		default:
-			o.output.Warn("[%s] unexpected status: %s", v.DomainName, strings.ToLower(Humanize(v.Status)))
+			o.output.Warn("[%s] unexpected status: %s", v.DomainName, Humanize(v.Status))
 		}
 	}
 }

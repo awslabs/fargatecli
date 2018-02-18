@@ -70,6 +70,8 @@ func TestCertificateInfoOperation(t *testing.T) {
 	}
 
 	if mockOutput.KeyValueMsgs["Status"] != "Pending Validation" {
+		t.Logf(mockOutput.KeyValueMsgs["Status"])
+		t.Logf(Titleize(mockOutput.KeyValueMsgs["Status"]))
 		t.Errorf("Expected Status == Pending Validation, got %s", mockOutput.KeyValueMsgs["Status"])
 	}
 

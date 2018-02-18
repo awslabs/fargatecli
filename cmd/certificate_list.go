@@ -99,8 +99,8 @@ func (o certificateListOperation) display(certificates []acm.Certificate) {
 		rows = append(rows,
 			[]string{
 				certificate.DomainName,
-				Humanize(certificate.Type),
-				Humanize(certificate.Status),
+				Titleize(certificate.Type),
+				Titleize(certificate.Status),
 				strings.Join(certificate.SubjectAlternativeNames, ", "),
 			},
 		)
