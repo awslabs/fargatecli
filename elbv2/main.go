@@ -11,6 +11,8 @@ import (
 
 // Client represents a method for accessing Elastic Load Balancing (v2).
 type Client interface {
+	DescribeLoadBalancers() (LoadBalancers, error)
+	DescribeListeners(string) (Listeners, error)
 	DescribeLoadBalancersByName([]string) (LoadBalancers, error)
 	CreateLoadBalancer(CreateLoadBalancerInput) (string, error)
 	CreateTargetGroup(CreateTargetGroupInput) (string, error)

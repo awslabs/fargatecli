@@ -11,8 +11,6 @@ import (
 	"golang.org/x/time/rate"
 )
 
-const describeRequestLimitRate = 10
-
 type certificateListOperation struct {
 	acm    acm.Client
 	output Output
@@ -34,17 +32,17 @@ func (o certificateListOperation) execute() {
 	o.display(certificates)
 }
 
-func (o certificateListOperation) find() ([]acm.Certificate, error) {
+func (o certificateListOperation) find() (acm.Certificates, error) {
 	var (
 		wg                   sync.WaitGroup
-		inflatedCertificates []acm.Certificate
+		inflatedCertificates acm.Certificates
 	)
 
-	o.output.Debug("Listing certificates [API=acm Action=ListCertificates")
+	o.output.Debug("Listing certificates [API=acm Action=ListCertificates]")
 	certificates, err := o.acm.ListCertificates()
 
 	if err != nil {
-		return []acm.Certificate{}, err
+		return acm.Certificates{}, err
 	}
 
 	results := make(chan acm.Certificate, len(certificates))

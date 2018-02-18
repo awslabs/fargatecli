@@ -45,7 +45,7 @@ func destroyService(operation *ServiceDestroyOperation) {
 
 	if service.TargetGroupArn != "" {
 		loadBalancerArn := elbv2.GetTargetGroupLoadBalancerArn(service.TargetGroupArn)
-		loadBalancer := elbv2.DescribeLoadBalancerByArn(loadBalancerArn)
+		loadBalancer := elbv2.DescribeLoadBalancerByARN(loadBalancerArn)
 		listeners := elbv2.GetListeners(loadBalancerArn)
 
 		for _, listener := range listeners {

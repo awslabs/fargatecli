@@ -78,7 +78,7 @@ func getServiceInfo(operation *ServiceInfoOperation) {
 
 	if service.TargetGroupArn != "" {
 		if loadBalancerArn := elbv2.GetTargetGroupLoadBalancerArn(service.TargetGroupArn); loadBalancerArn != "" {
-			loadBalancer := elbv2.DescribeLoadBalancerByArn(loadBalancerArn)
+			loadBalancer := elbv2.DescribeLoadBalancerByARN(loadBalancerArn)
 			listeners := elbv2.GetListeners(loadBalancerArn)
 
 			console.KeyValue("Load Balancer", "\n")

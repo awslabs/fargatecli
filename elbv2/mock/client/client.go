@@ -72,6 +72,32 @@ func (mr *MockClientMockRecorder) CreateTargetGroup(arg0 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTargetGroup", reflect.TypeOf((*MockClient)(nil).CreateTargetGroup), arg0)
 }
 
+// DescribeListeners mocks base method
+func (m *MockClient) DescribeListeners(arg0 string) (elbv2.Listeners, error) {
+	ret := m.ctrl.Call(m, "DescribeListeners", arg0)
+	ret0, _ := ret[0].(elbv2.Listeners)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DescribeListeners indicates an expected call of DescribeListeners
+func (mr *MockClientMockRecorder) DescribeListeners(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeListeners", reflect.TypeOf((*MockClient)(nil).DescribeListeners), arg0)
+}
+
+// DescribeLoadBalancers mocks base method
+func (m *MockClient) DescribeLoadBalancers() (elbv2.LoadBalancers, error) {
+	ret := m.ctrl.Call(m, "DescribeLoadBalancers")
+	ret0, _ := ret[0].(elbv2.LoadBalancers)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DescribeLoadBalancers indicates an expected call of DescribeLoadBalancers
+func (mr *MockClientMockRecorder) DescribeLoadBalancers() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeLoadBalancers", reflect.TypeOf((*MockClient)(nil).DescribeLoadBalancers))
+}
+
 // DescribeLoadBalancersByName mocks base method
 func (m *MockClient) DescribeLoadBalancersByName(arg0 []string) (elbv2.LoadBalancers, error) {
 	ret := m.ctrl.Call(m, "DescribeLoadBalancersByName", arg0)

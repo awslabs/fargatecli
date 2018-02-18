@@ -51,7 +51,8 @@ func listServices() {
 	}
 
 	if len(loadBalancerArns) > 0 {
-		for _, loadBalancer := range elbv2.DescribeLoadBalancers(ELBV2.DescribeLoadBalancersInput{ARNs: loadBalancerArns}) {
+		lbs, _ := elbv2.DescribeLoadBalancersByARN(loadBalancerArns)
+		for _, loadBalancer := range lbs {
 			loadBalancers[loadBalancer.ARN] = loadBalancer
 		}
 	}

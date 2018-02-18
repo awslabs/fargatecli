@@ -19,8 +19,20 @@ type Listener struct {
 	Rules           []Rule
 }
 
-func (l *Listener) String() string {
+func (l Listener) String() string {
 	return fmt.Sprintf("%s:%d", l.Protocol, l.Port)
+}
+
+type Listeners []Listener
+
+func (l Listeners) String() string {
+	var listenerStrings []string
+
+	for _, listener := range l {
+		listenerStrings = append(listenerStrings, listener.String())
+	}
+
+	return strings.Join(listenerStrings, ", ")
 }
 
 type Rule struct {
@@ -46,6 +58,37 @@ type CreateListenerInput struct {
 
 func (input *CreateListenerInput) SetCertificateArns(arns []string) {
 	input.CertificateARNs = arns
+}
+
+func (elbv2 SDKClient) DescribeListeners(lbARN string) (Listeners, error) {
+	var listeners []Listener
+
+	input := &awselbv2.DescribeListenersInput{
+		LoadBalancerArn: aws.String(lbARN),
+	}
+
+	err := elbv2.client.DescribeListenersPages(
+		input,
+		func(resp *awselbv2.DescribeListenersOutput, lastPage bool) bool {
+			for _, l := range resp.Listeners {
+				listener := Listener{
+					ARN:      aws.StringValue(l.ListenerArn),
+					Port:     aws.Int64Value(l.Port),
+					Protocol: aws.StringValue(l.Protocol),
+				}
+
+				for _, certificate := range l.Certificates {
+					listener.CertificateARNs = append(listener.CertificateARNs, aws.StringValue(certificate.CertificateArn))
+				}
+
+				listeners = append(listeners, listener)
+			}
+
+			return true
+		},
+	)
+
+	return listeners, err
 }
 
 func (elbv2 SDKClient) CreateListener(i CreateListenerInput) (string, error) {

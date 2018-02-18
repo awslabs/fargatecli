@@ -30,6 +30,8 @@ const (
 	typeApplication       = "application"
 	typeNetwork           = "network"
 	validRuleTypesPattern = "(?i)^host|path$"
+
+	describeRequestLimitRate = 10
 )
 
 var InvalidCpuAndMemoryCombination = fmt.Errorf(`Invalid CPU and Memory settings
