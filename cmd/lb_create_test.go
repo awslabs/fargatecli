@@ -734,6 +734,52 @@ func TestNewLBCreateOperation(t *testing.T) {
 	if o.certificateARNs[0] != certificateARN {
 		t.Errorf("expected certificate ARN %s, got: %s", certificateARN, o.certificateARNs)
 	}
+
+	if o.securityGroupIDs[0] != "sg-abcdef" {
+		t.Errorf("expected security group ID == sg-abcdef, got: %v", o.securityGroupIDs)
+	}
+
+	if o.subnetIDs[0] != "subnet-1234567" || o.subnetIDs[1] != "subnet-abcdef" {
+		t.Errorf("expected subnet ID == subnet-1234567, subnet-abcdef, got: %v", o.subnetIDs)
+	}
+}
+
+func TestNewLBCreateOperationDefaults(t *testing.T) {
+	mockOutput := &mock.Output{}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockEC2 := ec2client.NewMockClient(mockCtrl)
+	mockACM := acmclient.NewMockClient(mockCtrl)
+	mockELBV2 := elbv2client.NewMockClient(mockCtrl)
+
+	mockEC2.EXPECT().GetSubnetVPCID("subnet-1234567").Return("vpc-1234567", nil)
+	mockEC2.EXPECT().GetDefaultSubnetIDs().Return([]string{"subnet-1234567", "subnet-abcdef"}, nil)
+	mockEC2.EXPECT().GetDefaultSecurityGroupID().Return("sg-abcdef", nil)
+
+	o, errs := newLBCreateOperation(
+		"web",
+		[]string{},
+		[]string{"80"},
+		[]string{},
+		[]string{},
+		mockOutput,
+		mockACM,
+		mockEC2,
+		mockELBV2,
+	)
+
+	if len(errs) > 0 {
+		t.Fatalf("expected no error, got: %v", errs)
+	}
+
+	if o.securityGroupIDs[0] != "sg-abcdef" {
+		t.Errorf("expected security group ID == sg-abcdef, got: %v", o.securityGroupIDs)
+	}
+
+	if o.subnetIDs[0] != "subnet-1234567" || o.subnetIDs[1] != "subnet-abcdef" {
+		t.Errorf("expected subnet ID == subnet-1234567, subnet-abcdef, got: %v", o.subnetIDs)
+	}
 }
 
 func TestNewLBCreateOperationNoName(t *testing.T) {
