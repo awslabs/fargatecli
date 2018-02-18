@@ -54,7 +54,8 @@ func TestLBAliasOperation(t *testing.T) {
 
 	operation := lbAliasOperation{
 		lbOperation: lbOperation{
-			elbv2: mockELBV2Client,
+			elbv2:  mockELBV2Client,
+			output: mockOutput,
 		},
 		aliasDomain: domainName,
 		lbName:      lbName,
@@ -83,7 +84,8 @@ func TestLBAliasOperationFindLBError(t *testing.T) {
 
 	operation := lbAliasOperation{
 		lbOperation: lbOperation{
-			elbv2: mockELBV2Client,
+			elbv2:  mockELBV2Client,
+			output: mockOutput,
 		},
 		aliasDomain: "example.com",
 		lbName:      "web",
@@ -112,7 +114,8 @@ func TestLBAliasOperationListHostedZonesError(t *testing.T) {
 
 	operation := lbAliasOperation{
 		lbOperation: lbOperation{
-			elbv2: mockELBV2Client,
+			elbv2:  mockELBV2Client,
+			output: mockOutput,
 		},
 		aliasDomain: "example.com",
 		lbName:      "web",
@@ -155,7 +158,8 @@ func TestLBAliasOperationAliasError(t *testing.T) {
 
 	operation := lbAliasOperation{
 		lbOperation: lbOperation{
-			elbv2: mockELBV2Client,
+			elbv2:  mockELBV2Client,
+			output: mockOutput,
 		},
 		aliasDomain: domainName,
 		lbName:      lbName,
@@ -189,7 +193,8 @@ func TestLBAliasOperationHostedZoneNotFound(t *testing.T) {
 
 	operation := lbAliasOperation{
 		lbOperation: lbOperation{
-			elbv2: mockELBV2Client,
+			elbv2:  mockELBV2Client,
+			output: mockOutput,
 		},
 		aliasDomain: domainName,
 		lbName:      lbName,

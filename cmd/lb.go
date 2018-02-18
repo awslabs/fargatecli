@@ -10,11 +10,12 @@ import (
 const defaultTargetGroupFormat = "%s-default"
 
 type lbOperation struct {
-	elbv2 elbv2.Client
+	elbv2  elbv2.Client
+	output Output
 }
 
-func (o lbOperation) findLB(lbName string, output Output) (elbv2.LoadBalancer, error) {
-	output.Debug("Finding load balancer[API=elb2 Action=DescribeLoadBalancers]")
+func (o lbOperation) findLB(lbName string) (elbv2.LoadBalancer, error) {
+	o.output.Debug("Finding load balancer[API=elb2 Action=DescribeLoadBalancers]")
 	loadBalancers, err := o.elbv2.DescribeLoadBalancersByName([]string{lbName})
 
 	if err != nil {

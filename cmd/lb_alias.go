@@ -15,7 +15,7 @@ type lbAliasOperation struct {
 }
 
 func (o lbAliasOperation) execute() {
-	loadBalancer, err := o.findLB(o.lbName, o.output)
+	loadBalancer, err := o.findLB(o.lbName)
 
 	if err != nil {
 		o.output.Fatal(err, "Could not alias load balancer")
@@ -67,11 +67,9 @@ provider or host your domains in a different account, you will need to manually
 create this record.  `,
 	Run: func(cmd *cobra.Command, args []string) {
 		lbAliasOperation{
-			lbOperation: lbOperation{
-				elbv2: elbv2.New(sess),
-			},
 			aliasDomain: args[1],
 			lbName:      args[0],
+			lbOperation: lbOperation{elbv2: elbv2.New(sess), output: output},
 			output:      output,
 			route53:     route53.New(sess),
 		}.execute()
