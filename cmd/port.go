@@ -12,11 +12,15 @@ type Port struct {
 	Protocol string
 }
 
-func (p *Port) Empty() bool {
-	return p.Number == 0 && p.Protocol == ""
+func (p Port) Empty() bool {
+	return p.Number == 0 || p.Protocol == ""
 }
 
-func (p *Port) String() string {
+func (p Port) String() string {
+	if p.Empty() {
+		return ""
+	}
+
 	return fmt.Sprintf("%s:%d", p.Protocol, p.Number)
 }
 
