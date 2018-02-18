@@ -329,6 +329,32 @@ func TestSetPortsCantInflate(t *testing.T) {
 	}
 }
 
+func TestSetPortsInvalidNumber(t *testing.T) {
+	o := lbCreateOperation{}
+	errs := o.setPorts([]string{"555555555"})
+
+	if len(errs) != 1 {
+		t.Fatalf("expected error, got none")
+	}
+
+	if expected := errors.New("invalid port 555555555 (specify within 1 - 65535)"); errs[0].Error() != expected.Error() {
+		t.Errorf("expected error %v, got: %v", expected, errs[0])
+	}
+}
+
+func TestSetPortsInvalidProtocol(t *testing.T) {
+	o := lbCreateOperation{}
+	errs := o.setPorts([]string{"SMTP:25"})
+
+	if len(errs) != 1 {
+		t.Fatalf("expected error, got none")
+	}
+
+	if expected := errors.New("invalid protocol SMTP (specify TCP, HTTP, or HTTPS)"); errs[0].Error() != expected.Error() {
+		t.Errorf("expected error %v, got: %v", expected, errs[0])
+	}
+}
+
 func TestInferType(t *testing.T) {
 	tests := []struct {
 		inputPorts []string
@@ -756,6 +782,37 @@ func TestNewLBCreateOperationNoPort(t *testing.T) {
 	}
 
 	if expected := "at least one --port must be specified"; err[0].Error() != expected {
+		t.Errorf("expected: %s, got: %v", expected, err)
+	}
+}
+
+func TestNewLBCreateOperationDefaultSubnets(t *testing.T) {
+	mockOutput := &mock.Output{}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockEC2 := ec2client.NewMockClient(mockCtrl)
+
+	mockEC2.EXPECT().GetDefaultSubnetIDs().Return([]string{"subnet-1234567"}, nil)
+	mockEC2.EXPECT().GetSubnetVPCID("subnet-1234567").Return("", errors.New("boom"))
+
+	_, err := newLBCreateOperation(
+		"web",
+		[]string{},
+		[]string{"445"},
+		[]string{},
+		[]string{},
+		mockOutput,
+		acmclient.NewMockClient(mockCtrl),
+		mockEC2,
+		elbv2client.NewMockClient(mockCtrl),
+	)
+
+	if err == nil {
+		t.Fatalf("expected errors, got none")
+	}
+
+	if expected := "boom"; err[0].Error() != expected {
 		t.Errorf("expected: %s, got: %v", expected, err)
 	}
 }
