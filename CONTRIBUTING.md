@@ -21,7 +21,7 @@ email and Google Hangouts at john@pignata.com.
 
 ## Setup
 
-- Ensure you're using golang 1.9
+- Ensure you're using golang 1.9+.
 
   ```console
   go version
