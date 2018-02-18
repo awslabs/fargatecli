@@ -14,7 +14,7 @@ type certificateInfoOperation struct {
 }
 
 func (o certificateInfoOperation) execute() {
-	certificate, err := o.findCertificate(o.domainName, o.output)
+	certificate, err := o.findCertificate(o.domainName)
 
 	if err != nil {
 		switch err {
@@ -63,11 +63,9 @@ ownership.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateInfoOperation{
-			certificateOperation: certificateOperation{
-				acm: acm.New(sess),
-			},
-			domainName: args[0],
-			output:     output,
+			certificateOperation: certificateOperation{acm: acm.New(sess), output: output},
+			domainName:           args[0],
+			output:               output,
 		}.execute()
 	},
 }

@@ -16,7 +16,7 @@ type certificateValidateOperation struct {
 }
 
 func (o certificateValidateOperation) execute() {
-	certificate, err := o.findCertificate(o.domainName, o.output)
+	certificate, err := o.findCertificate(o.domainName)
 
 	if err != nil {
 		o.output.Fatal(err, "Could not validate certificate")
@@ -88,12 +88,10 @@ AWS Certificate Manager may take up to several hours after the DNS records are
 created to complete validation and issue the certificate.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateValidateOperation{
-			certificateOperation: certificateOperation{
-				acm: acm.New(sess),
-			},
-			domainName: args[0],
-			output:     output,
-			route53:    route53.New(sess),
+			certificateOperation: certificateOperation{acm: acm.New(sess), output: output},
+			domainName:           args[0],
+			output:               output,
+			route53:              route53.New(sess),
 		}.execute()
 	},
 }

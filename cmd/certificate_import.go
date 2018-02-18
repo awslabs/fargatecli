@@ -84,39 +84,37 @@ func (o *certificateImportOperation) readFiles() []error {
 	return errs
 }
 
-var (
-	flagCertificateImportCertificate string
-	flagCertificateImportKey         string
-	flagCertificateImportChain       string
-
-	certificateImportCmd = &cobra.Command{
-		Use:   "import --certificate <certificate-file> --key <key-file> [--chain <chain-file>]",
-		Short: "Import a certificate",
-		Long: `Import a certificate
+var certificateImportCmd = &cobra.Command{
+	Use:   "import --certificate <certificate-file> --key <key-file> [--chain <chain-file>]",
+	Short: "Import a certificate",
+	Long: `Import a certificate
 
 Upload a certificate from a certificate file, a private key file, and optionally
 an intermediate certificate chain file. The files must be PEM-encoded and the
 private key must not be encrypted or protected by a passphrase. See
 http://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html
 for more details.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			certificateImportOperation{
-				acm:                  acm.New(sess),
-				output:               output,
-				certificateFile:      flagCertificateImportCertificate,
-				privateKeyFile:       flagCertificateImportKey,
-				certificateChainFile: flagCertificateImportChain,
-			}.execute()
-		},
-	}
-)
+	Run: func(cmd *cobra.Command, args []string) {
+		certificateImportOperation{
+			acm:                  acm.New(sess),
+			certificateChainFile: certificateImportFlags.chain,
+			certificateFile:      certificateImportFlags.certificate,
+			output:               output,
+			privateKeyFile:       certificateImportFlags.key,
+		}.execute()
+	},
+}
+
+var certificateImportFlags struct {
+	certificate, key, chain string
+}
 
 func init() {
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportCertificate, "certificate", "c", "",
+	certificateImportCmd.Flags().StringVarP(&certificateImportFlags.certificate, "certificate", "c", "",
 		"Filename of the certificate to import")
-	certificateImportCmd.Flags().StringVarP(&flagCertificateImportKey, "key", "k", "",
+	certificateImportCmd.Flags().StringVarP(&certificateImportFlags.key, "key", "k", "",
 		"Filename of the private key used to generate the certificate")
-	certificateImportCmd.Flags().StringVar(&flagCertificateImportChain, "chain", "",
+	certificateImportCmd.Flags().StringVar(&certificateImportFlags.chain, "chain", "",
 		"Filename of intermediate certificate chain")
 
 	certificateCmd.AddCommand(certificateImportCmd)

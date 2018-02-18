@@ -30,7 +30,8 @@ func TestCertificateDestroyOperation(t *testing.T) {
 
 	certificateDestroyOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: domainName,
 		output:     mockOutput,
@@ -60,7 +61,8 @@ func TestCertificateDestroyOperationCertNotFound(t *testing.T) {
 
 	certificateDestroyOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: domainName,
 		output:     mockOutput,
@@ -98,7 +100,8 @@ func TestCertificateDestroyOperationMoreThanOneCertFound(t *testing.T) {
 
 	certificateDestroyOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: domainName,
 		output:     mockOutput,
@@ -126,7 +129,8 @@ func TestCertificateDestroyOperationListError(t *testing.T) {
 
 	certificateDestroyOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: domainName,
 		output:     mockOutput,
@@ -161,7 +165,8 @@ func TestCertificateDestroyOperationDeleteError(t *testing.T) {
 
 	certificateDestroyOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: domainName,
 		output:     mockOutput,

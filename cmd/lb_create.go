@@ -80,7 +80,7 @@ func (o *lbCreateOperation) setCertificateARNs(domainNames []string) []error {
 	)
 
 	for _, domainName := range domainNames {
-		if certificate, err := o.findCertificate(domainName, output); err == nil {
+		if certificate, err := o.findCertificate(domainName); err == nil {
 			if certificate.IsIssued() {
 				certificateARNs = append(certificateARNs, certificate.ARN)
 			} else {
@@ -187,7 +187,7 @@ func newLBCreateOperation(
 	elbv2 elbv2.Client,
 ) (operation lbCreateOperation, errors []error) {
 	operation = lbCreateOperation{
-		certificateOperation: certificateOperation{acm: acm},
+		certificateOperation: certificateOperation{acm: acm, output: output},
 		elbv2:                elbv2,
 		lbName:               lbName,
 		output:               output,

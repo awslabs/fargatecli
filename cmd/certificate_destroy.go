@@ -12,7 +12,7 @@ type certificateDestroyOperation struct {
 }
 
 func (o certificateDestroyOperation) execute() {
-	certificate, err := o.findCertificate(o.domainName, o.output)
+	certificate, err := o.findCertificate(o.domainName)
 
 	if err != nil {
 		switch err {
@@ -47,11 +47,9 @@ any other AWS resources.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		certificateDestroyOperation{
-			certificateOperation: certificateOperation{
-				acm: acm.New(sess),
-			},
-			domainName: args[0],
-			output:     output,
+			certificateOperation: certificateOperation{acm: acm.New(sess), output: output},
+			domainName:           args[0],
+			output:               output,
 		}.execute()
 	},
 }

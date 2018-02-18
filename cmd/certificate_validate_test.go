@@ -68,7 +68,8 @@ func TestCertificateValidateOperation(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -94,7 +95,8 @@ func TestCertificateValidateOperationFindCertificateError(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -130,7 +132,8 @@ func TestCertificateValidateOperationListHostedZonesError(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -170,7 +173,8 @@ func TestCertificateValidateOperationInvalidState(t *testing.T) {
 	mockACMClient.EXPECT().InflateCertificate(certificates[0]).Return(certificate, nil)
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -224,7 +228,8 @@ func TestCertificateValidateOperationZoneNotFound(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -271,7 +276,8 @@ func TestCertificateValidateOperationValidationSuccess(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -318,7 +324,8 @@ func TestCertificateValidateOperationValidationFailed(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -365,7 +372,8 @@ func TestCertificateValidateOperationValidationUnknown(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -435,7 +443,8 @@ func TestCertificateValidateOperationRecordSetError(t *testing.T) {
 
 	certificateValidateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockACMClient,
+			acm:    mockACMClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,

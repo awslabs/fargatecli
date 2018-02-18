@@ -49,7 +49,8 @@ func TestCertificateInfoOperation(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: domainName,
 		output:     mockOutput,
@@ -128,7 +129,8 @@ func TestCertificateInfoOperationNotFound(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -158,7 +160,8 @@ func TestCertificateInfoOperationListError(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,
@@ -195,7 +198,8 @@ func TestCertificateInfoOperationDescribeError(t *testing.T) {
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 		domainName: "example.com",
 		output:     mockOutput,

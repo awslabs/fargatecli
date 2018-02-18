@@ -8,11 +8,12 @@ import (
 )
 
 type certificateOperation struct {
-	acm acm.Client
+	acm    acm.Client
+	output Output
 }
 
-func (o certificateOperation) findCertificate(domainName string, output Output) (acm.Certificate, error) {
-	output.Debug("Listing certificates [API=acm Action=ListCertificate]")
+func (o certificateOperation) findCertificate(domainName string) (acm.Certificate, error) {
+	o.output.Debug("Listing certificates [API=acm Action=ListCertificate]")
 	certificates, err := o.acm.ListCertificates()
 
 	if err != nil {
@@ -28,7 +29,7 @@ func (o certificateOperation) findCertificate(domainName string, output Output) 
 		return acm.Certificate{}, errCertificateTooManyFound
 	}
 
-	output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", certificates[0].ARN)
+	o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", certificates[0].ARN)
 	return o.acm.InflateCertificate(certificates[0])
 }
 

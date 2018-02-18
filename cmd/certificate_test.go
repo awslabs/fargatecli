@@ -32,9 +32,10 @@ func TestFindCertificate(t *testing.T) {
 	mockClient.EXPECT().InflateCertificate(certificate).Return(inflatedCertificate, nil)
 
 	operation := certificateOperation{
-		acm: mockClient,
+		acm:    mockClient,
+		output: mockOutput,
 	}
-	foundCertificate, err := operation.findCertificate("www.example.com", mockOutput)
+	foundCertificate, err := operation.findCertificate("www.example.com")
 
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
@@ -55,9 +56,10 @@ func TestFindCertificateNotFound(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{}, nil)
 
 	operation := certificateOperation{
-		acm: mockClient,
+		acm:    mockClient,
+		output: mockOutput,
 	}
-	foundCertificate, err := operation.findCertificate("www.example.com", mockOutput)
+	foundCertificate, err := operation.findCertificate("www.example.com")
 
 	if err != errCertificateNotFound {
 		t.Errorf("Expected errCertificateNotFound, got %v", err)
@@ -83,9 +85,10 @@ func TestFindCertificateTooManyFound(t *testing.T) {
 	mockClient.EXPECT().ListCertificates().Return(certificates, nil)
 
 	operation := certificateOperation{
-		acm: mockClient,
+		acm:    mockClient,
+		output: mockOutput,
 	}
-	foundCertificate, err := operation.findCertificate("www.example.com", mockOutput)
+	foundCertificate, err := operation.findCertificate("www.example.com")
 
 	if err != errCertificateTooManyFound {
 		t.Errorf("Expected errCertificateTooManyFound, got %v", err)

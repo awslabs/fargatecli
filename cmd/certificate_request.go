@@ -56,13 +56,10 @@ func (o certificateRequestOperation) validate() []error {
 	return errors
 }
 
-var (
-	flagCertificateRequestAliases []string
-
-	certificateRequestCmd = &cobra.Command{
-		Use:   "request <domain-name>",
-		Short: "Request a certificate",
-		Long: `Request a certificate
+var certificateRequestCmd = &cobra.Command{
+	Use:   "request <domain-name>",
+	Short: "Request a certificate",
+	Long: `Request a certificate
 
 Certificates can be for a fully qualified domain name (e.g. www.example.com) or
 a wildcard domain name (e.g. *.example.com). You can add aliases to a
@@ -70,20 +67,23 @@ certificate by specifying additional domain names via the --alias flag. To add
 multiple aliases, pass --alias multiple times. By default, AWS Certificate
 Manager has a limit of 10 domain names per certificate, but this limit can be
 raised by AWS support.`,
-		Args: cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			certificateRequestOperation{
-				acm:        acm.New(sess),
-				aliases:    flagCertificateRequestAliases,
-				output:     output,
-				domainName: args[0],
-			}.execute()
-		},
-	}
-)
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		certificateRequestOperation{
+			acm:        acm.New(sess),
+			aliases:    certificateRequestFlags.aliases,
+			output:     output,
+			domainName: args[0],
+		}.execute()
+	},
+}
+
+var certificateRequestFlags struct {
+	aliases []string
+}
 
 func init() {
-	certificateRequestCmd.Flags().StringSliceVarP(&flagCertificateRequestAliases, "alias", "a", []string{},
+	certificateRequestCmd.Flags().StringSliceVarP(&certificateRequestFlags.aliases, "alias", "a", []string{},
 		`Additional domain names to be included in the certificate (can be specified multiple times)`)
 
 	certificateCmd.AddCommand(certificateRequestCmd)

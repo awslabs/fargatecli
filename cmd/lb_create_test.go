@@ -413,6 +413,7 @@ func TestInferTypeInvalidProtocol(t *testing.T) {
 }
 
 func TestSetCertificateARNs(t *testing.T) {
+	mockOutput := &mock.Output{}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -431,7 +432,8 @@ func TestSetCertificateARNs(t *testing.T) {
 
 	o := lbCreateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 	}
 
@@ -451,6 +453,7 @@ func TestSetCertificateARNs(t *testing.T) {
 }
 
 func TestSetCertificateARNsNotIssued(t *testing.T) {
+	mockOutput := &mock.Output{}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -469,7 +472,8 @@ func TestSetCertificateARNsNotIssued(t *testing.T) {
 
 	o := lbCreateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 	}
 
@@ -489,6 +493,7 @@ func TestSetCertificateARNsNotIssued(t *testing.T) {
 }
 
 func TestSetCertificateARNsNotFound(t *testing.T) {
+	mockOutput := &mock.Output{}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -498,7 +503,8 @@ func TestSetCertificateARNsNotFound(t *testing.T) {
 
 	o := lbCreateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 	}
 
@@ -518,6 +524,7 @@ func TestSetCertificateARNsNotFound(t *testing.T) {
 }
 
 func TestSetCertificateARNsTooManyFound(t *testing.T) {
+	mockOutput := &mock.Output{}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -529,7 +536,8 @@ func TestSetCertificateARNsTooManyFound(t *testing.T) {
 
 	o := lbCreateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 	}
 
@@ -549,6 +557,7 @@ func TestSetCertificateARNsTooManyFound(t *testing.T) {
 }
 
 func TestSetCertificateARNsError(t *testing.T) {
+	mockOutput := &mock.Output{}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -558,7 +567,8 @@ func TestSetCertificateARNsError(t *testing.T) {
 
 	o := lbCreateOperation{
 		certificateOperation: certificateOperation{
-			acm: mockClient,
+			acm:    mockClient,
+			output: mockOutput,
 		},
 	}
 
