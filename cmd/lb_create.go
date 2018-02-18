@@ -156,7 +156,7 @@ func (o lbCreateOperation) execute() {
 	o.output.Debug("Created target group [ARN=%s]", defaultTargetGroupARN)
 
 	for _, port := range o.ports {
-		o.output.Debug("Creating listener [Port=%s Protocol=%s]", port.Number, port.Protocol)
+		o.output.Debug("Creating listener [Port=%d Protocol=%s]", port.Number, port.Protocol)
 		listenerARN, err := o.elbv2.CreateListener(
 			elbv2.CreateListenerInput{
 				CertificateARNs:       o.certificateARNs,
