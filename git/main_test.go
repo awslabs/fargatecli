@@ -33,8 +33,9 @@ func TestGetShortSha(t *testing.T) {
 	commitOutput, err := gitCommit.CombinedOutput()
 
 	if err != nil {
-		t.Error("Could not create dummy git commit", err)
-		return
+		t.Errorf("Could not create dummy git commit: %v", err)
+		t.Errorf("Output: %s", commitOutput)
+		t.FailNow()
 	}
 
 	if shortSha := GetShortSha(); !strings.Contains(string(commitOutput), GetShortSha()) {
