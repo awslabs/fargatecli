@@ -8,6 +8,8 @@ import (
 	"github.com/jpignata/fargate/console"
 )
 
+// LoadBalancer is an Elastic Load Balancing load balancer. It holds attributes for
+// the Application Load Balancer and the Network Load Balancer.
 type LoadBalancer struct {
 	ARN              string
 	DNSName          string
@@ -22,8 +24,10 @@ type LoadBalancer struct {
 	VPCID            string
 }
 
+// LoadBalancers is a collection of LoadBalancers.
 type LoadBalancers []LoadBalancer
 
+// CreateLoadBalancerInput holds the attributes needed to create a new load balancer.
 type CreateLoadBalancerInput struct {
 	Name             string
 	SecurityGroupIDs []string
@@ -31,22 +35,26 @@ type CreateLoadBalancerInput struct {
 	Type             string
 }
 
+// DescribeLoadBalancers returns all load balancers.
 func (elbv2 SDKClient) DescribeLoadBalancers() (LoadBalancers, error) {
 	return elbv2.describeLoadBalancers(&awselbv2.DescribeLoadBalancersInput{})
 }
 
+// DescribeLoadBalancersByName returns all load balancers identified by the given load balancer names.
 func (elbv2 SDKClient) DescribeLoadBalancersByName(lbNames []string) (LoadBalancers, error) {
 	return elbv2.describeLoadBalancers(
 		&awselbv2.DescribeLoadBalancersInput{Names: aws.StringSlice(lbNames)},
 	)
 }
 
+// DescribeLoadBalancersbyARN returns all load balancers whose ARN match the given ARNs.
 func (elbv2 SDKClient) DescribeLoadBalancersByARN(lbARNs []string) (LoadBalancers, error) {
 	return elbv2.describeLoadBalancers(
 		&awselbv2.DescribeLoadBalancersInput{LoadBalancerArns: aws.StringSlice(lbARNs)},
 	)
 }
 
+// CreateLoadBalancer creates a new ALB or NLB.
 func (elbv2 SDKClient) CreateLoadBalancer(i CreateLoadBalancerInput) (string, error) {
 	sdki := &awselbv2.CreateLoadBalancerInput{
 		Name:    aws.String(i.Name),
