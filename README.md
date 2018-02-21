@@ -1,8 +1,6 @@
 # Fargate CLI
 
-![](doc/media/fargate.png)
-
-Deploy serverless containers onto the cloud from your command line
+[![CircleCI](https://circleci.com/gh/jpignata/fargate/tree/master.svg?style=svg)](https://circleci.com/gh/jpignata/fargate/tree/master)
 
 ## Screencast
 
