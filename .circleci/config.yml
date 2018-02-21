@@ -7,6 +7,10 @@ jobs:
     steps:
       - checkout
 
+      - run: git config --global user.email circleci@pignata.com
+      - run: git config --global user.name CircleCI
+
       - run: go get -u github.com/golang/dep/cmd/dep
       - run: dep ensure
+
       - run: make test
