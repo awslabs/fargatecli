@@ -1,0 +1,12 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.10
+    working_directory: /go/src/github.com/jpignata/fargate
+    steps:
+      - checkout
+
+      - run: go get -u github.com/golang/dep/cmd/dep
+      - run: dep ensure
+      - run: make test
