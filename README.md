@@ -1,6 +1,7 @@
 # Fargate CLI
 
 [![CircleCI](https://circleci.com/gh/jpignata/fargate/tree/master.svg?style=svg)](https://circleci.com/gh/jpignata/fargate/tree/master)
+[![GoDoc](https://godoc.org/github.com/jpignata/fargate?status.svg)](https://godoc.org/github.com/jpignata/fargate)
 
 ## Screencast
 
