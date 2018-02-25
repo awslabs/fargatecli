@@ -57,7 +57,7 @@ func destroyService(operation *ServiceDestroyOperation) {
 
 						if defaultTargetGroupArn == "" {
 							defaultTargetGroupArn, _ = elbv2.CreateTargetGroup(
-								ELBV2.CreateTargetGroupInput{
+								ELBV2.CreateTargetGroupParameters{
 									Name:     defaultTargetGroupName,
 									Port:     listeners[0].Port,
 									Protocol: listeners[0].Protocol,

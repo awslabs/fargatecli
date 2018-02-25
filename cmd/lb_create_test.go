@@ -41,19 +41,19 @@ func TestLBCreateOperation(t *testing.T) {
 	mockEC2Client := ec2client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	createLoadBalancerInput := elbv2.CreateLoadBalancerInput{
+	createLoadBalancerInput := elbv2.CreateLoadBalancerParameters{
 		Name:             lbName,
 		SecurityGroupIDs: securityGroupIDs,
 		SubnetIDs:        subnetIDs,
 		Type:             lbType,
 	}
-	createTargetGroupInput := elbv2.CreateTargetGroupInput{
+	createTargetGroupInput := elbv2.CreateTargetGroupParameters{
 		Name:     "lb-default",
 		Port:     80,
 		Protocol: "HTTP",
 		VPCID:    vpcID,
 	}
-	createListenerInput := elbv2.CreateListenerInput{
+	createListenerInput := elbv2.CreateListenerParameters{
 		DefaultTargetGroupARN: tgARN,
 		LoadBalancerARN:       lbARN,
 		Port:                  80,
@@ -144,13 +144,13 @@ func TestLBCreateOperationTargetGroupError(t *testing.T) {
 	mockEC2Client := ec2client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	createLoadBalancerInput := elbv2.CreateLoadBalancerInput{
+	createLoadBalancerInput := elbv2.CreateLoadBalancerParameters{
 		Name:             lbName,
 		SecurityGroupIDs: securityGroupIDs,
 		SubnetIDs:        subnetIDs,
 		Type:             lbType,
 	}
-	createTargetGroupInput := elbv2.CreateTargetGroupInput{
+	createTargetGroupInput := elbv2.CreateTargetGroupParameters{
 		Name:     "lb-default",
 		Port:     80,
 		Protocol: "HTTP",
@@ -205,19 +205,19 @@ func TestLBCreateOperationListenerError(t *testing.T) {
 	mockEC2Client := ec2client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	createLoadBalancerInput := elbv2.CreateLoadBalancerInput{
+	createLoadBalancerInput := elbv2.CreateLoadBalancerParameters{
 		Name:             lbName,
 		SecurityGroupIDs: securityGroupIDs,
 		SubnetIDs:        subnetIDs,
 		Type:             lbType,
 	}
-	createTargetGroupInput := elbv2.CreateTargetGroupInput{
+	createTargetGroupInput := elbv2.CreateTargetGroupParameters{
 		Name:     "lb-default",
 		Port:     80,
 		Protocol: "HTTP",
 		VPCID:    vpcID,
 	}
-	createListenerInput := elbv2.CreateListenerInput{
+	createListenerInput := elbv2.CreateListenerParameters{
 		DefaultTargetGroupARN: tgARN,
 		LoadBalancerARN:       lbARN,
 		Port:                  80,

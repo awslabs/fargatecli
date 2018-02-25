@@ -23,14 +23,14 @@ func TestLBListOperation(t *testing.T) {
 		DNSName: "test-12345678.us-east-1.elb.amazonaws.com",
 		Name:    "test",
 		Type:    "application",
-		State:   "active",
+		Status:  "active",
 	}
 	loadBalancer2 := elbv2.LoadBalancer{
 		ARN:     "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/lb/93fa3d386bec918a",
 		DNSName: "test-abcdef.us-east-1.elb.amazonaws.com",
 		Name:    "test2",
 		Type:    "application",
-		State:   "active",
+		Status:  "active",
 	}
 	listener1 := elbv2.Listener{
 		ARN:      "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2",
@@ -77,7 +77,7 @@ func TestLBListOperation(t *testing.T) {
 		t.Errorf("expected type: %s, got: %s", expected, row1[1])
 	}
 
-	if expected := Titleize(loadBalancer1.State); row1[2] != expected {
+	if expected := Titleize(loadBalancer1.Status); row1[2] != expected {
 		t.Errorf("expected status: %s, got: %s", expected, row1[2])
 	}
 
@@ -99,7 +99,7 @@ func TestLBListOperation(t *testing.T) {
 		t.Errorf("expected type: %s, got: %s", expected, row2[1])
 	}
 
-	if expected := Titleize(loadBalancer2.State); row2[2] != expected {
+	if expected := Titleize(loadBalancer2.Status); row2[2] != expected {
 		t.Errorf("expected status: %s, got: %s", expected, row2[2])
 	}
 

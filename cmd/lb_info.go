@@ -43,7 +43,7 @@ func getLoadBalancerInfo(operation *LbInfoOperation) {
 	services := ecs.ListServices()
 
 	console.KeyValue("Load Balancer Name", "%s\n", loadBalancer.Name)
-	console.KeyValue("Status", "%s\n", Humanize(loadBalancer.State))
+	console.KeyValue("Status", "%s\n", Humanize(loadBalancer.Status))
 	console.KeyValue("Type", "%s\n", Humanize(loadBalancer.Type))
 	console.KeyValue("DNS Name", "%s\n", loadBalancer.DNSName)
 	console.KeyValue("Subnets", "%s\n", strings.Join(loadBalancer.SubnetIDs, ", "))

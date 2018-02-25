@@ -3,6 +3,7 @@
 PACKAGES := $(shell go list ./... | grep -v /mock)
 
 mocks:
+	go get github.com/golang/mock/mockgen
 	go generate $(PACKAGES)
 
 test:

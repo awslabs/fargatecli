@@ -88,7 +88,7 @@ func (o lbListOperation) execute() {
 			[]string{
 				loadBalancer.Name,
 				Titleize(loadBalancer.Type),
-				Titleize(loadBalancer.State),
+				Titleize(loadBalancer.Status),
 				loadBalancer.DNSName,
 				fmt.Sprintf("%s", loadBalancer.Listeners),
 			},

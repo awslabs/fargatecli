@@ -12,14 +12,14 @@ type TargetGroup struct {
 	LoadBalancerARN string
 }
 
-type CreateTargetGroupInput struct {
+type CreateTargetGroupParameters struct {
 	Name     string
 	Port     int64
 	Protocol string
 	VPCID    string
 }
 
-func (elbv2 SDKClient) CreateTargetGroup(i CreateTargetGroupInput) (string, error) {
+func (elbv2 SDKClient) CreateTargetGroup(i CreateTargetGroupParameters) (string, error) {
 	resp, err := elbv2.client.CreateTargetGroup(
 		&awselbv2.CreateTargetGroupInput{
 			Name:       aws.String(i.Name),

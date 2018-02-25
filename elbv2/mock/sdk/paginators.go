@@ -11,7 +11,23 @@ type MockDescribeLoadBalancersClient struct {
 	Error error
 }
 
+type MockDescribeListenersClient struct {
+	elbv2iface.ELBV2API
+	Resp  *elbv2.DescribeListenersOutput
+	Error error
+}
+
 func (m MockDescribeLoadBalancersClient) DescribeLoadBalancersPages(in *elbv2.DescribeLoadBalancersInput, fn func(*elbv2.DescribeLoadBalancersOutput, bool) bool) error {
+	if m.Error != nil {
+		return m.Error
+	}
+
+	fn(m.Resp, true)
+
+	return nil
+}
+
+func (m MockDescribeListenersClient) DescribeListenersPages(in *elbv2.DescribeListenersInput, fn func(*elbv2.DescribeListenersOutput, bool) bool) error {
 	if m.Error != nil {
 		return m.Error
 	}

@@ -125,7 +125,7 @@ func (o lbCreateOperation) execute() {
 	defaultTargetGroupName := fmt.Sprintf(defaultTargetGroupFormat, o.lbName)
 
 	loadBalancerARN, err := o.elbv2.CreateLoadBalancer(
-		elbv2.CreateLoadBalancerInput{
+		elbv2.CreateLoadBalancerParameters{
 			Name:             o.lbName,
 			SecurityGroupIDs: o.securityGroupIDs,
 			SubnetIDs:        o.subnetIDs,
@@ -140,7 +140,7 @@ func (o lbCreateOperation) execute() {
 
 	o.output.Debug("Creating target group [Name=%s]", defaultTargetGroupName)
 	defaultTargetGroupARN, err := o.elbv2.CreateTargetGroup(
-		elbv2.CreateTargetGroupInput{
+		elbv2.CreateTargetGroupParameters{
 			Name:     defaultTargetGroupName,
 			Port:     o.ports[0].Number,
 			Protocol: o.ports[0].Protocol,
@@ -158,7 +158,7 @@ func (o lbCreateOperation) execute() {
 	for _, port := range o.ports {
 		o.output.Debug("Creating listener [Port=%d Protocol=%s]", port.Number, port.Protocol)
 		listenerARN, err := o.elbv2.CreateListener(
-			elbv2.CreateListenerInput{
+			elbv2.CreateListenerParameters{
 				CertificateARNs:       o.certificateARNs,
 				DefaultTargetGroupARN: defaultTargetGroupARN,
 				LoadBalancerARN:       loadBalancerARN,

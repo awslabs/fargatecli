@@ -11,6 +11,7 @@ import (
 	"github.com/jpignata/fargate/console"
 )
 
+// Listener accepts incoming traffic on a load balancer based upon the provided routing rules.
 type Listener struct {
 	ARN             string
 	CertificateARNs []string
@@ -19,12 +20,15 @@ type Listener struct {
 	Rules           []Rule
 }
 
+// String returns a friendly representation of the listener.
 func (l Listener) String() string {
 	return fmt.Sprintf("%s:%d", l.Protocol, l.Port)
 }
 
+// Listeners is a collection of listeners.
 type Listeners []Listener
 
+// Listeners returns a comma-separated friendly representation of the listeners.
 func (l Listeners) String() string {
 	var listenerStrings []string
 
@@ -35,6 +39,7 @@ func (l Listeners) String() string {
 	return strings.Join(listenerStrings, ", ")
 }
 
+// Rule defines a routing rule defining how traffic should be routed to a listener.
 type Rule struct {
 	ARN            string
 	IsDefault      bool
@@ -44,11 +49,13 @@ type Rule struct {
 	Value          string
 }
 
-func (r *Rule) String() string {
+// String returns a friendly representation of a rule.
+func (r Rule) String() string {
 	return strings.Join([]string{r.Type, r.Value}, "=")
 }
 
-type CreateListenerInput struct {
+// CreateListenerParameters are the parameters required to create a new listener.
+type CreateListenerParameters struct {
 	CertificateARNs       []string
 	DefaultTargetGroupARN string
 	LoadBalancerARN       string
@@ -56,10 +63,49 @@ type CreateListenerInput struct {
 	Protocol              string
 }
 
-func (input *CreateListenerInput) SetCertificateArns(arns []string) {
+// SetCertificateARNs sets the certificate ARNs with the given ARNs.
+func (input *CreateListenerParameters) SetCertificateARNs(arns []string) {
 	input.CertificateARNs = arns
 }
 
+// CreateListener creates a new listener and returns the listener ARN if successfully created.
+func (elbv2 SDKClient) CreateListener(p CreateListenerParameters) (string, error) {
+	action := &awselbv2.Action{
+		TargetGroupArn: aws.String(p.DefaultTargetGroupARN),
+		Type:           aws.String(awselbv2.ActionTypeEnumForward),
+	}
+
+	i := &awselbv2.CreateListenerInput{
+		Port:            aws.Int64(p.Port),
+		Protocol:        aws.String(p.Protocol),
+		LoadBalancerArn: aws.String(p.LoadBalancerARN),
+		DefaultActions:  []*awselbv2.Action{action},
+	}
+
+	if len(p.CertificateARNs) > 0 {
+		certificates := []*awselbv2.Certificate{}
+
+		for _, certificateARN := range p.CertificateARNs {
+			certificates = append(certificates,
+				&awselbv2.Certificate{
+					CertificateArn: aws.String(certificateARN),
+				},
+			)
+		}
+
+		i.SetCertificates(certificates)
+	}
+
+	resp, err := elbv2.client.CreateListener(i)
+
+	if err != nil {
+		return "", err
+	}
+
+	return aws.StringValue(resp.Listeners[0].ListenerArn), nil
+}
+
+// DescribeListeners returns all of the listeners for a given load balancer ARN.
 func (elbv2 SDKClient) DescribeListeners(lbARN string) (Listeners, error) {
 	var listeners []Listener
 
@@ -89,42 +135,6 @@ func (elbv2 SDKClient) DescribeListeners(lbARN string) (Listeners, error) {
 	)
 
 	return listeners, err
-}
-
-func (elbv2 SDKClient) CreateListener(i CreateListenerInput) (string, error) {
-	action := &awselbv2.Action{
-		TargetGroupArn: aws.String(i.DefaultTargetGroupARN),
-		Type:           aws.String(awselbv2.ActionTypeEnumForward),
-	}
-
-	sdki := &awselbv2.CreateListenerInput{
-		Port:            aws.Int64(i.Port),
-		Protocol:        aws.String(i.Protocol),
-		LoadBalancerArn: aws.String(i.LoadBalancerARN),
-		DefaultActions:  []*awselbv2.Action{action},
-	}
-
-	if len(i.CertificateARNs) > 0 {
-		certificates := []*awselbv2.Certificate{}
-
-		for _, certificateARN := range i.CertificateARNs {
-			certificates = append(certificates,
-				&awselbv2.Certificate{
-					CertificateArn: aws.String(certificateARN),
-				},
-			)
-		}
-
-		sdki.SetCertificates(certificates)
-	}
-
-	resp, err := elbv2.client.CreateListener(sdki)
-
-	if err != nil {
-		return "", err
-	}
-
-	return aws.StringValue(resp.Listeners[0].ListenerArn), nil
 }
 
 func (elbv2 SDKClient) ModifyLoadBalancerDefaultAction(lbARN, targetGroupARN string) {

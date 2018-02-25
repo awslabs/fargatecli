@@ -1,3 +1,4 @@
+// Package elbv2 is a client for Elastic Load Balancing (v2).
 package elbv2
 
 //go:generate mockgen -package client -destination=mock/client/client.go github.com/jpignata/fargate/elbv2 Client
@@ -11,12 +12,14 @@ import (
 
 // Client represents a method for accessing Elastic Load Balancing (v2).
 type Client interface {
-	DescribeLoadBalancers() (LoadBalancers, error)
+	CreateListener(CreateListenerParameters) (string, error)
 	DescribeListeners(string) (Listeners, error)
+
+	DescribeLoadBalancers() (LoadBalancers, error)
 	DescribeLoadBalancersByName([]string) (LoadBalancers, error)
-	CreateLoadBalancer(CreateLoadBalancerInput) (string, error)
-	CreateTargetGroup(CreateTargetGroupInput) (string, error)
-	CreateListener(CreateListenerInput) (string, error)
+	CreateLoadBalancer(CreateLoadBalancerParameters) (string, error)
+
+	CreateTargetGroup(CreateTargetGroupParameters) (string, error)
 }
 
 // SDKClient implements access to Elastic Load Balancing (v2) via the AWS SDK.

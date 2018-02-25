@@ -8,6 +8,7 @@ import (
 	"github.com/jpignata/fargate/console"
 )
 
+// LoadBalancer represents an Elastic Load Balancing (v2) load balancer.
 type LoadBalancer struct {
 	ARN              string
 	DNSName          string
@@ -15,47 +16,34 @@ type LoadBalancer struct {
 	Listeners        Listeners
 	Name             string
 	SecurityGroupIDs []string
-	State            string
-	StateReason      string
+	Status           string
 	SubnetIDs        []string
 	Type             string
 	VPCID            string
 }
 
+// LoadBalancers is a collection of Elastic Load Balancing (v2) load balancers.
 type LoadBalancers []LoadBalancer
 
-type CreateLoadBalancerInput struct {
+// CreateLoadBalancerParameters are the parameters required to create a new load balancer.
+type CreateLoadBalancerParameters struct {
 	Name             string
 	SecurityGroupIDs []string
 	SubnetIDs        []string
 	Type             string
 }
 
-func (elbv2 SDKClient) DescribeLoadBalancers() (LoadBalancers, error) {
-	return elbv2.describeLoadBalancers(&awselbv2.DescribeLoadBalancersInput{})
-}
-
-func (elbv2 SDKClient) DescribeLoadBalancersByName(lbNames []string) (LoadBalancers, error) {
-	return elbv2.describeLoadBalancers(
-		&awselbv2.DescribeLoadBalancersInput{Names: aws.StringSlice(lbNames)},
-	)
-}
-
-func (elbv2 SDKClient) DescribeLoadBalancersByARN(lbARNs []string) (LoadBalancers, error) {
-	return elbv2.describeLoadBalancers(
-		&awselbv2.DescribeLoadBalancersInput{LoadBalancerArns: aws.StringSlice(lbARNs)},
-	)
-}
-
-func (elbv2 SDKClient) CreateLoadBalancer(i CreateLoadBalancerInput) (string, error) {
+// CreateLoadBalancer creates a new load balancer. It returns the ARN of the load balancer if it is successfully
+// created.
+func (elbv2 SDKClient) CreateLoadBalancer(p CreateLoadBalancerParameters) (string, error) {
 	sdki := &awselbv2.CreateLoadBalancerInput{
-		Name:    aws.String(i.Name),
-		Subnets: aws.StringSlice(i.SubnetIDs),
-		Type:    aws.String(i.Type),
+		Name:    aws.String(p.Name),
+		Subnets: aws.StringSlice(p.SubnetIDs),
+		Type:    aws.String(p.Type),
 	}
 
-	if i.Type == awselbv2.LoadBalancerTypeEnumApplication {
-		sdki.SetSecurityGroups(aws.StringSlice(i.SecurityGroupIDs))
+	if p.Type == awselbv2.LoadBalancerTypeEnumApplication {
+		sdki.SetSecurityGroups(aws.StringSlice(p.SecurityGroupIDs))
 	}
 
 	resp, err := elbv2.client.CreateLoadBalancer(sdki)
@@ -65,6 +53,25 @@ func (elbv2 SDKClient) CreateLoadBalancer(i CreateLoadBalancerInput) (string, er
 	}
 
 	return aws.StringValue(resp.LoadBalancers[0].LoadBalancerArn), nil
+}
+
+// DescribeLoadBalancers returns all load balancers.
+func (elbv2 SDKClient) DescribeLoadBalancers() (LoadBalancers, error) {
+	return elbv2.describeLoadBalancers(&awselbv2.DescribeLoadBalancersInput{})
+}
+
+// DescribeLoadBalancersByName returns load balancers that match the given load balancer names.
+func (elbv2 SDKClient) DescribeLoadBalancersByName(lbNames []string) (LoadBalancers, error) {
+	return elbv2.describeLoadBalancers(
+		&awselbv2.DescribeLoadBalancersInput{Names: aws.StringSlice(lbNames)},
+	)
+}
+
+// DescribeLoadBalancersByARN returns load balancers that match the given load balancer ARNs.
+func (elbv2 SDKClient) DescribeLoadBalancersByARN(lbARNs []string) (LoadBalancers, error) {
+	return elbv2.describeLoadBalancers(
+		&awselbv2.DescribeLoadBalancersInput{LoadBalancerArns: aws.StringSlice(lbARNs)},
+	)
 }
 
 func (elbv2 SDKClient) DescribeLoadBalancer(lbName string) LoadBalancer {
@@ -119,8 +126,7 @@ func (elbv2 SDKClient) describeLoadBalancers(i *awselbv2.DescribeLoadBalancersIn
 					VPCID:            aws.StringValue(loadBalancer.VpcId),
 					Name:             aws.StringValue(loadBalancer.LoadBalancerName),
 					SecurityGroupIDs: aws.StringValueSlice(loadBalancer.SecurityGroups),
-					State:            aws.StringValue(loadBalancer.State.Code),
-					StateReason:      aws.StringValue(loadBalancer.State.Reason),
+					Status:           aws.StringValue(loadBalancer.State.Code),
 					SubnetIDs:        subnetIDs,
 					Type:             aws.StringValue(loadBalancer.Type),
 				},

@@ -315,7 +315,7 @@ func createService(operation *ServiceCreateOperation) {
 	if operation.LoadBalancerArn != "" {
 		vpcId, _ := ec2.GetSubnetVPCID(operation.SubnetIds[0])
 		targetGroupArn, _ = elbv2.CreateTargetGroup(
-			ELBV2.CreateTargetGroupInput{
+			ELBV2.CreateTargetGroupParameters{
 				Name:     fmt.Sprintf("%s-%s", clusterName, operation.ServiceName),
 				Port:     operation.Port.Number,
 				Protocol: operation.Port.Protocol,

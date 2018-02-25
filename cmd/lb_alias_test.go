@@ -20,8 +20,7 @@ var (
 		VPCID:            "vpc-3ac0fb5f",
 		Name:             "web",
 		SecurityGroupIDs: []string{"sg-5943793c"},
-		State:            "active",
-		StateReason:      "",
+		Status:           "active",
 		SubnetIDs:        []string{"subnet-8360a9e7"},
 		Type:             "application",
 	}
