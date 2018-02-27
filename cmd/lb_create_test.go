@@ -428,7 +428,7 @@ func TestSetCertificateARNs(t *testing.T) {
 	mockClient := acmclient.NewMockClient(mockCtrl)
 
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
-	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
+	mockClient.EXPECT().InflateCertificate(gomock.Any()).Return(nil)
 
 	o := lbCreateOperation{
 		certificateOperation: certificateOperation{
@@ -468,7 +468,7 @@ func TestSetCertificateARNsNotIssued(t *testing.T) {
 	mockClient := acmclient.NewMockClient(mockCtrl)
 
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
-	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
+	mockClient.EXPECT().InflateCertificate(gomock.Any()).Return(nil)
 
 	o := lbCreateOperation{
 		certificateOperation: certificateOperation{
@@ -677,7 +677,7 @@ func TestNewLBCreateOperation(t *testing.T) {
 
 	mockEC2.EXPECT().GetSubnetVPCID("subnet-1234567").Return("vpc-1234567", nil)
 	mockACM.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
-	mockACM.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
+	mockACM.EXPECT().InflateCertificate(gomock.Any()).Return(nil)
 
 	o, errs := newLBCreateOperation(
 		"web",

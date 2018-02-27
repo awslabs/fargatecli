@@ -14,11 +14,7 @@ import (
 func TestCertificateInfoOperation(t *testing.T) {
 	domainName := "example.com"
 	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
-	inCertificate := acm.Certificate{
-		ARN:        certificateARN,
-		DomainName: domainName,
-	}
-	outCertificate := acm.Certificate{
+	certificate := acm.Certificate{
 		ARN:                     certificateARN,
 		DomainName:              domainName,
 		Type:                    "AMAZON_ISSUED",
@@ -36,7 +32,7 @@ func TestCertificateInfoOperation(t *testing.T) {
 			},
 		},
 	}
-	certificateList := acm.Certificates{inCertificate}
+	certificateList := acm.Certificates{certificate}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -45,7 +41,7 @@ func TestCertificateInfoOperation(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
-	mockClient.EXPECT().InflateCertificate(inCertificate).Return(outCertificate, nil)
+	mockClient.EXPECT().InflateCertificate(gomock.Any()).Return(nil)
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{
@@ -194,7 +190,7 @@ func TestCertificateInfoOperationDescribeError(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
-	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, errors.New("boom"))
+	mockClient.EXPECT().InflateCertificate(gomock.Any()).Return(errors.New("boom"))
 
 	certificateInfoOperation{
 		certificateOperation: certificateOperation{

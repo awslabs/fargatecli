@@ -33,10 +33,7 @@ func (o certificateListOperation) execute() {
 }
 
 func (o certificateListOperation) find() (acm.Certificates, error) {
-	var (
-		wg                   sync.WaitGroup
-		inflatedCertificates acm.Certificates
-	)
+	var wg sync.WaitGroup
 
 	o.output.Debug("Listing certificates [API=acm Action=ListCertificates]")
 	certificates, err := o.acm.ListCertificates()
@@ -45,43 +42,36 @@ func (o certificateListOperation) find() (acm.Certificates, error) {
 		return acm.Certificates{}, err
 	}
 
-	results := make(chan acm.Certificate, len(certificates))
-	errs := make(chan error, len(certificates))
+	errs := make(chan error)
+	done := make(chan bool)
 	limiter := rate.NewLimiter(describeRequestLimitRate, 1)
 
-	for _, certificate := range certificates {
+	for i := 0; i < len(certificates); i++ {
 		wg.Add(1)
 
-		go func(c acm.Certificate) {
+		go func(index int) {
 			defer wg.Done()
 
 			if err := limiter.Wait(context.Background()); err == nil {
-				o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", c.ARN)
-				certificate, err := o.acm.InflateCertificate(c)
-
-				if err != nil {
+				o.output.Debug("Describing certificate [API=acm Action=DescribeCertificate ARN=%s]", certificates[index].ARN)
+				if err := o.acm.InflateCertificate(&certificates[index]); err != nil {
 					errs <- err
 				}
-
-				results <- certificate
 			}
-		}(certificate)
+		}(i)
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		done <- true
+	}()
 
-	close(results)
-	close(errs)
-
-	if len(errs) > 0 {
-		return inflatedCertificates, <-errs
+	select {
+	case err := <-errs:
+		return acm.Certificates{}, err
+	case <-done:
+		return certificates, nil
 	}
-
-	for c := range results {
-		inflatedCertificates = append(inflatedCertificates, c)
-	}
-
-	return inflatedCertificates, nil
 }
 
 func (o certificateListOperation) display(certificates []acm.Certificate) {

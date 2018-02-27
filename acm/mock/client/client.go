@@ -59,11 +59,10 @@ func (mr *MockClientMockRecorder) ImportCertificate(arg0, arg1, arg2 interface{}
 }
 
 // InflateCertificate mocks base method
-func (m *MockClient) InflateCertificate(arg0 acm.Certificate) (acm.Certificate, error) {
+func (m *MockClient) InflateCertificate(arg0 *acm.Certificate) error {
 	ret := m.ctrl.Call(m, "InflateCertificate", arg0)
-	ret0, _ := ret[0].(acm.Certificate)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // InflateCertificate indicates an expected call of InflateCertificate

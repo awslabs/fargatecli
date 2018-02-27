@@ -25,7 +25,7 @@ func TestCertificateDestroyOperation(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
-	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
+	mockClient.EXPECT().InflateCertificate(&certificate).Return(nil)
 	mockClient.EXPECT().DeleteCertificate(certificateARN).Return(nil)
 
 	certificateDestroyOperation{
@@ -160,7 +160,7 @@ func TestCertificateDestroyOperationDeleteError(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
-	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, nil)
+	mockClient.EXPECT().InflateCertificate(&certificate).Return(nil)
 	mockClient.EXPECT().DeleteCertificate(certificateARN).Return(errors.New(":-("))
 
 	certificateDestroyOperation{

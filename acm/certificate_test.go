@@ -359,165 +359,86 @@ func TestDeleteCertificateError(t *testing.T) {
 }
 
 func TestInflateCertificate(t *testing.T) {
+	domainName := "www.example.com"
+	certificateARN := "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+	certificateType := "AMAZON_ISSUED"
+	certificateStatus := "PENDING_VALIDATION"
+	certificateSANs := []string{"staging.example.com"}
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	var tests = []struct {
-		DescribeCertificateOutput *awsacm.DescribeCertificateOutput
-		InCertificate             Certificate
-		OutCertificate            Certificate
-	}{
-		{
-			&awsacm.DescribeCertificateOutput{
-				Certificate: &awsacm.CertificateDetail{
-					Type:                    aws.String("AMAZON_ISSUED"),
-					Status:                  aws.String("PENDING_VALIDATION"),
-					SubjectAlternativeNames: aws.StringSlice([]string{"staging.example.com"}),
-					DomainValidationOptions: []*awsacm.DomainValidation{
-						&awsacm.DomainValidation{
-							ValidationStatus: aws.String("SUCCESS"),
-							DomainName:       aws.String("staging.example.com"),
-							ResourceRecord: &awsacm.ResourceRecord{
-								Name:  aws.String("_beeed67ae3f2d83f6cd3e19a8064947b.staging.example.com"),
-								Type:  aws.String("CNAME"),
-								Value: aws.String("_6ddc33cd42c3fe3d5eca4cb075013a0a.acm-validations.aws."),
-							},
-						},
-						&awsacm.DomainValidation{
-							ValidationStatus: aws.String("PENDING_VALIDATION"),
-							DomainName:       aws.String("www.example.com"),
-							ResourceRecord: &awsacm.ResourceRecord{
-								Name:  aws.String("_beeed67ae3f2d83f6cd3e19a8064947b.www.example.com"),
-								Type:  aws.String("CNAME"),
-								Value: aws.String("_6ddc33cd42c3fe3d5eca4cb075013a0a.acm-validations.aws."),
-							},
-						},
+	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
+
+	acm := SDKClient{client: mockACMAPI}
+	i := &awsacm.DescribeCertificateInput{
+		CertificateArn: aws.String(certificateARN),
+	}
+	o := &awsacm.DescribeCertificateOutput{
+		Certificate: &awsacm.CertificateDetail{
+			Type:                    aws.String(certificateType),
+			Status:                  aws.String(certificateStatus),
+			SubjectAlternativeNames: aws.StringSlice(certificateSANs),
+			DomainValidationOptions: []*awsacm.DomainValidation{
+				&awsacm.DomainValidation{
+					ValidationStatus: aws.String("SUCCESS"),
+					DomainName:       aws.String("staging.example.com"),
+					ResourceRecord: &awsacm.ResourceRecord{
+						Name:  aws.String("_beeed67ae3f2d83f6cd3e19a8064947b.staging.example.com"),
+						Type:  aws.String("CNAME"),
+						Value: aws.String("_6ddc33cd42c3fe3d5eca4cb075013a0a.acm-validations.aws."),
 					},
 				},
-			},
-			Certificate{
-				DomainName: "www.example.com",
-				ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
-			},
-			Certificate{
-				DomainName:              "www.example.com",
-				ARN:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
-				Type:                    "AMAZON_ISSUED",
-				Status:                  "PENDING_VALIDATION",
-				SubjectAlternativeNames: []string{"staging.example.com"},
-				Validations: []CertificateValidation{
-					CertificateValidation{
-						Status:     "SUCCESS",
-						DomainName: "staging.example.com",
-						ResourceRecord: CertificateResourceRecord{
-							Name:  "_beeed67ae3f2d83f6cd3e19a8064947b.staging.example.com",
-							Type:  "CNAME",
-							Value: "_6ddc33cd42c3fe3d5eca4cb075013a0a.acm-validations.aws.",
-						},
-					},
-					CertificateValidation{
-						Status:     "PENDING_VALIDATION",
-						DomainName: "www.example.com",
-						ResourceRecord: CertificateResourceRecord{
-							Name:  "_beeed67ae3f2d83f6cd3e19a8064947b.www.example.com",
-							Type:  "CNAME",
-							Value: "_6ddc33cd42c3fe3d5eca4cb075013a0a.acm-validations.aws.",
-						},
-					},
-				},
-			},
-		},
-		{
-			&awsacm.DescribeCertificateOutput{
-				Certificate: &awsacm.CertificateDetail{
-					Type:   aws.String("AMAZON_ISSUED"),
-					Status: aws.String("FAILED"),
-					DomainValidationOptions: []*awsacm.DomainValidation{
-						&awsacm.DomainValidation{
-							ValidationStatus: aws.String("FAILED"),
-							DomainName:       aws.String("staging.example.com"),
-						},
-					},
-				},
-			},
-			Certificate{
-				DomainName: "staging.example.com",
-				ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
-			},
-			Certificate{
-				DomainName:              "staging.example.com",
-				ARN:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
-				Type:                    "AMAZON_ISSUED",
-				Status:                  "FAILED",
-				SubjectAlternativeNames: []string{},
-				Validations: []CertificateValidation{
-					CertificateValidation{
-						Status:     "FAILED",
-						DomainName: "staging.example.com",
+				&awsacm.DomainValidation{
+					ValidationStatus: aws.String("PENDING_VALIDATION"),
+					DomainName:       aws.String(domainName),
+					ResourceRecord: &awsacm.ResourceRecord{
+						Name:  aws.String("_beeed67ae3f2d83f6cd3e19a8064947b.www.example.com"),
+						Type:  aws.String("CNAME"),
+						Value: aws.String("_6ddc33cd42c3fe3d5eca4cb075013a0a.acm-validations.aws."),
 					},
 				},
 			},
 		},
 	}
+	certificate := Certificate{
+		DomainName: domainName,
+		ARN:        certificateARN,
+	}
 
-	for _, test := range tests {
-		mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
+	mockACMAPI.EXPECT().DescribeCertificate(i).Return(o, nil)
 
-		acm := SDKClient{client: mockACMAPI}
-		i := &awsacm.DescribeCertificateInput{
-			CertificateArn: aws.String(test.InCertificate.ARN),
-		}
+	if err := acm.InflateCertificate(&certificate); err != nil {
+		t.Errorf("Expected no error, got %+v", err)
+	}
 
-		mockACMAPI.EXPECT().DescribeCertificate(i).Return(test.DescribeCertificateOutput, nil)
+	if certificate.DomainName != domainName {
+		t.Errorf("Expected DomainName %s, got %s", domainName, certificate.DomainName)
+	}
 
-		certificate, err := acm.InflateCertificate(test.InCertificate)
+	if certificate.ARN != certificateARN {
+		t.Errorf("Expected ARN %s, got %s", certificateARN, certificate.ARN)
+	}
 
-		if err != nil {
-			t.Errorf("Expected no error, got %+v", err)
-		}
+	if certificate.Type != certificateType {
+		t.Errorf("Expected type %s, got %s", certificateType, certificate.Type)
+	}
 
-		if certificate.DomainName != test.OutCertificate.DomainName {
-			t.Errorf("Expected DomainName %s, got %s", test.OutCertificate.DomainName, certificate.DomainName)
-		}
+	if certificate.Status != certificateStatus {
+		t.Errorf("Expected status %s, got %s", certificateStatus, certificate.Status)
+	}
 
-		if certificate.ARN != test.OutCertificate.ARN {
-			t.Errorf("Expected Arn %s, got %s", test.OutCertificate.ARN, certificate.ARN)
-		}
+	if !reflect.DeepEqual(certificateSANs, certificate.SubjectAlternativeNames) {
+		t.Errorf("Expected subject alternative names %v, got %v", certificateSANs, certificate.SubjectAlternativeNames)
+	}
 
-		if certificate.Type != test.OutCertificate.Type {
-			t.Errorf("Expected Type %s, got %s", test.OutCertificate.Type, certificate.Type)
-		}
-
-		if certificate.Status != test.OutCertificate.Status {
-			t.Errorf("Expected Status %s, got %s", test.OutCertificate.Status, certificate.Status)
-		}
-
-		if !reflect.DeepEqual(certificate.SubjectAlternativeNames, test.OutCertificate.SubjectAlternativeNames) {
-			t.Errorf("Expected SubjectAlternativeNames %+v, got %+v", test.OutCertificate.SubjectAlternativeNames, certificate.SubjectAlternativeNames)
-		}
-
-		if len(certificate.Validations) != len(test.OutCertificate.Validations) {
-			t.Errorf("Expected %d Validations, got %d", len(test.OutCertificate.Validations), len(certificate.Validations))
-		}
-
-		for i, v := range certificate.Validations {
-			if v.Status != test.OutCertificate.Validations[i].Status {
-				t.Errorf("Expected Validation Type %s, got %s", test.OutCertificate.Validations[i].Status, v.Status)
-			}
-
-			if v.DomainName != test.OutCertificate.Validations[i].DomainName {
-				t.Errorf("Expected Validation DomainName %s, got %s", test.OutCertificate.Validations[i].DomainName, v.DomainName)
-			}
-
-			if v.ResourceRecordString() != test.OutCertificate.Validations[i].ResourceRecordString() {
-				t.Errorf("Expected Validation ResourceRecord %s, got %s", test.OutCertificate.Validations[i].ResourceRecordString(), v.ResourceRecordString())
-			}
-		}
+	if len(certificate.Validations) != 2 {
+		t.Errorf("Expected 2 validations, got %d", len(certificate.Validations))
 	}
 }
 
 func TestInflateCertificateError(t *testing.T) {
-	inCertificate := Certificate{
+	certificate := Certificate{
 		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		DomainName: "www.example.com",
 	}
@@ -528,19 +449,15 @@ func TestInflateCertificateError(t *testing.T) {
 	mockACMAPI := sdk.NewMockACMAPI(mockCtrl)
 
 	acm := SDKClient{client: mockACMAPI}
-	i := &awsacm.DescribeCertificateInput{CertificateArn: aws.String(inCertificate.ARN)}
+	i := &awsacm.DescribeCertificateInput{CertificateArn: aws.String(certificate.ARN)}
 	o := &awsacm.DescribeCertificateOutput{}
 
 	mockACMAPI.EXPECT().DescribeCertificate(i).Return(o, errors.New(":-("))
 
-	outCertificate, err := acm.InflateCertificate(inCertificate)
+	err := acm.InflateCertificate(&certificate)
 
 	if err == nil {
 		t.Error("Expected error, got nil")
-	}
-
-	if !reflect.DeepEqual(outCertificate, inCertificate) {
-		t.Errorf("Certificate modified, expected %+v, got %+v", inCertificate, outCertificate)
 	}
 }
 

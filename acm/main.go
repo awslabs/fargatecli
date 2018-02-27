@@ -12,7 +12,7 @@ import (
 // Client represents a method for accessing AWS Certificate Manager.
 type Client interface {
 	DeleteCertificate(string) error
-	InflateCertificate(Certificate) (Certificate, error)
+	InflateCertificate(*Certificate) error
 	ListCertificates() (Certificates, error)
 	RequestCertificate(string, []string) (string, error)
 	ImportCertificate([]byte, []byte, []byte) (string, error)

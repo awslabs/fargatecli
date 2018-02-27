@@ -156,8 +156,8 @@ func (acm SDKClient) ImportCertificate(certificate, privateKey, certificateChain
 }
 
 // InflateCertificate uses a partially hydrated certificate to fetch the rest of its details and
-// return the full certificate.
-func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
+// set them on the certificate.
+func (acm SDKClient) InflateCertificate(c *Certificate) error {
 	resp, err := acm.client.DescribeCertificate(
 		&awsacm.DescribeCertificateInput{
 			CertificateArn: aws.String(c.ARN),
@@ -165,7 +165,7 @@ func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 	)
 
 	if err != nil {
-		return c, err
+		return err
 	}
 
 	c.Status = aws.StringValue(resp.Certificate.Status)
@@ -189,7 +189,7 @@ func (acm SDKClient) InflateCertificate(c Certificate) (Certificate, error) {
 		c.AddValidation(validation)
 	}
 
-	return c, nil
+	return nil
 }
 
 // ListCertificates returns all certificates associated with the caller's account.

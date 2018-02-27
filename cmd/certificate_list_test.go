@@ -14,17 +14,12 @@ import (
 func TestCertificateListOperation(t *testing.T) {
 	certificateList := acm.Certificates{
 		acm.Certificate{
-			ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
-			DomainName: "example.com",
+			ARN:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
+			DomainName:              "example.com",
+			Type:                    "AMAZON_ISSUED",
+			Status:                  "PENDING_VALIDATION",
+			SubjectAlternativeNames: []string{"staging1.example.com", "staging2.example.com"},
 		},
-	}
-
-	certificate := acm.Certificate{
-		ARN:                     "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
-		DomainName:              "example.com",
-		Type:                    "AMAZON_ISSUED",
-		Status:                  "PENDING_VALIDATION",
-		SubjectAlternativeNames: []string{"staging1.example.com", "staging2.example.com"},
 	}
 
 	mockCtrl := gomock.NewController(t)
@@ -34,7 +29,7 @@ func TestCertificateListOperation(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
-	mockClient.EXPECT().InflateCertificate(certificateList[0]).Return(certificate, nil)
+	mockClient.EXPECT().InflateCertificate(&certificateList[0]).Return(nil)
 
 	certificateListOperation{
 		acm:    mockClient,
@@ -108,10 +103,7 @@ func TestCertificateListOperationOrdered(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
-
-	for _, c := range certificateList {
-		mockClient.EXPECT().InflateCertificate(c).Return(c, nil)
-	}
+	mockClient.EXPECT().InflateCertificate(gomock.Any()).Return(nil).Times(len(certificateList))
 
 	certificateListOperation{
 		acm:    mockClient,
@@ -202,7 +194,7 @@ func TestCertificateListOperationDescribeError(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(certificateList, nil)
-	mockClient.EXPECT().InflateCertificate(certificate).Return(certificate, errors.New("boom"))
+	mockClient.EXPECT().InflateCertificate(&certificate).Return(errors.New("boom"))
 
 	certificateListOperation{
 		acm:    mockClient,

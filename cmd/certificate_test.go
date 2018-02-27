@@ -14,10 +14,6 @@ func TestFindCertificate(t *testing.T) {
 	certificate := acm.Certificate{
 		DomainName: "www.example.com",
 		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
-	}
-	inflatedCertificate := acm.Certificate{
-		DomainName: "www.example.com",
-		ARN:        "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012",
 		Status:     "ISSUED",
 		Type:       "AMAZON_ISSUED",
 	}
@@ -29,7 +25,7 @@ func TestFindCertificate(t *testing.T) {
 	mockOutput := &mock.Output{}
 
 	mockClient.EXPECT().ListCertificates().Return(acm.Certificates{certificate}, nil)
-	mockClient.EXPECT().InflateCertificate(certificate).Return(inflatedCertificate, nil)
+	mockClient.EXPECT().InflateCertificate(&certificate).Return(nil)
 
 	operation := certificateOperation{
 		acm:    mockClient,
@@ -41,8 +37,8 @@ func TestFindCertificate(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	if !reflect.DeepEqual(foundCertificate, inflatedCertificate) {
-		t.Errorf("Expected to find %+v, got: %v", inflatedCertificate, foundCertificate)
+	if !reflect.DeepEqual(foundCertificate, certificate) {
+		t.Errorf("Expected to find %+v, got: %v", certificate, foundCertificate)
 	}
 }
 
