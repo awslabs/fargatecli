@@ -16,6 +16,42 @@ type lbListOperation struct {
 	output Output
 }
 
+func (o lbListOperation) execute() {
+	loadBalancers, err := o.find()
+
+	if err != nil {
+		o.output.Fatal(err, "Could not list load balancers")
+		return
+	}
+
+	if len(loadBalancers) == 0 {
+		o.output.Info("No load balancers found")
+		return
+	}
+
+	rows := [][]string{
+		[]string{"NAME", "TYPE", "STATUS", "DNS NAME", "PORTS"},
+	}
+
+	sort.Slice(loadBalancers, func(i, j int) bool {
+		return loadBalancers[i].Name < loadBalancers[j].Name
+	})
+
+	for _, loadBalancer := range loadBalancers {
+		rows = append(rows,
+			[]string{
+				loadBalancer.Name,
+				Titleize(loadBalancer.Type),
+				Titleize(loadBalancer.Status),
+				loadBalancer.DNSName,
+				fmt.Sprintf("%s", loadBalancer.Listeners),
+			},
+		)
+	}
+
+	o.output.Table("", rows)
+}
+
 func (o lbListOperation) find() (elbv2.LoadBalancers, error) {
 	var wg sync.WaitGroup
 
@@ -60,42 +96,6 @@ func (o lbListOperation) find() (elbv2.LoadBalancers, error) {
 	case <-done:
 		return loadBalancers, nil
 	}
-}
-
-func (o lbListOperation) execute() {
-	loadBalancers, err := o.find()
-
-	if err != nil {
-		o.output.Fatal(err, "Could not list load balancers")
-		return
-	}
-
-	if len(loadBalancers) == 0 {
-		o.output.Info("No load balancers found")
-		return
-	}
-
-	sort.Slice(loadBalancers, func(i, j int) bool {
-		return loadBalancers[i].Name < loadBalancers[j].Name
-	})
-
-	rows := [][]string{
-		[]string{"NAME", "TYPE", "STATUS", "DNS NAME", "PORTS"},
-	}
-
-	for _, loadBalancer := range loadBalancers {
-		rows = append(rows,
-			[]string{
-				loadBalancer.Name,
-				Titleize(loadBalancer.Type),
-				Titleize(loadBalancer.Status),
-				loadBalancer.DNSName,
-				fmt.Sprintf("%s", loadBalancer.Listeners),
-			},
-		)
-	}
-
-	o.output.Table("", rows)
 }
 
 var lbListCmd = &cobra.Command{

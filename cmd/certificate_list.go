@@ -29,7 +29,26 @@ func (o certificateListOperation) execute() {
 		return
 	}
 
-	o.display(certificates)
+	rows := [][]string{
+		[]string{"CERTIFICATE", "TYPE", "STATUS", "SUBJECT ALTERNATIVE NAMES"},
+	}
+
+	sort.Slice(certificates, func(i, j int) bool {
+		return certificates[i].DomainName < certificates[j].DomainName
+	})
+
+	for _, certificate := range certificates {
+		rows = append(rows,
+			[]string{
+				certificate.DomainName,
+				Titleize(certificate.Type),
+				Titleize(certificate.Status),
+				strings.Join(certificate.SubjectAlternativeNames, ", "),
+			},
+		)
+	}
+
+	o.output.Table("", rows)
 }
 
 func (o certificateListOperation) find() (acm.Certificates, error) {
@@ -75,26 +94,6 @@ func (o certificateListOperation) find() (acm.Certificates, error) {
 }
 
 func (o certificateListOperation) display(certificates []acm.Certificate) {
-	rows := [][]string{
-		[]string{"CERTIFICATE", "TYPE", "STATUS", "SUBJECT ALTERNATIVE NAMES"},
-	}
-
-	sort.Slice(certificates, func(i, j int) bool {
-		return certificates[i].DomainName < certificates[j].DomainName
-	})
-
-	for _, certificate := range certificates {
-		rows = append(rows,
-			[]string{
-				certificate.DomainName,
-				Titleize(certificate.Type),
-				Titleize(certificate.Status),
-				strings.Join(certificate.SubjectAlternativeNames, ", "),
-			},
-		)
-	}
-
-	o.output.Table("", rows)
 }
 
 var certificateListCmd = &cobra.Command{
