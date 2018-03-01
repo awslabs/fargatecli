@@ -37,16 +37,18 @@ func (elbv2 SDKClient) CreateTargetGroup(i CreateTargetGroupParameters) (string,
 	return aws.StringValue(resp.TargetGroups[0].TargetGroupArn), nil
 }
 
-func (elbv2 SDKClient) DeleteTargetGroup(targetGroupName string) {
+func (elbv2 SDKClient) DeleteTargetGroup(targetGroupName string) error {
 	console.Debug("Deleting ELB target group")
 
 	targetGroup := elbv2.describeTargetGroupByName(targetGroupName)
 
-	elbv2.client.DeleteTargetGroup(
+	_, err := elbv2.client.DeleteTargetGroup(
 		&awselbv2.DeleteTargetGroupInput{
 			TargetGroupArn: targetGroup.TargetGroupArn,
 		},
 	)
+
+	return err
 }
 
 func (elbv2 SDKClient) DeleteTargetGroupByArn(targetGroupARN string) {

@@ -72,6 +72,42 @@ func (mr *MockClientMockRecorder) CreateTargetGroup(arg0 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTargetGroup", reflect.TypeOf((*MockClient)(nil).CreateTargetGroup), arg0)
 }
 
+// DeleteListener mocks base method
+func (m *MockClient) DeleteListener(arg0 string) error {
+	ret := m.ctrl.Call(m, "DeleteListener", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteListener indicates an expected call of DeleteListener
+func (mr *MockClientMockRecorder) DeleteListener(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteListener", reflect.TypeOf((*MockClient)(nil).DeleteListener), arg0)
+}
+
+// DeleteLoadBalancer mocks base method
+func (m *MockClient) DeleteLoadBalancer(arg0 string) error {
+	ret := m.ctrl.Call(m, "DeleteLoadBalancer", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteLoadBalancer indicates an expected call of DeleteLoadBalancer
+func (mr *MockClientMockRecorder) DeleteLoadBalancer(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLoadBalancer", reflect.TypeOf((*MockClient)(nil).DeleteLoadBalancer), arg0)
+}
+
+// DeleteTargetGroup mocks base method
+func (m *MockClient) DeleteTargetGroup(arg0 string) error {
+	ret := m.ctrl.Call(m, "DeleteTargetGroup", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTargetGroup indicates an expected call of DeleteTargetGroup
+func (mr *MockClientMockRecorder) DeleteTargetGroup(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTargetGroup", reflect.TypeOf((*MockClient)(nil).DeleteTargetGroup), arg0)
+}
+
 // DescribeListeners mocks base method
 func (m *MockClient) DescribeListeners(arg0 string) (elbv2.Listeners, error) {
 	ret := m.ctrl.Call(m, "DescribeListeners", arg0)
@@ -109,4 +145,16 @@ func (m *MockClient) DescribeLoadBalancersByName(arg0 []string) (elbv2.LoadBalan
 // DescribeLoadBalancersByName indicates an expected call of DescribeLoadBalancersByName
 func (mr *MockClientMockRecorder) DescribeLoadBalancersByName(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeLoadBalancersByName", reflect.TypeOf((*MockClient)(nil).DescribeLoadBalancersByName), arg0)
+}
+
+// InflateListeners mocks base method
+func (m *MockClient) InflateListeners(arg0 *elbv2.LoadBalancer) error {
+	ret := m.ctrl.Call(m, "InflateListeners", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// InflateListeners indicates an expected call of InflateListeners
+func (mr *MockClientMockRecorder) InflateListeners(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InflateListeners", reflect.TypeOf((*MockClient)(nil).InflateListeners), arg0)
 }

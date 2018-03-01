@@ -24,6 +24,13 @@ func TestLBListOperation(t *testing.T) {
 		Name:    "test",
 		Type:    "application",
 		Status:  "active",
+		Listeners: elbv2.Listeners{
+			elbv2.Listener{
+				ARN:      "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2",
+				Port:     80,
+				Protocol: "HTTP",
+			},
+		},
 	}
 	loadBalancer2 := elbv2.LoadBalancer{
 		ARN:     "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/lb/93fa3d386bec918a",
@@ -31,24 +38,18 @@ func TestLBListOperation(t *testing.T) {
 		Name:    "test2",
 		Type:    "application",
 		Status:  "active",
-	}
-	listener1 := elbv2.Listener{
-		ARN:      "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2",
-		Port:     80,
-		Protocol: "HTTP",
-	}
-	listener2 := elbv2.Listener{
-		ARN:      "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2",
-		Port:     8080,
-		Protocol: "HTTP",
+		Listeners: elbv2.Listeners{
+			elbv2.Listener{
+				ARN:      "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2",
+				Port:     8080,
+				Protocol: "HTTP",
+			},
+		},
 	}
 	loadBalancers := elbv2.LoadBalancers{loadBalancer1, loadBalancer2}
-	listeners1 := elbv2.Listeners{listener1}
-	listeners2 := elbv2.Listeners{listener2}
 
 	mockClient.EXPECT().DescribeLoadBalancers().Return(loadBalancers, nil)
-	mockClient.EXPECT().DescribeListeners(loadBalancer1.ARN).Return(listeners1, nil)
-	mockClient.EXPECT().DescribeListeners(loadBalancer2.ARN).Return(listeners2, nil)
+	mockClient.EXPECT().InflateListeners(gomock.Any()).Return(nil).Times(2)
 
 	lbListOperation{
 		elbv2:  mockClient,
@@ -147,7 +148,7 @@ func TestLBListOperationListenerDescribeError(t *testing.T) {
 	}
 
 	mockClient.EXPECT().DescribeLoadBalancers().Return(loadBalancers, nil)
-	mockClient.EXPECT().DescribeListeners("lbARN").Return(elbv2.Listeners{}, errors.New("boom"))
+	mockClient.EXPECT().InflateListeners(gomock.Any()).Return(errors.New("boom"))
 
 	lbListOperation{
 		elbv2:  mockClient,

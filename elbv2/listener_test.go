@@ -153,3 +153,22 @@ func TestCreateListeners(t *testing.T) {
 		t.Errorf("expected ARN %s, got %s", lbARN, arn)
 	}
 }
+
+func TestDeleteListener(t *testing.T) {
+	listenerARN := "arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2"
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockELBV2API := sdk.NewMockELBV2API(mockCtrl)
+	elbv2 := SDKClient{client: mockELBV2API}
+	i := &awselbv2.DeleteListenerInput{
+		ListenerArn: aws.String(listenerARN),
+	}
+
+	mockELBV2API.EXPECT().DeleteListener(i).Return(nil, nil)
+
+	if err := elbv2.DeleteListener(listenerARN); err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}

@@ -94,17 +94,15 @@ func (elbv2 SDKClient) DescribeLoadBalancerByARN(lbARN string) LoadBalancer {
 	return loadBalancers[0]
 }
 
-func (elbv2 SDKClient) DeleteLoadBalancer(lbName string) {
-	loadBalancer := elbv2.DescribeLoadBalancer(lbName)
+// DeleteLoadBalancer deletes the load balancer identified by the given ARN.
+func (elbv2 SDKClient) DeleteLoadBalancer(lbARN string) error {
 	_, err := elbv2.client.DeleteLoadBalancer(
 		&awselbv2.DeleteLoadBalancerInput{
-			LoadBalancerArn: aws.String(loadBalancer.ARN),
+			LoadBalancerArn: aws.String(lbARN),
 		},
 	)
 
-	if err != nil {
-		console.ErrorExit(err, "Could not destroy ELB load balancer")
-	}
+	return err
 }
 
 func (elbv2 SDKClient) describeLoadBalancers(i *awselbv2.DescribeLoadBalancersInput) (LoadBalancers, error) {

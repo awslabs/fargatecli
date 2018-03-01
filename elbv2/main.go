@@ -13,13 +13,17 @@ import (
 // Client represents a method for accessing Elastic Load Balancing (v2).
 type Client interface {
 	CreateListener(CreateListenerParameters) (string, error)
+	DeleteListener(string) error
 	DescribeListeners(string) (Listeners, error)
+	InflateListeners(*LoadBalancer) error
 
+	CreateLoadBalancer(CreateLoadBalancerParameters) (string, error)
+	DeleteLoadBalancer(string) error
 	DescribeLoadBalancers() (LoadBalancers, error)
 	DescribeLoadBalancersByName([]string) (LoadBalancers, error)
-	CreateLoadBalancer(CreateLoadBalancerParameters) (string, error)
 
 	CreateTargetGroup(CreateTargetGroupParameters) (string, error)
+	DeleteTargetGroup(string) error
 }
 
 // SDKClient implements access to Elastic Load Balancing (v2) via the AWS SDK.

@@ -105,6 +105,17 @@ func (elbv2 SDKClient) CreateListener(p CreateListenerParameters) (string, error
 	return aws.StringValue(resp.Listeners[0].ListenerArn), nil
 }
 
+// DeleteListener deletes the listener identified by the given ARN.
+func (elbv2 SDKClient) DeleteListener(listenerARN string) error {
+	_, err := elbv2.client.DeleteListener(
+		&awselbv2.DeleteListenerInput{
+			ListenerArn: aws.String(listenerARN),
+		},
+	)
+
+	return err
+}
+
 // DescribeListeners returns all of the listeners for a given load balancer ARN.
 func (elbv2 SDKClient) DescribeListeners(lbARN string) (Listeners, error) {
 	var listeners []Listener
@@ -135,6 +146,18 @@ func (elbv2 SDKClient) DescribeListeners(lbARN string) (Listeners, error) {
 	)
 
 	return listeners, err
+}
+
+// InflateListeners accepts a load balancer, fetches its listeners, and sets them on the load balancer.
+func (elbv2 SDKClient) InflateListeners(loadBalancer *LoadBalancer) error {
+	listeners, err := elbv2.DescribeListeners(loadBalancer.ARN)
+
+	if err != nil {
+		return err
+	}
+
+	loadBalancer.Listeners = listeners
+	return nil
 }
 
 func (elbv2 SDKClient) ModifyLoadBalancerDefaultAction(lbARN, targetGroupARN string) {

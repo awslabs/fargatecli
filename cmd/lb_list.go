@@ -73,14 +73,10 @@ func (o lbListOperation) find() (elbv2.LoadBalancers, error) {
 			defer wg.Done()
 
 			if err := limiter.Wait(context.Background()); err == nil {
-				o.output.Debug("Describing Listeners [API=elbv2 Action=DescribeListeners LoadBalancerArn=%s]", loadBalancers[index].ARN)
-				listeners, err := o.elbv2.DescribeListeners(loadBalancers[index].ARN)
-
-				if err != nil {
+				o.output.Debug("Describing Listeners [API=elbv2 Action=DescribeListeners ARN=%s]", loadBalancers[index].ARN)
+				if err := o.elbv2.InflateListeners(&loadBalancers[index]); err != nil {
 					errs <- err
 				}
-
-				loadBalancers[index].Listeners = listeners
 			}
 		}(i)
 	}

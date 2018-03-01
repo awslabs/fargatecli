@@ -155,8 +155,8 @@ func (acm SDKClient) ImportCertificate(certificate, privateKey, certificateChain
 	return aws.StringValue(resp.CertificateArn), err
 }
 
-// InflateCertificate uses a partially hydrated certificate to fetch the rest of its details and
-// set them on the certificate.
+// InflateCertificate accepts a hydrated certificate to fetch the rest of its details and sets them on
+// the certificate.
 func (acm SDKClient) InflateCertificate(c *Certificate) error {
 	resp, err := acm.client.DescribeCertificate(
 		&awsacm.DescribeCertificateInput{
