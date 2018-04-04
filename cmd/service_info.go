@@ -32,10 +32,10 @@ active deployments, and environment variables.
 Deployments show active versions of your service that are running. Multiple
 deployments are shown if a service is transitioning due to a deployment or
 update to configuration such a CPU, memory, or environment variables.`,
-	Args: cobra.ExactArgs(1),
+	PreRun: setServiceName,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceInfoOperation{
-			ServiceName: args[0],
+			ServiceName: serviceName,
 		}
 
 		getServiceInfo(operation)

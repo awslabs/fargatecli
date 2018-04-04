@@ -18,10 +18,10 @@ var serviceRestartCmd = &cobra.Command{
 Creates a new set of tasks for the service and stops the previous tasks. This
 is useful if your service needs to reload data cached from an external source,
 for example.`,
-	Args: cobra.ExactArgs(1),
+	PreRun: setServiceName,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceRestartOperation{
-			ServiceName: args[0],
+			ServiceName: serviceName,
 		}
 
 		restartService(operation)

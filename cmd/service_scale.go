@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 
@@ -45,6 +46,28 @@ func (o *ScaleServiceOperation) SetScale(scaleExpression string) {
 	}
 }
 
+var scaleExpressionArg string
+
+func setScaleServiceNameAndExpression(cmd *cobra.Command, args []string) {
+	//supported args:
+	//fargate service scale serviceName 10
+	//export FARGATE_SERVICE=my-service && fargate service scale 10
+
+	svcName := os.Getenv(serviceEnvironmentVariable)
+	if len(args) == 1 {
+		if svcName == "" {
+			cmd.Usage()
+			os.Exit(-1)
+		} else {
+			serviceName = svcName
+			scaleExpressionArg = args[0]
+		}
+	} else if len(args) == 2 {
+		serviceName = svcName
+		scaleExpressionArg = args[1]
+	}
+}
+
 var serviceScaleCmd = &cobra.Command{
 	Use:   "scale <service-name> <scale-expression>",
 	Short: "Changes the number of tasks running for the service",
@@ -53,13 +76,14 @@ var serviceScaleCmd = &cobra.Command{
 Changes the number of desired tasks to be run in a service by the given scale
 expression. A scale expression can either be an absolute number or a delta
 specified with a sign such as +5 or -2.`,
-	Args: cobra.ExactArgs(2),
+	Args:   cobra.MinimumNArgs(1),
+	PreRun: setScaleServiceNameAndExpression,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ScaleServiceOperation{
-			ServiceName: args[0],
+			ServiceName: serviceName,
 		}
 
-		operation.SetScale(args[1])
+		operation.SetScale(scaleExpressionArg)
 
 		scaleService(operation)
 	},

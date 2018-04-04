@@ -42,15 +42,13 @@ timestamp:
 You can filter logs for specific term by passing a filter expression via the
 --filter flag. Pass a single term to search for that term, pass multiple terms
 to search for log messages that include all terms.`,
-	Args: cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, args []string) {
-	},
+	PreRun: setServiceName,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &GetLogsOperation{
-			LogGroupName: fmt.Sprintf(serviceLogGroupFormat, args[0]),
+			LogGroupName: fmt.Sprintf(serviceLogGroupFormat, serviceName),
 			Filter:       flagServiceLogsFilter,
 			Follow:       flagServiceLogsFollow,
-			Namespace:    args[0],
+			Namespace:    serviceName,
 		}
 
 		operation.AddTasks(flagServiceLogsTasks)

@@ -1,10 +1,15 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
-const serviceLogGroupFormat = "/fargate/service/%s"
+const (
+	serviceLogGroupFormat      = "/fargate/service/%s"
+	serviceEnvironmentVariable = "FARGATE_SERVICE"
+)
 
 var serviceCmd = &cobra.Command{
 	Use:   "service",
@@ -20,4 +25,21 @@ distribute traffic amongst the tasks in your service.`,
 
 func init() {
 	rootCmd.AddCommand(serviceCmd)
+}
+
+var serviceName string
+
+//look for service first from cli args then envvars
+func setServiceName(cmd *cobra.Command, args []string) {
+	result := ""
+	if len(args) > 0 {
+		result = args[0]
+	} else {
+		result = os.Getenv(serviceEnvironmentVariable)
+	}
+	if result == "" {
+		cmd.Usage()
+		os.Exit(-1)
+	}
+	serviceName = result
 }
