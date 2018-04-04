@@ -52,6 +52,8 @@ the AWS SDK for Go documentation.
 | --no-color | false | Disable color output |
 | --verbose | false | Verbose output |
 
+*Note that as an alternative to specifying `--cluster xyz`, the cluster can be specified by using an environment variable named, `FARGATE_CLUSTER`
+
 #### Tasks
 
 Tasks are one-time executions of your container. Instances of your task are run
