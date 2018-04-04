@@ -27,10 +27,10 @@ container image from the current working directory and push it to Amazon ECR in
 a repository named for the task group. If the current working directory is a
 git repository, the container image will be tagged with the short ref of the
 HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.`,
-	Args: cobra.ExactArgs(1),
+	PreRun: setServiceName,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceDeployOperation{
-			ServiceName: args[0],
+			ServiceName: serviceName,
 			Image:       flagServiceDeployImage,
 		}
 

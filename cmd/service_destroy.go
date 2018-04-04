@@ -19,10 +19,10 @@ var serviceDestroyCmd = &cobra.Command{
 	Long: `Destroy service
 
 In order to destroy a service, it must first be scaled to 0 running tasks.`,
-	Args: cobra.ExactArgs(1),
+	PreRun: setServiceName,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceDestroyOperation{
-			ServiceName: args[0],
+			ServiceName: serviceName,
 		}
 
 		destroyService(operation)

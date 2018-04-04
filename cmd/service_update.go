@@ -64,10 +64,10 @@ configurations:
 | 4096            | 8192 through 30720 in 1GiB increments |
 
 At least one of --cpu or --memory must be specified.`,
-	Args: cobra.ExactArgs(1),
+	PreRun: setServiceName,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceUpdateOperation{
-			ServiceName: args[0],
+			ServiceName: serviceName,
 			Cpu:         flagServiceUpdateCpu,
 			Memory:      flagServiceUpdateMemory,
 		}
