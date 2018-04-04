@@ -142,17 +142,22 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 		}
 
 		if clusterName == "" {
-			clusterName = defaultClusterName
-			ecs := ECS.New(sess, clusterName)
 
-			output.Debug("Creating default cluster [API=ecs Action=CreateCluster]")
+			clusterName = os.Getenv("FARGATE_CLUSTER")
+			if clusterName == "" {
 
-			arn, err := ecs.CreateCluster()
+				clusterName = defaultClusterName
+				ecs := ECS.New(sess, clusterName)
 
-			if err == nil {
-				output.Debug("Created default cluster [ARN=%s]", arn)
-			} else {
-				output.Fatal(err, "Could not create default cluster")
+				output.Debug("Creating default cluster [API=ecs Action=CreateCluster]")
+
+				arn, err := ecs.CreateCluster()
+
+				if err == nil {
+					output.Debug("Created default cluster [ARN=%s]", arn)
+				} else {
+					output.Fatal(err, "Could not create default cluster")
+				}
 			}
 		}
 	},
