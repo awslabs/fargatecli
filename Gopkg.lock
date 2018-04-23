@@ -140,9 +140,15 @@
   packages = ["rate"]
   revision = "6dc17368e09b0e8634d71cac8168d853e869a0c7"
 
+[[projects]]
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8677694b9e080fee43d6d400a5650f7a2d4d80186bbe79740b6d8568f6ea116c"
+  inputs-digest = "7f3f09d64057b7145a79157b76f96a3765024814888b6ef4ff329fd660358985"
   solver-name = "gps-cdcl"
   solver-version = 1

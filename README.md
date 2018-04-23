@@ -320,6 +320,31 @@ a repository named for the task group. If the current working directory is a
 git repository, the container image will be tagged with the short ref of the
 HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.
 
+
+```console
+fargate service deploy <service-name> --file docker-compose.yml
+```
+
+Deploy image and environment variables defined in a [docker compose file](https://docs.docker.com/compose/overview/) to service
+
+Deploy a docker [image](https://docs.docker.com/compose/compose-file/#image) and [environment variables](https://docs.docker.com/compose/environment-variables/) defined in a docker compose file together as a single unit.  Note that while the docker-compose yaml configuration supports numerous options, only the image and environment variables are deployed to fargate. If the docker compose file defines more than one container, you can use the [label](https://docs.docker.com/compose/compose-file/#labels) `aws.ecs.fargate.deploy: 1` to indicate which container you would like to deploy. For example:
+
+```yaml
+version: '3'
+services:
+  web:
+    build: .
+    image: 1234567890.dkr.ecr.us-east-1.amazonaws.com/my-service:0.1.0
+    environment:
+      FOO: bar
+    ports:
+    - "80:5000"
+    labels:
+      aws.ecs.fargate.deploy: 1
+  redis:
+    image: redis
+```
+
 ##### fargate service info
 
 ```console
