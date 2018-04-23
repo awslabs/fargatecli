@@ -52,3 +52,7 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/time"
+
+[[constraint]]
+  name = "gopkg.in/yaml.v2"
+  version = "2.2.1"
