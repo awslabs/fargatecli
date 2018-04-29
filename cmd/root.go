@@ -45,7 +45,7 @@ CPU (CPU Units)    Memory (MiB)
 4096               8192 through 30720 in 1GiB increments
 `)
 
-var validRegions = []string{"us-east-1"}
+var validRegions = []string{"us-east-1", "us-east-2", "us-west-2", "eu-west-1"}
 
 var (
 	clusterName string
@@ -105,11 +105,7 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			}
 		}
 
-		for _, validRegion := range validRegions {
-			if region == validRegion {
-				break
-			}
-
+		if !validateRegion(region) {
 			console.IssueExit("Invalid region: %s [valid regions: %s]", region, strings.Join(validRegions, ", "))
 		}
 
@@ -240,4 +236,13 @@ func validateCpuAndMemory(inputCpuUnits, inputMebibytes string) error {
 
 func validateMebibytes(mebibytes, min, max int64) bool {
 	return mebibytes >= min && mebibytes <= max && mebibytes%mebibytesInGibibyte == 0
+}
+
+func validateRegion(region string) bool {
+	for _, validRegion := range validRegions {
+		if validRegion == region {
+			return true
+		}
+	}
+	return false
 }
