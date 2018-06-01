@@ -11,14 +11,15 @@ import (
 )
 
 type CreateServiceInput struct {
-	Cluster           string
-	DesiredCount      int64
-	Name              string
-	Port              int64
-	SecurityGroupIds  []string
-	SubnetIds         []string
-	TargetGroupArn    string
-	TaskDefinitionArn string
+	Cluster               string
+	DesiredCount          int64
+	Name                  string
+	Port                  int64
+	SecurityGroupIds      []string
+	SubnetIds             []string
+	TargetGroupArn        string
+	TaskDefinitionArn     string
+	AssignPublicIpEnabled bool
 }
 
 type Service struct {
@@ -67,6 +68,11 @@ func (s *Service) AddDeployment(d Deployment) {
 func (ecs *ECS) CreateService(input *CreateServiceInput) {
 	console.Debug("Creating ECS service")
 
+	assignPublicIP := awsecs.AssignPublicIpEnabled
+	if !input.AssignPublicIpEnabled {
+		assignPublicIP = awsecs.AssignPublicIpDisabled
+	}
+
 	createServiceInput := &awsecs.CreateServiceInput{
 		Cluster:        aws.String(input.Cluster),
 		DesiredCount:   aws.Int64(input.DesiredCount),
@@ -75,7 +81,7 @@ func (ecs *ECS) CreateService(input *CreateServiceInput) {
 		LaunchType:     aws.String(awsecs.CompatibilityFargate),
 		NetworkConfiguration: &awsecs.NetworkConfiguration{
 			AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
-				AssignPublicIp: aws.String(awsecs.AssignPublicIpEnabled),
+				AssignPublicIp: aws.String(assignPublicIP),
 				Subnets:        aws.StringSlice(input.SubnetIds),
 				SecurityGroups: aws.StringSlice(input.SecurityGroupIds),
 			},

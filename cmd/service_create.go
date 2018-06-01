@@ -20,19 +20,20 @@ import (
 const typeService = "service"
 
 type ServiceCreateOperation struct {
-	Cpu              string
-	EnvVars          []ECS.EnvVar
-	Image            string
-	LoadBalancerArn  string
-	LoadBalancerName string
-	Memory           string
-	Num              int64
-	Port             Port
-	Rules            []ELBV2.Rule
-	SecurityGroupIds []string
-	ServiceName      string
-	SubnetIds        []string
-	TaskRole         string
+	Cpu                   string
+	EnvVars               []ECS.EnvVar
+	Image                 string
+	LoadBalancerArn       string
+	LoadBalancerName      string
+	Memory                string
+	Num                   int64
+	Port                  Port
+	Rules                 []ELBV2.Rule
+	SecurityGroupIds      []string
+	ServiceName           string
+	SubnetIds             []string
+	TaskRole              string
+	AssignPublicIPEnabled bool
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -147,6 +148,7 @@ var (
 	flagServiceCreateSecurityGroupIds []string
 	flagServiceCreateSubnetIds        []string
 	flagServiceCreateTaskRole         string
+	flagServiceAssignPublicIP         bool
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -215,18 +217,23 @@ specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
 
 A task role can be optionally specified via the --task-role flag by providing
 eith a full IAM role ARN or the name of an IAM role. The tasks run by the
-service will be able to assume this role.`,
+service will be able to assume this role.
+
+Services can be configured to have only private ip address via the
+--assign-public-ip=false flag.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+
 		operation := &ServiceCreateOperation{
-			Cpu:              flagServiceCreateCpu,
-			Image:            flagServiceCreateImage,
-			Memory:           flagServiceCreateMemory,
-			Num:              flagServiceCreateNum,
-			SecurityGroupIds: flagServiceCreateSecurityGroupIds,
-			ServiceName:      args[0],
-			SubnetIds:        flagServiceCreateSubnetIds,
-			TaskRole:         flagServiceCreateTaskRole,
+			Cpu:                   flagServiceCreateCpu,
+			Image:                 flagServiceCreateImage,
+			Memory:                flagServiceCreateMemory,
+			Num:                   flagServiceCreateNum,
+			SecurityGroupIds:      flagServiceCreateSecurityGroupIds,
+			ServiceName:           args[0],
+			SubnetIds:             flagServiceCreateSubnetIds,
+			TaskRole:              flagServiceCreateTaskRole,
+			AssignPublicIPEnabled: flagServiceAssignPublicIP,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -262,6 +269,7 @@ func init() {
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the service (can be specified multiple times)")
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the service (can be specified multiple times)")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the service's tasks can assume")
+	serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
@@ -350,14 +358,15 @@ func createService(operation *ServiceCreateOperation) {
 
 	ecs.CreateService(
 		&ECS.CreateServiceInput{
-			Cluster:           clusterName,
-			DesiredCount:      operation.Num,
-			Name:              operation.ServiceName,
-			Port:              operation.Port.Number,
-			SecurityGroupIds:  operation.SecurityGroupIds,
-			SubnetIds:         operation.SubnetIds,
-			TargetGroupArn:    targetGroupArn,
-			TaskDefinitionArn: taskDefinitionArn,
+			Cluster:               clusterName,
+			DesiredCount:          operation.Num,
+			Name:                  operation.ServiceName,
+			Port:                  operation.Port.Number,
+			SecurityGroupIds:      operation.SecurityGroupIds,
+			SubnetIds:             operation.SubnetIds,
+			TargetGroupArn:        targetGroupArn,
+			TaskDefinitionArn:     taskDefinitionArn,
+			AssignPublicIpEnabled: operation.AssignPublicIPEnabled,
 		},
 	)
 
