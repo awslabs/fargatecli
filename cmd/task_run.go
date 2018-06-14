@@ -24,6 +24,7 @@ type TaskRunOperation struct {
 	SubnetIds        []string
 	TaskName         string
 	TaskRole         string
+	TaskCommand      string
 }
 
 func (o *TaskRunOperation) Validate() {
@@ -51,6 +52,7 @@ var (
 	flagTaskRunSecurityGroupIds []string
 	flagTaskRunSubnetIds        []string
 	flagTaskRunTaskRole         string
+	flagTaskRunTaskCommand      []string
 )
 
 var taskRunCmd = &cobra.Command{

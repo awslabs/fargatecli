@@ -25,6 +25,7 @@ type CreateTaskDefinitionInput struct {
 	LogRegion        string
 	TaskRole         string
 	Type             string
+	TaskCommand      []string
 }
 
 type EnvVar struct {
@@ -50,6 +51,7 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 		Image:            aws.String(input.Image),
 		LogConfiguration: logConfiguration,
 		Name:             aws.String(input.Name),
+		Command:          aws.StringSlice(input.TaskCommand),
 	}
 
 	if input.Port != 0 {
