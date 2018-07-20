@@ -45,7 +45,16 @@ CPU (CPU Units)    Memory (MiB)
 4096               8192 through 30720 in 1GiB increments
 `)
 
-var validRegions = []string{"us-east-1"}
+var validRegions = []string{
+	"us-east-1", 
+	"us-east-2", 
+	"us-west-2", 
+	"eu-west-1", 
+	"eu-central-1",
+	"ap-northeast-1",
+	"ap-southeast-1",
+	"ap-southeast-2"
+}
 
 var (
 	clusterName string
@@ -105,11 +114,14 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			}
 		}
 
+		isValidRegion := false
 		for _, validRegion := range validRegions {
 			if region == validRegion {
+				isValidRegion = true
 				break
 			}
-
+		}
+		if !isValidRegion {
 			console.IssueExit("Invalid region: %s [valid regions: %s]", region, strings.Join(validRegions, ", "))
 		}
 
