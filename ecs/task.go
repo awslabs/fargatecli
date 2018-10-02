@@ -131,6 +131,42 @@ OUTER:
 	return taskGroups
 }
 
+func (ecs *ECS) WaitTaskGroups() []*TaskGroup {
+	var taskGroups []*TaskGroup
+
+	taskGroupStartedByRegexp := regexp.MustCompile(taskGroupStartedByPattern)
+
+	input := &awsecs.ListTasksInput{
+		Cluster: aws.String(ecs.ClusterName),
+	}
+
+OUTER:
+	for _, task := range ecs.waitTasks(input) {
+		matches := taskGroupStartedByRegexp.FindStringSubmatch(task.StartedBy)
+
+		if len(matches) == 2 {
+			taskGroupName := matches[1]
+
+			for _, taskGroup := range taskGroups {
+				if taskGroup.TaskGroupName == taskGroupName {
+					taskGroup.Instances++
+					continue OUTER
+				}
+			}
+
+			taskGroups = append(
+				taskGroups,
+				&TaskGroup{
+					TaskGroupName: taskGroupName,
+					Instances:     1,
+				},
+			)
+		}
+	}
+
+	return taskGroups
+}
+
 func (ecs *ECS) StopTasks(taskIds []string) {
 	for _, taskId := range taskIds {
 		ecs.StopTask(taskId)
@@ -151,6 +187,36 @@ func (ecs *ECS) StopTask(taskId string) {
 }
 
 func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
+	var tasks []Task
+	var taskArnBatches [][]string
+
+	err := ecs.svc.ListTasksPages(
+		input,
+		func(resp *awsecs.ListTasksOutput, lastPage bool) bool {
+			if len(resp.TaskArns) > 0 {
+				taskArnBatches = append(taskArnBatches, aws.StringValueSlice(resp.TaskArns))
+			}
+
+			return true
+		},
+	)
+
+	if err != nil {
+		console.ErrorExit(err, "Could not list ECS tasks")
+	}
+
+	if len(taskArnBatches) > 0 {
+		for _, taskArnBatch := range taskArnBatches {
+			for _, task := range ecs.DescribeTasks(taskArnBatch) {
+				tasks = append(tasks, task)
+			}
+		}
+	}
+
+	return tasks
+}
+
+func (ecs *ECS) waitTasks(input *awsecs.ListTasksInput) []Task {
 	var tasks []Task
 	var taskArnBatches [][]string
 

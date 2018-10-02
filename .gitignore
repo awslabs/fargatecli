@@ -3,3 +3,4 @@ bin
 fargate
 dist
 vendor
+*~

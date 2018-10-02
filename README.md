@@ -59,6 +59,7 @@ until you manually stop them either through AWS APIs, the AWS Management
 Console, or `fargate task stop`, or until they are interrupted for any reason.
 
 - [list](#fargate-task-list)
+- [wait](#fargate-task-wait)
 - [run](#fargate-task-run)
 - [info](#fargate-task-info)
 - [ps](#fargate-task-ps)
