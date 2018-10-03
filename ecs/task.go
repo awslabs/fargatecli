@@ -2,10 +2,10 @@ package ecs
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"strings"
 	"time"
-	"math"
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
@@ -141,30 +141,27 @@ func (ecs *ECS) WaitTaskGroups() bool {
 		Cluster: aws.String(ecs.ClusterName),
 	}
 
-
 	sleep_millisecs := 100.00
-	for matched := true ;
-	    matched == true ;
-	    {
+	for matched := true; matched == true; {
 		matched = false
 		for _, task := range ecs.listTasks(input) {
-		    matches := taskGroupStartedByRegexp.MatchString(task.StartedBy)
+			matches := taskGroupStartedByRegexp.MatchString(task.StartedBy)
 
-		    if matches {
-			matched = true
-			break
-		    }
+			if matches {
+				matched = true
+				break
+			}
 		}
 		if matched == false {
-		   break
-		}		
+			break
+		}
 		fmt.Printf("process running - sleeping for %f milliseconds\n", sleep_millisecs)
-		time.Sleep(time.Duration(math.Round(sleep_millisecs)) * time.Millisecond) 
+		time.Sleep(time.Duration(math.Round(sleep_millisecs)) * time.Millisecond)
 		sleep_millisecs *= sleep_grow
 	}
 
 	return true
-}	
+}
 
 func (ecs *ECS) StopTasks(taskIds []string) {
 	for _, taskId := range taskIds {
@@ -218,7 +215,7 @@ func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
 func (ecs *ECS) waitTasks(input *awsecs.ListTasksInput) bool {
 	var taskArnBatches [][]string
 
-	for taskArnBatches = nil ; len(taskArnBatches) > 0; taskArnBatches = nil {
+	for taskArnBatches = nil; len(taskArnBatches) > 0; taskArnBatches = nil {
 		err := ecs.svc.ListTasksPages(
 			input,
 			func(resp *awsecs.ListTasksOutput, lastPage bool) bool {
