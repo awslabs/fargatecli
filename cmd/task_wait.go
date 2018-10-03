@@ -8,7 +8,7 @@ import (
 
 var taskWaitCmd = &cobra.Command{
 	Use:   "wait",
-	Short: "List currently - later wait for running task groups",
+	Short: "Wait for running task groups to complete",
 	Run: func(cmd *cobra.Command, args []string) {
 		waitTaskGroups()
 	},
