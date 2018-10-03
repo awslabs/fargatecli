@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"math"
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
@@ -131,8 +132,8 @@ OUTER:
 	return taskGroups
 }
 
-func (ecs *ECS) WaitTaskGroups() []*TaskGroup {
-	var taskGroups []*TaskGroup
+func (ecs *ECS) WaitTaskGroups() bool {
+	sleep_grow := 1.1
 
 	taskGroupStartedByRegexp := regexp.MustCompile(taskGroupStartedByPattern)
 
@@ -140,32 +141,30 @@ func (ecs *ECS) WaitTaskGroups() []*TaskGroup {
 		Cluster: aws.String(ecs.ClusterName),
 	}
 
-OUTER:
-	for _, task := range ecs.waitTasks(input) {
-		matches := taskGroupStartedByRegexp.FindStringSubmatch(task.StartedBy)
 
-		if len(matches) == 2 {
-			taskGroupName := matches[1]
+	sleep_millisecs := 100.00
+	for matched := true ;
+	    matched == true ;
+	    {
+		matched = false
+		for _, task := range ecs.listTasks(input) {
+		    matches := taskGroupStartedByRegexp.MatchString(task.StartedBy)
 
-			for _, taskGroup := range taskGroups {
-				if taskGroup.TaskGroupName == taskGroupName {
-					taskGroup.Instances++
-					continue OUTER
-				}
-			}
-
-			taskGroups = append(
-				taskGroups,
-				&TaskGroup{
-					TaskGroupName: taskGroupName,
-					Instances:     1,
-				},
-			)
+		    if matches {
+			matched = true
+			break
+		    }
 		}
+		if matched == false {
+		   break
+		}		
+		fmt.Printf("process running - sleeping for %f milliseconds\n", sleep_millisecs)
+		time.Sleep(time.Duration(math.Round(sleep_millisecs)) * time.Millisecond) 
+		sleep_millisecs *= sleep_grow
 	}
 
-	return taskGroups
-}
+	return true
+}	
 
 func (ecs *ECS) StopTasks(taskIds []string) {
 	for _, taskId := range taskIds {
@@ -216,34 +215,26 @@ func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
 	return tasks
 }
 
-func (ecs *ECS) waitTasks(input *awsecs.ListTasksInput) []Task {
-	var tasks []Task
+func (ecs *ECS) waitTasks(input *awsecs.ListTasksInput) bool {
 	var taskArnBatches [][]string
 
-	err := ecs.svc.ListTasksPages(
-		input,
-		func(resp *awsecs.ListTasksOutput, lastPage bool) bool {
-			if len(resp.TaskArns) > 0 {
-				taskArnBatches = append(taskArnBatches, aws.StringValueSlice(resp.TaskArns))
-			}
+	for taskArnBatches = nil ; len(taskArnBatches) > 0; taskArnBatches = nil {
+		err := ecs.svc.ListTasksPages(
+			input,
+			func(resp *awsecs.ListTasksOutput, lastPage bool) bool {
+				if len(resp.TaskArns) > 0 {
+					taskArnBatches = append(taskArnBatches, aws.StringValueSlice(resp.TaskArns))
+				}
 
-			return true
-		},
-	)
+				return true
+			},
+		)
 
-	if err != nil {
-		console.ErrorExit(err, "Could not list ECS tasks")
-	}
-
-	if len(taskArnBatches) > 0 {
-		for _, taskArnBatch := range taskArnBatches {
-			for _, task := range ecs.DescribeTasks(taskArnBatch) {
-				tasks = append(tasks, task)
-			}
+		if err != nil {
+			console.ErrorExit(err, "Could not list ECS tasks")
 		}
 	}
-
-	return tasks
+	return true
 }
 
 func (ecs *ECS) DescribeTasks(taskIds []string) []Task {
