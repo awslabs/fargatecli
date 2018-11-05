@@ -101,7 +101,11 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			} else if envAwsRegion != "" {
 				region = envAwsRegion
 			} else {
-				region = defaultRegion
+				if sess = session.Must(session.NewSession()); *sess.Config.Region != "" {
+					region = *sess.Config.Region
+				} else {
+					region = defaultRegion
+				}
 			}
 		}
 
