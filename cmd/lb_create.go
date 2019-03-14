@@ -12,11 +12,12 @@ import (
 type lbCreateOperation struct {
 	certificateARNs []string
 	certificateOperation
-	elbv2  elbv2.Client
-	lbType string
-	lbName string
-	output Output
-	ports  []Port
+	elbv2    elbv2.Client
+	lbType   string
+	lbScheme string
+	lbName   string
+	output   Output
+	ports    []Port
 	vpcOperation
 }
 
@@ -130,6 +131,7 @@ func (o lbCreateOperation) execute() {
 			SecurityGroupIDs: o.securityGroupIDs,
 			SubnetIDs:        o.subnetIDs,
 			Type:             o.lbType,
+			Scheme:           o.lbScheme,
 		},
 	)
 
@@ -179,7 +181,7 @@ func (o lbCreateOperation) execute() {
 }
 
 func newLBCreateOperation(
-	lbName string,
+	lbName, lbScheme string,
 	certificates, ports, securityGroupIDs, subnetIDs []string,
 	output Output,
 	acm acm.Client,
@@ -190,6 +192,7 @@ func newLBCreateOperation(
 		certificateOperation: certificateOperation{acm: acm, output: output},
 		elbv2:                elbv2,
 		lbName:               lbName,
+		lbScheme:             lbScheme,
 		output:               output,
 		vpcOperation:         vpcOperation{ec2: ec2, output: output},
 	}
@@ -265,6 +268,7 @@ applied to the load balancer.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation, errs := newLBCreateOperation(
 			args[0],
+			lbCreateFlags.scheme,
 			lbCreateFlags.certificates,
 			lbCreateFlags.ports,
 			lbCreateFlags.securityGroupIDs,
@@ -284,6 +288,7 @@ applied to the load balancer.`,
 	}}
 
 var lbCreateFlags struct {
+	scheme           string
 	certificates     []string
 	ports            []string
 	securityGroupIDs []string
@@ -299,6 +304,8 @@ func init() {
 		"ID of a security group to apply to the load balancer (can be specified multiple times)")
 	lbCreateCmd.Flags().StringSliceVar(&lbCreateFlags.subnetIDs, "subnet-id", []string{},
 		"ID of a subnet to place the load balancer (can be specified multiple times)")
+	lbCreateCmd.Flags().StringVarP(&lbCreateFlags.scheme, "scheme", "s", "internet-facing",
+		"Scheme of the load balancer")
 
 	lbCmd.AddCommand(lbCreateCmd)
 }
