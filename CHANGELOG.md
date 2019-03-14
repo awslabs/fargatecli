@@ -1,4 +1,4 @@
-## 0.3.0 (Unreleased)
+## 0.3.0 (2019-03-14)
 
 ### Enhancements
 
@@ -7,6 +7,10 @@
   with --no-emoji if you're not into fun
 - Requests and responses from AWS are displayed in full when --verbose is
   passed
+- Added additional AWS Fargate regions
+- Added --task-command flag to allow overriding of the Docker command used by the container
+- If you have a region set in your AWS credentials, use that by default and only fall back to us-east-1 if no region is set
+- Added --assign-public-ip boolean flag, which allows you to control whether a task has a public IP address (default: true)
 
 ### Bug Fixes
 
