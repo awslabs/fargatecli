@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	version = "0.2.3"
+	version = "0.2.4"
 
 	defaultClusterName = "fargate"
 	defaultRegion      = "us-east-1"
