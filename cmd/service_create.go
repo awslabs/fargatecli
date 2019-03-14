@@ -34,6 +34,7 @@ type ServiceCreateOperation struct {
 	SubnetIds        []string
 	TaskRole         string
 	TaskCommand      []string
+  AssignPublicIPEnabled bool
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -148,7 +149,8 @@ var (
 	flagServiceCreateSecurityGroupIds []string
 	flagServiceCreateSubnetIds        []string
 	flagServiceCreateTaskRole         string
-	flagServiceCreateTaskCommand      []string
+  flagServiceCreateTaskCommand      []string
+	flagServiceAssignPublicIP         bool
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -222,19 +224,25 @@ service will be able to assume this role.
 The default command of the docker image can be overridden using the
 --task-command flag, where the value is a string of comma seperated values
 representing the command. These values will be placed into an array as per
-the requirements of the docker CMD syntax`,
+the requirements of the docker CMD syntax
+
+Services can be configured to have only private ip address via the
+--assign-public-ip=false flag.`,
+
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+
 		operation := &ServiceCreateOperation{
-			Cpu:              flagServiceCreateCpu,
-			Image:            flagServiceCreateImage,
-			Memory:           flagServiceCreateMemory,
-			Num:              flagServiceCreateNum,
-			SecurityGroupIds: flagServiceCreateSecurityGroupIds,
-			ServiceName:      args[0],
-			SubnetIds:        flagServiceCreateSubnetIds,
-			TaskRole:         flagServiceCreateTaskRole,
-			TaskCommand:      flagServiceCreateTaskCommand,
+			Cpu:                   flagServiceCreateCpu,
+			Image:                 flagServiceCreateImage,
+			Memory:                flagServiceCreateMemory,
+			Num:                   flagServiceCreateNum,
+			SecurityGroupIds:      flagServiceCreateSecurityGroupIds,
+			ServiceName:           args[0],
+			SubnetIds:             flagServiceCreateSubnetIds,
+			TaskRole:              flagServiceCreateTaskRole,
+      TaskCommand:      flagServiceCreateTaskCommand,
+			AssignPublicIPEnabled: flagServiceAssignPublicIP,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -271,7 +279,7 @@ func init() {
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the service (can be specified multiple times)")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the service's tasks can assume")
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateTaskCommand, "task-command", []string{}, "Command to run inside container instead of the one specified in the docker image")
-
+  serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
 
@@ -360,14 +368,15 @@ func createService(operation *ServiceCreateOperation) {
 
 	ecs.CreateService(
 		&ECS.CreateServiceInput{
-			Cluster:           clusterName,
-			DesiredCount:      operation.Num,
-			Name:              operation.ServiceName,
-			Port:              operation.Port.Number,
-			SecurityGroupIds:  operation.SecurityGroupIds,
-			SubnetIds:         operation.SubnetIds,
-			TargetGroupArn:    targetGroupArn,
-			TaskDefinitionArn: taskDefinitionArn,
+			Cluster:               clusterName,
+			DesiredCount:          operation.Num,
+			Name:                  operation.ServiceName,
+			Port:                  operation.Port.Number,
+			SecurityGroupIds:      operation.SecurityGroupIds,
+			SubnetIds:             operation.SubnetIds,
+			TargetGroupArn:        targetGroupArn,
+			TaskDefinitionArn:     taskDefinitionArn,
+			AssignPublicIpEnabled: operation.AssignPublicIPEnabled,
 		},
 	)
 
