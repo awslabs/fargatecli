@@ -133,6 +133,7 @@ func TestCreateLoadBalancer(t *testing.T) {
 	subnetIDs := []string{"subnet-1234567"}
 	securityGroupIDs := []string{"sg-1234567"}
 	lbType := "application"
+	lbScheme := "internet-facing"
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -144,6 +145,7 @@ func TestCreateLoadBalancer(t *testing.T) {
 		Subnets:        aws.StringSlice(subnetIDs),
 		SecurityGroups: aws.StringSlice(securityGroupIDs),
 		Type:           aws.String(lbType),
+		Scheme:         aws.String(lbScheme),
 	}
 	o := &awselbv2.CreateLoadBalancerOutput{
 		LoadBalancers: []*awselbv2.LoadBalancer{
@@ -156,6 +158,7 @@ func TestCreateLoadBalancer(t *testing.T) {
 		Name:             name,
 		SubnetIDs:        subnetIDs,
 		Type:             lbType,
+		Scheme:           lbScheme,
 		SecurityGroupIDs: securityGroupIDs,
 	}
 

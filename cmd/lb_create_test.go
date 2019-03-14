@@ -681,6 +681,7 @@ func TestNewLBCreateOperation(t *testing.T) {
 
 	o, errs := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{"example.com"},
 		[]string{"80", "443"},
 		[]string{"sg-abcdef"},
@@ -759,6 +760,7 @@ func TestNewLBCreateOperationDefaults(t *testing.T) {
 
 	o, errs := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{"80"},
 		[]string{},
@@ -799,6 +801,7 @@ func TestNewLBCreateOperationDefaultsWithSGCreate(t *testing.T) {
 
 	o, errs := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{"80"},
 		[]string{},
@@ -832,6 +835,7 @@ func TestNewLBCreateOperationNoName(t *testing.T) {
 
 	_, err := newLBCreateOperation(
 		"",
+		"internet-facing",
 		[]string{},
 		[]string{"80"},
 		[]string{"sg-abcdef"},
@@ -863,6 +867,7 @@ func TestNewLBCreateOperationNoPort(t *testing.T) {
 
 	_, err := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{},
 		[]string{},
@@ -894,6 +899,7 @@ func TestNewLBCreateOperationDefaultSubnets(t *testing.T) {
 
 	_, err := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{"445"},
 		[]string{},
@@ -923,6 +929,7 @@ func TestNewLBCreateOperationDescribeSubnetsError(t *testing.T) {
 
 	_, err := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{"80"},
 		[]string{"sg-abcdef"},
@@ -952,6 +959,7 @@ func TestNewLBCreateOperationInvalidProtocol(t *testing.T) {
 
 	_, err := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{"SMTP:25"},
 		[]string{"sg-abcdef"},
@@ -982,6 +990,7 @@ func TestNewLBCreateOperationUseDefaultSG(t *testing.T) {
 
 	o, err := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{"80"},
 		[]string{},
@@ -1012,6 +1021,7 @@ func TestNewLBCreateOperationDefaultSGError(t *testing.T) {
 
 	_, errs := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{},
 		[]string{"80"},
 		[]string{},
@@ -1045,6 +1055,7 @@ func TestNewLBCreateOperationCertificateError(t *testing.T) {
 
 	_, errs := newLBCreateOperation(
 		"web",
+		"internet-facing",
 		[]string{"example.com"},
 		[]string{"80", "443"},
 		[]string{"sg-abcdef"},

@@ -31,6 +31,7 @@ type CreateLoadBalancerParameters struct {
 	SecurityGroupIDs []string
 	SubnetIDs        []string
 	Type             string
+	Scheme           string
 }
 
 // CreateLoadBalancer creates a new load balancer. It returns the ARN of the load balancer if it is successfully
@@ -40,6 +41,7 @@ func (elbv2 SDKClient) CreateLoadBalancer(p CreateLoadBalancerParameters) (strin
 		Name:    aws.String(p.Name),
 		Subnets: aws.StringSlice(p.SubnetIDs),
 		Type:    aws.String(p.Type),
+		Scheme:  aws.String(p.Scheme),
 	}
 
 	if p.Type == awselbv2.LoadBalancerTypeEnumApplication {

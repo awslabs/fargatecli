@@ -489,6 +489,7 @@ List load balancers
 ```console
 fargate lb create <load-balancer-name> --port <port-expression> [--certificate <certificate-name>]
                                        [--subnet-id <subnet-id>] [--security-group-id <security-group-id>]
+                                       [--scheme <lb-scheme>]
 ```
 
 Create a load balancer
@@ -518,6 +519,9 @@ passing the --security-group-id flag with a security group ID. To add multiple
 security groups, pass --security-group-id with a security group ID multiple
 times. If --security-group-id is omitted, a permissive security group will be
 applied to the load balancer.
+
+You can also choose the scheme type for load balancer via the --scheme flag.
+By default, load balancers are internet-facing.
 
 ##### fargate lb destroy
 

@@ -24,6 +24,7 @@ type TaskRunOperation struct {
 	SubnetIds        []string
 	TaskName         string
 	TaskRole         string
+	TaskCommand      []string
 }
 
 func (o *TaskRunOperation) Validate() {
@@ -51,6 +52,7 @@ var (
 	flagTaskRunSecurityGroupIds []string
 	flagTaskRunSubnetIds        []string
 	flagTaskRunTaskRole         string
+	flagTaskRunTaskCommand      []string
 )
 
 var taskRunCmd = &cobra.Command{
@@ -104,7 +106,13 @@ specifying explicit subnets by passing the --subnet-id flag with a subnet ID.
 
 A task role can be optionally specified via the --task-role flag by providing
 eith a full IAM role ARN or the name of an IAM role. The tasks will be able to
-assume this role.`,
+assume this role.
+
+The default command of the docker image can be overridden using the
+--task-command flag, where the value is a string of comma seperated values
+representing the command. These values will be placed into an array as per
+the requirements of the docker CMD syntax`,
+
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &TaskRunOperation{
@@ -116,6 +124,7 @@ assume this role.`,
 			SubnetIds:        flagTaskRunSubnetIds,
 			TaskName:         args[0],
 			TaskRole:         flagTaskRunTaskRole,
+			TaskCommand:      flagTaskRunTaskCommand,
 		}
 
 		operation.SetEnvVars(flagTaskRunEnvVars)
@@ -134,6 +143,7 @@ func init() {
 	taskRunCmd.Flags().StringSliceVar(&flagTaskRunSecurityGroupIds, "security-group-id", []string{}, "ID of a security group to apply to the task (can be specified multiple times)")
 	taskRunCmd.Flags().StringSliceVar(&flagTaskRunSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the task (can be specified multiple times)")
 	taskRunCmd.Flags().StringVarP(&flagTaskRunTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the tasks can assume")
+	taskRunCmd.Flags().StringSliceVar(&flagTaskRunTaskCommand, "task-command", []string{}, "Command to run inside container instead of the one specified in the docker image")
 	taskCmd.AddCommand(taskRunCmd)
 }
 
@@ -192,6 +202,7 @@ func runTask(operation *TaskRunOperation) {
 			Name:             operation.TaskName,
 			Type:             typeTask,
 			TaskRole:         operation.TaskRole,
+			TaskCommand:      operation.TaskCommand,
 		},
 	)
 
