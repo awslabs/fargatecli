@@ -46,7 +46,7 @@ func (repository *Repository) Login(username, password string) {
 
 func (repository *Repository) Build(tag string) {
 	console.Debug("Building Docker image [%s]", repository.UriFor(tag))
-	console.Shell("docker build --tag %s .", repository.UriFor(tag))
+	console.Shell("docker build --rm=false --tag %s .", repository.UriFor(tag))
 
 	cmd := exec.Command("docker", "build", "--tag", repository.Uri+":"+tag, ".")
 
