@@ -1,3 +1,9 @@
+## 0.3.1 (2019-05-09)
+
+### Enhancements
+
+- Added support for ap-south-1, ca-central-1 and ap-northeast-2 regions
+
 ## 0.3.0 (2019-03-14)
 
 ### Enhancements
