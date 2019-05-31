@@ -1,3 +1,10 @@
+## 0.3.2 (2019-05-31)
+
+### Bug Fixes
+
+- Display the correct version using `--version`. See https://github.com/jpignata/fargate/issues/90.
+- Updated downloads section in documentation to point to this version `0.3.2`.
+
 ## 0.3.1 (2019-05-09)
 
 ### Enhancements
