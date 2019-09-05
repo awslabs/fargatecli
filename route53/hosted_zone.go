@@ -79,7 +79,11 @@ func (route53 SDKClient) CreateResourceRecord(i CreateResourceRecordInput) (stri
 		},
 	)
 
-	return aws.StringValue(resp.ChangeInfo.Id), err
+	if err != nil {
+		return "", err
+	}
+
+	return aws.StringValue(resp.ChangeInfo.Id), nil
 }
 
 // CreateAlias creates an alias record in an Amazon Route 53 hosted zone.
@@ -106,7 +110,11 @@ func (route53 SDKClient) CreateAlias(i CreateAliasInput) (string, error) {
 		},
 	)
 
-	return aws.StringValue(resp.ChangeInfo.Id), err
+	if err != nil {
+		return "", err
+	}
+
+	return aws.StringValue(resp.ChangeInfo.Id), nil
 }
 
 // ListHostedZones returns all Amazon Route 53 zones in the caller's account.

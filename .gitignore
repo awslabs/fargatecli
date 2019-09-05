@@ -2,4 +2,5 @@
 bin
 fargate
 dist
+fargatecli
 vendor

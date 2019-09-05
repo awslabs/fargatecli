@@ -151,8 +151,11 @@ func (acm SDKClient) ImportCertificate(certificate, privateKey, certificateChain
 	}
 
 	resp, err := acm.client.ImportCertificate(input)
+	if err != nil {
+		return "", err
+	}
 
-	return aws.StringValue(resp.CertificateArn), err
+	return aws.StringValue(resp.CertificateArn), nil
 }
 
 // InflateCertificate uses a partially hydrated certificate to fetch the rest of its details and
