@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/cmd/mock"
-	ec2client "github.com/jpignata/fargate/ec2/mock/client"
+	"github.com/awslabs/fargatecli/cmd/mock"
+	ec2client "github.com/awslabs/fargatecli/ec2/mock/client"
 )
 
 func TestSetSubnetIDs(t *testing.T) {

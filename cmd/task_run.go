@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	CWL "github.com/jpignata/fargate/cloudwatchlogs"
-	"github.com/jpignata/fargate/console"
-	"github.com/jpignata/fargate/docker"
-	EC2 "github.com/jpignata/fargate/ec2"
-	ECR "github.com/jpignata/fargate/ecr"
-	ECS "github.com/jpignata/fargate/ecs"
-	"github.com/jpignata/fargate/git"
-	IAM "github.com/jpignata/fargate/iam"
+	CWL "github.com/awslabs/fargatecli/cloudwatchlogs"
+	"github.com/awslabs/fargatecli/console"
+	"github.com/awslabs/fargatecli/docker"
+	EC2 "github.com/awslabs/fargatecli/ec2"
+	ECR "github.com/awslabs/fargatecli/ecr"
+	ECS "github.com/awslabs/fargatecli/ecs"
+	"github.com/awslabs/fargatecli/git"
+	IAM "github.com/awslabs/fargatecli/iam"
 	"github.com/spf13/cobra"
 )
 

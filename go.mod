@@ -1,9 +1,9 @@
-module github.com/jpignata/fargate
+module github.com/awslabs/fargatecli
 
 require (
 	github.com/aws/aws-sdk-go v1.12.70
 	github.com/go-ini/ini v1.32.0 // indirect
-	github.com/golang/mock v1.2.0
+	github.com/golang/mock v1.3.1
 	github.com/hashicorp/golang-lru v0.0.0-20180201235237-0fb14efe8c47
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8 // indirect
@@ -15,10 +15,9 @@ require (
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.2 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/crypto v0.0.0-20180127211104-1875d0a70c90
-	golang.org/x/net v0.0.0-20180202180947-2fb46b16b8dd // indirect
-	golang.org/x/sys v0.0.0-20180202135801-37707fdb30a5 // indirect
-	golang.org/x/text v0.3.0 // indirect
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	golang.org/x/time v0.0.0-20170927054726-6dc17368e09b
 	gopkg.in/ini.v1 v1.42.0 // indirect
 )
+
+go 1.13

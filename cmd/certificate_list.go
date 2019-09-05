@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/jpignata/fargate/acm"
+	"github.com/awslabs/fargatecli/acm"
 	"github.com/spf13/cobra"
 	"golang.org/x/time/rate"
 )

@@ -8,7 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
-	"github.com/jpignata/fargate/console"
+	"github.com/awslabs/fargatecli/console"
 )
 
 const (

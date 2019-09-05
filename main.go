@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/jpignata/fargate/cmd"
+	"github.com/awslabs/fargatecli/cmd"
 )
 
 func main() {

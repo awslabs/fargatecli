@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/jpignata/fargate/ec2"
+	"github.com/awslabs/fargatecli/ec2"
 )
 
 type vpcOperation struct {

@@ -1,7 +1,7 @@
 // Package elbv2 is a client for Elastic Load Balancing (v2).
 package elbv2
 
-//go:generate mockgen -package client -destination=mock/client/client.go github.com/jpignata/fargate/elbv2 Client
+//go:generate mockgen -package client -destination=mock/client/client.go github.com/awslabs/fargatecli/elbv2 Client
 //go:generate mockgen -package sdk -source ../vendor/github.com/aws/aws-sdk-go/service/elbv2/elbv2iface/interface.go -destination=mock/sdk/elbv2iface.go github.com/aws/aws-sdk-go/service/elbv2/elbv2iface ELBV2API
 
 import (

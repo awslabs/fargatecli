@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 
-	"github.com/jpignata/fargate/acm"
+	"github.com/awslabs/fargatecli/acm"
 	"github.com/spf13/cobra"
 )
 

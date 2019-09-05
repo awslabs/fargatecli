@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	ECS "github.com/jpignata/fargate/ecs"
+	ECS "github.com/awslabs/fargatecli/ecs"
 	"github.com/spf13/cobra"
 )
 

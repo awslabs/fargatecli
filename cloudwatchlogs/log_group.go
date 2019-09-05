@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	awscwl "github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/jpignata/fargate/console"
+	"github.com/awslabs/fargatecli/console"
 )
 
 type GetLogsInput struct {

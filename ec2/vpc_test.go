@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	awsec2 "github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/ec2/mock/sdk"
+	"github.com/awslabs/fargatecli/ec2/mock/sdk"
 )
 
 func TestGetDefaultSubnetIDs(t *testing.T) {

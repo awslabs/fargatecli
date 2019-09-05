@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	awsecr "github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/jpignata/fargate/console"
+	"github.com/awslabs/fargatecli/console"
 )
 
 func (ecr *ECR) CreateRepository(repositoryName string) string {

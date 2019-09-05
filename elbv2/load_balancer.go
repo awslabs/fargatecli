@@ -5,7 +5,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	awselbv2 "github.com/aws/aws-sdk-go/service/elbv2"
-	"github.com/jpignata/fargate/console"
+	"github.com/awslabs/fargatecli/console"
 )
 
 // LoadBalancer represents an Elastic Load Balancing (v2) load balancer.

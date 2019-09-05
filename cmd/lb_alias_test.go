@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/cmd/mock"
-	"github.com/jpignata/fargate/elbv2"
-	elbv2client "github.com/jpignata/fargate/elbv2/mock/client"
-	"github.com/jpignata/fargate/route53"
-	route53client "github.com/jpignata/fargate/route53/mock/client"
+	"github.com/awslabs/fargatecli/cmd/mock"
+	"github.com/awslabs/fargatecli/elbv2"
+	elbv2client "github.com/awslabs/fargatecli/elbv2/mock/client"
+	"github.com/awslabs/fargatecli/route53"
+	route53client "github.com/awslabs/fargatecli/route53/mock/client"
 )
 
 var (

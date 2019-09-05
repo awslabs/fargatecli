@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	awsacm "github.com/aws/aws-sdk-go/service/acm"
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/acm/mock/sdk"
+	"github.com/awslabs/fargatecli/acm/mock/sdk"
 )
 
 func TestValidateAlias(t *testing.T) {

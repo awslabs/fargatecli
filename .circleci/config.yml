@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/jpignata/fargate
+    working_directory: /go/src/github.com/awslabs/fargatecli
     steps:
       - checkout
 

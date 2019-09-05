@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/acm/mock/client"
-	"github.com/jpignata/fargate/cmd/mock"
+	"github.com/awslabs/fargatecli/acm/mock/client"
+	"github.com/awslabs/fargatecli/cmd/mock"
 )
 
 func TestCertificateImportOperation(t *testing.T) {

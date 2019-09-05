@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	awselbv2 "github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/elbv2/mock/sdk"
+	"github.com/awslabs/fargatecli/elbv2/mock/sdk"
 )
 
 func TestListenerString(t *testing.T) {

@@ -1,6 +1,6 @@
 package route53
 
-//go:generate mockgen -package client -destination=mock/client/client.go github.com/jpignata/fargate/route53 Client
+//go:generate mockgen -package client -destination=mock/client/client.go github.com/awslabs/fargatecli/route53 Client
 //go:generate mockgen -package sdk -source ../vendor/github.com/aws/aws-sdk-go/service/route53/route53iface/interface.go -destination=mock/sdk/route53iface.go github.com/aws/aws-sdk-go/service/route53/route53iface Route53API
 
 import (

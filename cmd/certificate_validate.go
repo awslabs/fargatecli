@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/route53"
+	"github.com/awslabs/fargatecli/acm"
+	"github.com/awslabs/fargatecli/route53"
 	"github.com/spf13/cobra"
 )
 

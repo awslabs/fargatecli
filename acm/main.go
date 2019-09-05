@@ -1,6 +1,6 @@
 package acm
 
-//go:generate mockgen -package client -destination=mock/client/client.go github.com/jpignata/fargate/acm Client
+//go:generate mockgen -package client -destination=mock/client/client.go github.com/awslabs/fargatecli/acm Client
 //go:generate mockgen -package sdk -source ../vendor/github.com/aws/aws-sdk-go/service/acm/acmiface/interface.go -destination=mock/sdk/acmiface.go github.com/aws/aws-sdk-go/service/acm/acmiface ACMAPI
 
 import (

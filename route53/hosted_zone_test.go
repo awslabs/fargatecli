@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	awsroute53 "github.com/aws/aws-sdk-go/service/route53"
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/route53/mock/sdk"
+	"github.com/awslabs/fargatecli/route53/mock/sdk"
 )
 
 func TestHostedZonesFindSuperDomainOf(t *testing.T) {

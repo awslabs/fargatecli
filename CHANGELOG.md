@@ -92,9 +92,9 @@
   fail to be issued immediately after request would cause crashes in lb info and
   lb list as the resource record was never generated.
 
-[issue-2]: https://github.com/jpignata/fargate/issues/2
-[issue-6]: https://github.com/jpignata/fargate/issues/6
-[issue-8]: https://github.com/jpignata/fargate/issues/8
-[issue-11]: https://github.com/jpignata/fargate/issues/11
-[issue-14]: https://github.com/jpignata/fargate/issues/14
-[issue-22]: https://github.com/jpignata/fargate/issues/22
+[issue-2]: https://github.com/awslabs/fargatecli/issues/2
+[issue-6]: https://github.com/awslabs/fargatecli/issues/6
+[issue-8]: https://github.com/awslabs/fargatecli/issues/8
+[issue-11]: https://github.com/awslabs/fargatecli/issues/11
+[issue-14]: https://github.com/awslabs/fargatecli/issues/14
+[issue-22]: https://github.com/awslabs/fargatecli/issues/22

@@ -33,13 +33,13 @@ email and Google Hangouts at john@pignata.com.
 - Install the source code from GitHub
 
   ```console
-  go get github.com/jpignata/fargate
+  go get github.com/awslabs/fargatecli
   ```
 
 - Run `dep ensure` to install required dependencies
 
   ```console
-  cd $GOPATH/src/github.com/jpignata/fargate
+  cd $GOPATH/src/github.com/awslabs/fargatecli
   dep ensure
   ```
 
