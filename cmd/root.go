@@ -14,6 +14,7 @@ import (
 	ECS "github.com/awslabs/fargatecli/ecs"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 )
 
 const (
@@ -99,7 +100,8 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 			} else if envAwsRegion != "" {
 				region = envAwsRegion
 			} else {
-				if sess = session.Must(session.NewSession()); *sess.Config.Region != "" {
+				if sess = session.Must(session.NewSessionWithOptions(session.Options { 
+					AssumeRoleTokenProvider: stscreds.StdinTokenProvider})); *sess.Config.Region != "" {
 					region = *sess.Config.Region
 				} else {
 					region = defaultRegion
@@ -116,7 +118,10 @@ CloudWatch Logs, and Amazon Route 53 into an easy-to-use CLI.`,
 		}
 
 		sess = session.Must(
-			session.NewSession(config),
+			session.NewSessionWithOptions(session.Options {
+				AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
+				Config: *config,
+			}),
 		)
 
 		_, err := sess.Config.Credentials.Get()
