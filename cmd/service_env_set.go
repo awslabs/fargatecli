@@ -24,7 +24,7 @@ func (o *ServiceEnvSetOperation) SetEnvVars(inputEnvVars []string) {
 var flagServiceEnvSetEnvVars []string
 
 var serviceEnvSetCmd = &cobra.Command{
-	Use:   "set --env <key=value> [--env <key=value] ...",
+	Use:   "set --env <key=value> [--env <key=value>] ...",
 	Short: "Set environment variables",
 	Long: `Set environment variables
 
@@ -43,7 +43,7 @@ At least one environment variable must be specified via the --env flag. Specify
 }
 
 func init() {
-	serviceEnvSetCmd.Flags().StringSliceVarP(&flagServiceEnvSetEnvVars, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
+	serviceEnvSetCmd.Flags().StringArrayVarP(&flagServiceEnvSetEnvVars, "env", "e", []string{}, "Environment variables to set [e.g. KEY=value]")
 
 	serviceEnvCmd.AddCommand(serviceEnvSetCmd)
 }
