@@ -37,6 +37,7 @@ func (m *MockRoute53API) EXPECT() *MockRoute53APIMockRecorder {
 
 // AssociateVPCWithHostedZone mocks base method
 func (m *MockRoute53API) AssociateVPCWithHostedZone(arg0 *route53.AssociateVPCWithHostedZoneInput) (*route53.AssociateVPCWithHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AssociateVPCWithHostedZone", arg0)
 	ret0, _ := ret[0].(*route53.AssociateVPCWithHostedZoneOutput)
 	ret1, _ := ret[1].(error)
@@ -45,11 +46,13 @@ func (m *MockRoute53API) AssociateVPCWithHostedZone(arg0 *route53.AssociateVPCWi
 
 // AssociateVPCWithHostedZone indicates an expected call of AssociateVPCWithHostedZone
 func (mr *MockRoute53APIMockRecorder) AssociateVPCWithHostedZone(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssociateVPCWithHostedZone", reflect.TypeOf((*MockRoute53API)(nil).AssociateVPCWithHostedZone), arg0)
 }
 
 // AssociateVPCWithHostedZoneWithContext mocks base method
 func (m *MockRoute53API) AssociateVPCWithHostedZoneWithContext(arg0 aws.Context, arg1 *route53.AssociateVPCWithHostedZoneInput, arg2 ...request.Option) (*route53.AssociateVPCWithHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -62,12 +65,14 @@ func (m *MockRoute53API) AssociateVPCWithHostedZoneWithContext(arg0 aws.Context,
 
 // AssociateVPCWithHostedZoneWithContext indicates an expected call of AssociateVPCWithHostedZoneWithContext
 func (mr *MockRoute53APIMockRecorder) AssociateVPCWithHostedZoneWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssociateVPCWithHostedZoneWithContext", reflect.TypeOf((*MockRoute53API)(nil).AssociateVPCWithHostedZoneWithContext), varargs...)
 }
 
 // AssociateVPCWithHostedZoneRequest mocks base method
 func (m *MockRoute53API) AssociateVPCWithHostedZoneRequest(arg0 *route53.AssociateVPCWithHostedZoneInput) (*request.Request, *route53.AssociateVPCWithHostedZoneOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AssociateVPCWithHostedZoneRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.AssociateVPCWithHostedZoneOutput)
@@ -76,11 +81,13 @@ func (m *MockRoute53API) AssociateVPCWithHostedZoneRequest(arg0 *route53.Associa
 
 // AssociateVPCWithHostedZoneRequest indicates an expected call of AssociateVPCWithHostedZoneRequest
 func (mr *MockRoute53APIMockRecorder) AssociateVPCWithHostedZoneRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssociateVPCWithHostedZoneRequest", reflect.TypeOf((*MockRoute53API)(nil).AssociateVPCWithHostedZoneRequest), arg0)
 }
 
 // ChangeResourceRecordSets mocks base method
 func (m *MockRoute53API) ChangeResourceRecordSets(arg0 *route53.ChangeResourceRecordSetsInput) (*route53.ChangeResourceRecordSetsOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ChangeResourceRecordSets", arg0)
 	ret0, _ := ret[0].(*route53.ChangeResourceRecordSetsOutput)
 	ret1, _ := ret[1].(error)
@@ -89,11 +96,13 @@ func (m *MockRoute53API) ChangeResourceRecordSets(arg0 *route53.ChangeResourceRe
 
 // ChangeResourceRecordSets indicates an expected call of ChangeResourceRecordSets
 func (mr *MockRoute53APIMockRecorder) ChangeResourceRecordSets(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeResourceRecordSets", reflect.TypeOf((*MockRoute53API)(nil).ChangeResourceRecordSets), arg0)
 }
 
 // ChangeResourceRecordSetsWithContext mocks base method
 func (m *MockRoute53API) ChangeResourceRecordSetsWithContext(arg0 aws.Context, arg1 *route53.ChangeResourceRecordSetsInput, arg2 ...request.Option) (*route53.ChangeResourceRecordSetsOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -106,12 +115,14 @@ func (m *MockRoute53API) ChangeResourceRecordSetsWithContext(arg0 aws.Context, a
 
 // ChangeResourceRecordSetsWithContext indicates an expected call of ChangeResourceRecordSetsWithContext
 func (mr *MockRoute53APIMockRecorder) ChangeResourceRecordSetsWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeResourceRecordSetsWithContext", reflect.TypeOf((*MockRoute53API)(nil).ChangeResourceRecordSetsWithContext), varargs...)
 }
 
 // ChangeResourceRecordSetsRequest mocks base method
 func (m *MockRoute53API) ChangeResourceRecordSetsRequest(arg0 *route53.ChangeResourceRecordSetsInput) (*request.Request, *route53.ChangeResourceRecordSetsOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ChangeResourceRecordSetsRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ChangeResourceRecordSetsOutput)
@@ -120,11 +131,13 @@ func (m *MockRoute53API) ChangeResourceRecordSetsRequest(arg0 *route53.ChangeRes
 
 // ChangeResourceRecordSetsRequest indicates an expected call of ChangeResourceRecordSetsRequest
 func (mr *MockRoute53APIMockRecorder) ChangeResourceRecordSetsRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeResourceRecordSetsRequest", reflect.TypeOf((*MockRoute53API)(nil).ChangeResourceRecordSetsRequest), arg0)
 }
 
 // ChangeTagsForResource mocks base method
 func (m *MockRoute53API) ChangeTagsForResource(arg0 *route53.ChangeTagsForResourceInput) (*route53.ChangeTagsForResourceOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ChangeTagsForResource", arg0)
 	ret0, _ := ret[0].(*route53.ChangeTagsForResourceOutput)
 	ret1, _ := ret[1].(error)
@@ -133,11 +146,13 @@ func (m *MockRoute53API) ChangeTagsForResource(arg0 *route53.ChangeTagsForResour
 
 // ChangeTagsForResource indicates an expected call of ChangeTagsForResource
 func (mr *MockRoute53APIMockRecorder) ChangeTagsForResource(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeTagsForResource", reflect.TypeOf((*MockRoute53API)(nil).ChangeTagsForResource), arg0)
 }
 
 // ChangeTagsForResourceWithContext mocks base method
 func (m *MockRoute53API) ChangeTagsForResourceWithContext(arg0 aws.Context, arg1 *route53.ChangeTagsForResourceInput, arg2 ...request.Option) (*route53.ChangeTagsForResourceOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -150,12 +165,14 @@ func (m *MockRoute53API) ChangeTagsForResourceWithContext(arg0 aws.Context, arg1
 
 // ChangeTagsForResourceWithContext indicates an expected call of ChangeTagsForResourceWithContext
 func (mr *MockRoute53APIMockRecorder) ChangeTagsForResourceWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeTagsForResourceWithContext", reflect.TypeOf((*MockRoute53API)(nil).ChangeTagsForResourceWithContext), varargs...)
 }
 
 // ChangeTagsForResourceRequest mocks base method
 func (m *MockRoute53API) ChangeTagsForResourceRequest(arg0 *route53.ChangeTagsForResourceInput) (*request.Request, *route53.ChangeTagsForResourceOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ChangeTagsForResourceRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ChangeTagsForResourceOutput)
@@ -164,11 +181,13 @@ func (m *MockRoute53API) ChangeTagsForResourceRequest(arg0 *route53.ChangeTagsFo
 
 // ChangeTagsForResourceRequest indicates an expected call of ChangeTagsForResourceRequest
 func (mr *MockRoute53APIMockRecorder) ChangeTagsForResourceRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeTagsForResourceRequest", reflect.TypeOf((*MockRoute53API)(nil).ChangeTagsForResourceRequest), arg0)
 }
 
 // CreateHealthCheck mocks base method
 func (m *MockRoute53API) CreateHealthCheck(arg0 *route53.CreateHealthCheckInput) (*route53.CreateHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateHealthCheck", arg0)
 	ret0, _ := ret[0].(*route53.CreateHealthCheckOutput)
 	ret1, _ := ret[1].(error)
@@ -177,11 +196,13 @@ func (m *MockRoute53API) CreateHealthCheck(arg0 *route53.CreateHealthCheckInput)
 
 // CreateHealthCheck indicates an expected call of CreateHealthCheck
 func (mr *MockRoute53APIMockRecorder) CreateHealthCheck(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHealthCheck", reflect.TypeOf((*MockRoute53API)(nil).CreateHealthCheck), arg0)
 }
 
 // CreateHealthCheckWithContext mocks base method
 func (m *MockRoute53API) CreateHealthCheckWithContext(arg0 aws.Context, arg1 *route53.CreateHealthCheckInput, arg2 ...request.Option) (*route53.CreateHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -194,12 +215,14 @@ func (m *MockRoute53API) CreateHealthCheckWithContext(arg0 aws.Context, arg1 *ro
 
 // CreateHealthCheckWithContext indicates an expected call of CreateHealthCheckWithContext
 func (mr *MockRoute53APIMockRecorder) CreateHealthCheckWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHealthCheckWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateHealthCheckWithContext), varargs...)
 }
 
 // CreateHealthCheckRequest mocks base method
 func (m *MockRoute53API) CreateHealthCheckRequest(arg0 *route53.CreateHealthCheckInput) (*request.Request, *route53.CreateHealthCheckOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateHealthCheckRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateHealthCheckOutput)
@@ -208,11 +231,13 @@ func (m *MockRoute53API) CreateHealthCheckRequest(arg0 *route53.CreateHealthChec
 
 // CreateHealthCheckRequest indicates an expected call of CreateHealthCheckRequest
 func (mr *MockRoute53APIMockRecorder) CreateHealthCheckRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHealthCheckRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateHealthCheckRequest), arg0)
 }
 
 // CreateHostedZone mocks base method
 func (m *MockRoute53API) CreateHostedZone(arg0 *route53.CreateHostedZoneInput) (*route53.CreateHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateHostedZone", arg0)
 	ret0, _ := ret[0].(*route53.CreateHostedZoneOutput)
 	ret1, _ := ret[1].(error)
@@ -221,11 +246,13 @@ func (m *MockRoute53API) CreateHostedZone(arg0 *route53.CreateHostedZoneInput) (
 
 // CreateHostedZone indicates an expected call of CreateHostedZone
 func (mr *MockRoute53APIMockRecorder) CreateHostedZone(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHostedZone", reflect.TypeOf((*MockRoute53API)(nil).CreateHostedZone), arg0)
 }
 
 // CreateHostedZoneWithContext mocks base method
 func (m *MockRoute53API) CreateHostedZoneWithContext(arg0 aws.Context, arg1 *route53.CreateHostedZoneInput, arg2 ...request.Option) (*route53.CreateHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -238,12 +265,14 @@ func (m *MockRoute53API) CreateHostedZoneWithContext(arg0 aws.Context, arg1 *rou
 
 // CreateHostedZoneWithContext indicates an expected call of CreateHostedZoneWithContext
 func (mr *MockRoute53APIMockRecorder) CreateHostedZoneWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHostedZoneWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateHostedZoneWithContext), varargs...)
 }
 
 // CreateHostedZoneRequest mocks base method
 func (m *MockRoute53API) CreateHostedZoneRequest(arg0 *route53.CreateHostedZoneInput) (*request.Request, *route53.CreateHostedZoneOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateHostedZoneRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateHostedZoneOutput)
@@ -252,11 +281,13 @@ func (m *MockRoute53API) CreateHostedZoneRequest(arg0 *route53.CreateHostedZoneI
 
 // CreateHostedZoneRequest indicates an expected call of CreateHostedZoneRequest
 func (mr *MockRoute53APIMockRecorder) CreateHostedZoneRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHostedZoneRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateHostedZoneRequest), arg0)
 }
 
 // CreateQueryLoggingConfig mocks base method
 func (m *MockRoute53API) CreateQueryLoggingConfig(arg0 *route53.CreateQueryLoggingConfigInput) (*route53.CreateQueryLoggingConfigOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateQueryLoggingConfig", arg0)
 	ret0, _ := ret[0].(*route53.CreateQueryLoggingConfigOutput)
 	ret1, _ := ret[1].(error)
@@ -265,11 +296,13 @@ func (m *MockRoute53API) CreateQueryLoggingConfig(arg0 *route53.CreateQueryLoggi
 
 // CreateQueryLoggingConfig indicates an expected call of CreateQueryLoggingConfig
 func (mr *MockRoute53APIMockRecorder) CreateQueryLoggingConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateQueryLoggingConfig", reflect.TypeOf((*MockRoute53API)(nil).CreateQueryLoggingConfig), arg0)
 }
 
 // CreateQueryLoggingConfigWithContext mocks base method
 func (m *MockRoute53API) CreateQueryLoggingConfigWithContext(arg0 aws.Context, arg1 *route53.CreateQueryLoggingConfigInput, arg2 ...request.Option) (*route53.CreateQueryLoggingConfigOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -282,12 +315,14 @@ func (m *MockRoute53API) CreateQueryLoggingConfigWithContext(arg0 aws.Context, a
 
 // CreateQueryLoggingConfigWithContext indicates an expected call of CreateQueryLoggingConfigWithContext
 func (mr *MockRoute53APIMockRecorder) CreateQueryLoggingConfigWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateQueryLoggingConfigWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateQueryLoggingConfigWithContext), varargs...)
 }
 
 // CreateQueryLoggingConfigRequest mocks base method
 func (m *MockRoute53API) CreateQueryLoggingConfigRequest(arg0 *route53.CreateQueryLoggingConfigInput) (*request.Request, *route53.CreateQueryLoggingConfigOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateQueryLoggingConfigRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateQueryLoggingConfigOutput)
@@ -296,11 +331,13 @@ func (m *MockRoute53API) CreateQueryLoggingConfigRequest(arg0 *route53.CreateQue
 
 // CreateQueryLoggingConfigRequest indicates an expected call of CreateQueryLoggingConfigRequest
 func (mr *MockRoute53APIMockRecorder) CreateQueryLoggingConfigRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateQueryLoggingConfigRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateQueryLoggingConfigRequest), arg0)
 }
 
 // CreateReusableDelegationSet mocks base method
 func (m *MockRoute53API) CreateReusableDelegationSet(arg0 *route53.CreateReusableDelegationSetInput) (*route53.CreateReusableDelegationSetOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateReusableDelegationSet", arg0)
 	ret0, _ := ret[0].(*route53.CreateReusableDelegationSetOutput)
 	ret1, _ := ret[1].(error)
@@ -309,11 +346,13 @@ func (m *MockRoute53API) CreateReusableDelegationSet(arg0 *route53.CreateReusabl
 
 // CreateReusableDelegationSet indicates an expected call of CreateReusableDelegationSet
 func (mr *MockRoute53APIMockRecorder) CreateReusableDelegationSet(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReusableDelegationSet", reflect.TypeOf((*MockRoute53API)(nil).CreateReusableDelegationSet), arg0)
 }
 
 // CreateReusableDelegationSetWithContext mocks base method
 func (m *MockRoute53API) CreateReusableDelegationSetWithContext(arg0 aws.Context, arg1 *route53.CreateReusableDelegationSetInput, arg2 ...request.Option) (*route53.CreateReusableDelegationSetOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -326,12 +365,14 @@ func (m *MockRoute53API) CreateReusableDelegationSetWithContext(arg0 aws.Context
 
 // CreateReusableDelegationSetWithContext indicates an expected call of CreateReusableDelegationSetWithContext
 func (mr *MockRoute53APIMockRecorder) CreateReusableDelegationSetWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReusableDelegationSetWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateReusableDelegationSetWithContext), varargs...)
 }
 
 // CreateReusableDelegationSetRequest mocks base method
 func (m *MockRoute53API) CreateReusableDelegationSetRequest(arg0 *route53.CreateReusableDelegationSetInput) (*request.Request, *route53.CreateReusableDelegationSetOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateReusableDelegationSetRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateReusableDelegationSetOutput)
@@ -340,11 +381,13 @@ func (m *MockRoute53API) CreateReusableDelegationSetRequest(arg0 *route53.Create
 
 // CreateReusableDelegationSetRequest indicates an expected call of CreateReusableDelegationSetRequest
 func (mr *MockRoute53APIMockRecorder) CreateReusableDelegationSetRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReusableDelegationSetRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateReusableDelegationSetRequest), arg0)
 }
 
 // CreateTrafficPolicy mocks base method
 func (m *MockRoute53API) CreateTrafficPolicy(arg0 *route53.CreateTrafficPolicyInput) (*route53.CreateTrafficPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTrafficPolicy", arg0)
 	ret0, _ := ret[0].(*route53.CreateTrafficPolicyOutput)
 	ret1, _ := ret[1].(error)
@@ -353,11 +396,13 @@ func (m *MockRoute53API) CreateTrafficPolicy(arg0 *route53.CreateTrafficPolicyIn
 
 // CreateTrafficPolicy indicates an expected call of CreateTrafficPolicy
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicy(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicy", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicy), arg0)
 }
 
 // CreateTrafficPolicyWithContext mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyWithContext(arg0 aws.Context, arg1 *route53.CreateTrafficPolicyInput, arg2 ...request.Option) (*route53.CreateTrafficPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -370,12 +415,14 @@ func (m *MockRoute53API) CreateTrafficPolicyWithContext(arg0 aws.Context, arg1 *
 
 // CreateTrafficPolicyWithContext indicates an expected call of CreateTrafficPolicyWithContext
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyWithContext), varargs...)
 }
 
 // CreateTrafficPolicyRequest mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyRequest(arg0 *route53.CreateTrafficPolicyInput) (*request.Request, *route53.CreateTrafficPolicyOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTrafficPolicyRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateTrafficPolicyOutput)
@@ -384,11 +431,13 @@ func (m *MockRoute53API) CreateTrafficPolicyRequest(arg0 *route53.CreateTrafficP
 
 // CreateTrafficPolicyRequest indicates an expected call of CreateTrafficPolicyRequest
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyRequest), arg0)
 }
 
 // CreateTrafficPolicyInstance mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyInstance(arg0 *route53.CreateTrafficPolicyInstanceInput) (*route53.CreateTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTrafficPolicyInstance", arg0)
 	ret0, _ := ret[0].(*route53.CreateTrafficPolicyInstanceOutput)
 	ret1, _ := ret[1].(error)
@@ -397,11 +446,13 @@ func (m *MockRoute53API) CreateTrafficPolicyInstance(arg0 *route53.CreateTraffic
 
 // CreateTrafficPolicyInstance indicates an expected call of CreateTrafficPolicyInstance
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyInstance(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyInstance", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyInstance), arg0)
 }
 
 // CreateTrafficPolicyInstanceWithContext mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyInstanceWithContext(arg0 aws.Context, arg1 *route53.CreateTrafficPolicyInstanceInput, arg2 ...request.Option) (*route53.CreateTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -414,12 +465,14 @@ func (m *MockRoute53API) CreateTrafficPolicyInstanceWithContext(arg0 aws.Context
 
 // CreateTrafficPolicyInstanceWithContext indicates an expected call of CreateTrafficPolicyInstanceWithContext
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyInstanceWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyInstanceWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyInstanceWithContext), varargs...)
 }
 
 // CreateTrafficPolicyInstanceRequest mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyInstanceRequest(arg0 *route53.CreateTrafficPolicyInstanceInput) (*request.Request, *route53.CreateTrafficPolicyInstanceOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTrafficPolicyInstanceRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateTrafficPolicyInstanceOutput)
@@ -428,11 +481,13 @@ func (m *MockRoute53API) CreateTrafficPolicyInstanceRequest(arg0 *route53.Create
 
 // CreateTrafficPolicyInstanceRequest indicates an expected call of CreateTrafficPolicyInstanceRequest
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyInstanceRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyInstanceRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyInstanceRequest), arg0)
 }
 
 // CreateTrafficPolicyVersion mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyVersion(arg0 *route53.CreateTrafficPolicyVersionInput) (*route53.CreateTrafficPolicyVersionOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTrafficPolicyVersion", arg0)
 	ret0, _ := ret[0].(*route53.CreateTrafficPolicyVersionOutput)
 	ret1, _ := ret[1].(error)
@@ -441,11 +496,13 @@ func (m *MockRoute53API) CreateTrafficPolicyVersion(arg0 *route53.CreateTrafficP
 
 // CreateTrafficPolicyVersion indicates an expected call of CreateTrafficPolicyVersion
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyVersion(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyVersion", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyVersion), arg0)
 }
 
 // CreateTrafficPolicyVersionWithContext mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyVersionWithContext(arg0 aws.Context, arg1 *route53.CreateTrafficPolicyVersionInput, arg2 ...request.Option) (*route53.CreateTrafficPolicyVersionOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -458,12 +515,14 @@ func (m *MockRoute53API) CreateTrafficPolicyVersionWithContext(arg0 aws.Context,
 
 // CreateTrafficPolicyVersionWithContext indicates an expected call of CreateTrafficPolicyVersionWithContext
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyVersionWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyVersionWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyVersionWithContext), varargs...)
 }
 
 // CreateTrafficPolicyVersionRequest mocks base method
 func (m *MockRoute53API) CreateTrafficPolicyVersionRequest(arg0 *route53.CreateTrafficPolicyVersionInput) (*request.Request, *route53.CreateTrafficPolicyVersionOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTrafficPolicyVersionRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateTrafficPolicyVersionOutput)
@@ -472,11 +531,13 @@ func (m *MockRoute53API) CreateTrafficPolicyVersionRequest(arg0 *route53.CreateT
 
 // CreateTrafficPolicyVersionRequest indicates an expected call of CreateTrafficPolicyVersionRequest
 func (mr *MockRoute53APIMockRecorder) CreateTrafficPolicyVersionRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTrafficPolicyVersionRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateTrafficPolicyVersionRequest), arg0)
 }
 
 // CreateVPCAssociationAuthorization mocks base method
 func (m *MockRoute53API) CreateVPCAssociationAuthorization(arg0 *route53.CreateVPCAssociationAuthorizationInput) (*route53.CreateVPCAssociationAuthorizationOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateVPCAssociationAuthorization", arg0)
 	ret0, _ := ret[0].(*route53.CreateVPCAssociationAuthorizationOutput)
 	ret1, _ := ret[1].(error)
@@ -485,11 +546,13 @@ func (m *MockRoute53API) CreateVPCAssociationAuthorization(arg0 *route53.CreateV
 
 // CreateVPCAssociationAuthorization indicates an expected call of CreateVPCAssociationAuthorization
 func (mr *MockRoute53APIMockRecorder) CreateVPCAssociationAuthorization(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateVPCAssociationAuthorization", reflect.TypeOf((*MockRoute53API)(nil).CreateVPCAssociationAuthorization), arg0)
 }
 
 // CreateVPCAssociationAuthorizationWithContext mocks base method
 func (m *MockRoute53API) CreateVPCAssociationAuthorizationWithContext(arg0 aws.Context, arg1 *route53.CreateVPCAssociationAuthorizationInput, arg2 ...request.Option) (*route53.CreateVPCAssociationAuthorizationOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -502,12 +565,14 @@ func (m *MockRoute53API) CreateVPCAssociationAuthorizationWithContext(arg0 aws.C
 
 // CreateVPCAssociationAuthorizationWithContext indicates an expected call of CreateVPCAssociationAuthorizationWithContext
 func (mr *MockRoute53APIMockRecorder) CreateVPCAssociationAuthorizationWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateVPCAssociationAuthorizationWithContext", reflect.TypeOf((*MockRoute53API)(nil).CreateVPCAssociationAuthorizationWithContext), varargs...)
 }
 
 // CreateVPCAssociationAuthorizationRequest mocks base method
 func (m *MockRoute53API) CreateVPCAssociationAuthorizationRequest(arg0 *route53.CreateVPCAssociationAuthorizationInput) (*request.Request, *route53.CreateVPCAssociationAuthorizationOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateVPCAssociationAuthorizationRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.CreateVPCAssociationAuthorizationOutput)
@@ -516,11 +581,13 @@ func (m *MockRoute53API) CreateVPCAssociationAuthorizationRequest(arg0 *route53.
 
 // CreateVPCAssociationAuthorizationRequest indicates an expected call of CreateVPCAssociationAuthorizationRequest
 func (mr *MockRoute53APIMockRecorder) CreateVPCAssociationAuthorizationRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateVPCAssociationAuthorizationRequest", reflect.TypeOf((*MockRoute53API)(nil).CreateVPCAssociationAuthorizationRequest), arg0)
 }
 
 // DeleteHealthCheck mocks base method
 func (m *MockRoute53API) DeleteHealthCheck(arg0 *route53.DeleteHealthCheckInput) (*route53.DeleteHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteHealthCheck", arg0)
 	ret0, _ := ret[0].(*route53.DeleteHealthCheckOutput)
 	ret1, _ := ret[1].(error)
@@ -529,11 +596,13 @@ func (m *MockRoute53API) DeleteHealthCheck(arg0 *route53.DeleteHealthCheckInput)
 
 // DeleteHealthCheck indicates an expected call of DeleteHealthCheck
 func (mr *MockRoute53APIMockRecorder) DeleteHealthCheck(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteHealthCheck", reflect.TypeOf((*MockRoute53API)(nil).DeleteHealthCheck), arg0)
 }
 
 // DeleteHealthCheckWithContext mocks base method
 func (m *MockRoute53API) DeleteHealthCheckWithContext(arg0 aws.Context, arg1 *route53.DeleteHealthCheckInput, arg2 ...request.Option) (*route53.DeleteHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -546,12 +615,14 @@ func (m *MockRoute53API) DeleteHealthCheckWithContext(arg0 aws.Context, arg1 *ro
 
 // DeleteHealthCheckWithContext indicates an expected call of DeleteHealthCheckWithContext
 func (mr *MockRoute53APIMockRecorder) DeleteHealthCheckWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteHealthCheckWithContext", reflect.TypeOf((*MockRoute53API)(nil).DeleteHealthCheckWithContext), varargs...)
 }
 
 // DeleteHealthCheckRequest mocks base method
 func (m *MockRoute53API) DeleteHealthCheckRequest(arg0 *route53.DeleteHealthCheckInput) (*request.Request, *route53.DeleteHealthCheckOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteHealthCheckRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DeleteHealthCheckOutput)
@@ -560,11 +631,13 @@ func (m *MockRoute53API) DeleteHealthCheckRequest(arg0 *route53.DeleteHealthChec
 
 // DeleteHealthCheckRequest indicates an expected call of DeleteHealthCheckRequest
 func (mr *MockRoute53APIMockRecorder) DeleteHealthCheckRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteHealthCheckRequest", reflect.TypeOf((*MockRoute53API)(nil).DeleteHealthCheckRequest), arg0)
 }
 
 // DeleteHostedZone mocks base method
 func (m *MockRoute53API) DeleteHostedZone(arg0 *route53.DeleteHostedZoneInput) (*route53.DeleteHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteHostedZone", arg0)
 	ret0, _ := ret[0].(*route53.DeleteHostedZoneOutput)
 	ret1, _ := ret[1].(error)
@@ -573,11 +646,13 @@ func (m *MockRoute53API) DeleteHostedZone(arg0 *route53.DeleteHostedZoneInput) (
 
 // DeleteHostedZone indicates an expected call of DeleteHostedZone
 func (mr *MockRoute53APIMockRecorder) DeleteHostedZone(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteHostedZone", reflect.TypeOf((*MockRoute53API)(nil).DeleteHostedZone), arg0)
 }
 
 // DeleteHostedZoneWithContext mocks base method
 func (m *MockRoute53API) DeleteHostedZoneWithContext(arg0 aws.Context, arg1 *route53.DeleteHostedZoneInput, arg2 ...request.Option) (*route53.DeleteHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -590,12 +665,14 @@ func (m *MockRoute53API) DeleteHostedZoneWithContext(arg0 aws.Context, arg1 *rou
 
 // DeleteHostedZoneWithContext indicates an expected call of DeleteHostedZoneWithContext
 func (mr *MockRoute53APIMockRecorder) DeleteHostedZoneWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteHostedZoneWithContext", reflect.TypeOf((*MockRoute53API)(nil).DeleteHostedZoneWithContext), varargs...)
 }
 
 // DeleteHostedZoneRequest mocks base method
 func (m *MockRoute53API) DeleteHostedZoneRequest(arg0 *route53.DeleteHostedZoneInput) (*request.Request, *route53.DeleteHostedZoneOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteHostedZoneRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DeleteHostedZoneOutput)
@@ -604,11 +681,13 @@ func (m *MockRoute53API) DeleteHostedZoneRequest(arg0 *route53.DeleteHostedZoneI
 
 // DeleteHostedZoneRequest indicates an expected call of DeleteHostedZoneRequest
 func (mr *MockRoute53APIMockRecorder) DeleteHostedZoneRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteHostedZoneRequest", reflect.TypeOf((*MockRoute53API)(nil).DeleteHostedZoneRequest), arg0)
 }
 
 // DeleteQueryLoggingConfig mocks base method
 func (m *MockRoute53API) DeleteQueryLoggingConfig(arg0 *route53.DeleteQueryLoggingConfigInput) (*route53.DeleteQueryLoggingConfigOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteQueryLoggingConfig", arg0)
 	ret0, _ := ret[0].(*route53.DeleteQueryLoggingConfigOutput)
 	ret1, _ := ret[1].(error)
@@ -617,11 +696,13 @@ func (m *MockRoute53API) DeleteQueryLoggingConfig(arg0 *route53.DeleteQueryLoggi
 
 // DeleteQueryLoggingConfig indicates an expected call of DeleteQueryLoggingConfig
 func (mr *MockRoute53APIMockRecorder) DeleteQueryLoggingConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteQueryLoggingConfig", reflect.TypeOf((*MockRoute53API)(nil).DeleteQueryLoggingConfig), arg0)
 }
 
 // DeleteQueryLoggingConfigWithContext mocks base method
 func (m *MockRoute53API) DeleteQueryLoggingConfigWithContext(arg0 aws.Context, arg1 *route53.DeleteQueryLoggingConfigInput, arg2 ...request.Option) (*route53.DeleteQueryLoggingConfigOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -634,12 +715,14 @@ func (m *MockRoute53API) DeleteQueryLoggingConfigWithContext(arg0 aws.Context, a
 
 // DeleteQueryLoggingConfigWithContext indicates an expected call of DeleteQueryLoggingConfigWithContext
 func (mr *MockRoute53APIMockRecorder) DeleteQueryLoggingConfigWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteQueryLoggingConfigWithContext", reflect.TypeOf((*MockRoute53API)(nil).DeleteQueryLoggingConfigWithContext), varargs...)
 }
 
 // DeleteQueryLoggingConfigRequest mocks base method
 func (m *MockRoute53API) DeleteQueryLoggingConfigRequest(arg0 *route53.DeleteQueryLoggingConfigInput) (*request.Request, *route53.DeleteQueryLoggingConfigOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteQueryLoggingConfigRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DeleteQueryLoggingConfigOutput)
@@ -648,11 +731,13 @@ func (m *MockRoute53API) DeleteQueryLoggingConfigRequest(arg0 *route53.DeleteQue
 
 // DeleteQueryLoggingConfigRequest indicates an expected call of DeleteQueryLoggingConfigRequest
 func (mr *MockRoute53APIMockRecorder) DeleteQueryLoggingConfigRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteQueryLoggingConfigRequest", reflect.TypeOf((*MockRoute53API)(nil).DeleteQueryLoggingConfigRequest), arg0)
 }
 
 // DeleteReusableDelegationSet mocks base method
 func (m *MockRoute53API) DeleteReusableDelegationSet(arg0 *route53.DeleteReusableDelegationSetInput) (*route53.DeleteReusableDelegationSetOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteReusableDelegationSet", arg0)
 	ret0, _ := ret[0].(*route53.DeleteReusableDelegationSetOutput)
 	ret1, _ := ret[1].(error)
@@ -661,11 +746,13 @@ func (m *MockRoute53API) DeleteReusableDelegationSet(arg0 *route53.DeleteReusabl
 
 // DeleteReusableDelegationSet indicates an expected call of DeleteReusableDelegationSet
 func (mr *MockRoute53APIMockRecorder) DeleteReusableDelegationSet(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteReusableDelegationSet", reflect.TypeOf((*MockRoute53API)(nil).DeleteReusableDelegationSet), arg0)
 }
 
 // DeleteReusableDelegationSetWithContext mocks base method
 func (m *MockRoute53API) DeleteReusableDelegationSetWithContext(arg0 aws.Context, arg1 *route53.DeleteReusableDelegationSetInput, arg2 ...request.Option) (*route53.DeleteReusableDelegationSetOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -678,12 +765,14 @@ func (m *MockRoute53API) DeleteReusableDelegationSetWithContext(arg0 aws.Context
 
 // DeleteReusableDelegationSetWithContext indicates an expected call of DeleteReusableDelegationSetWithContext
 func (mr *MockRoute53APIMockRecorder) DeleteReusableDelegationSetWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteReusableDelegationSetWithContext", reflect.TypeOf((*MockRoute53API)(nil).DeleteReusableDelegationSetWithContext), varargs...)
 }
 
 // DeleteReusableDelegationSetRequest mocks base method
 func (m *MockRoute53API) DeleteReusableDelegationSetRequest(arg0 *route53.DeleteReusableDelegationSetInput) (*request.Request, *route53.DeleteReusableDelegationSetOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteReusableDelegationSetRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DeleteReusableDelegationSetOutput)
@@ -692,11 +781,13 @@ func (m *MockRoute53API) DeleteReusableDelegationSetRequest(arg0 *route53.Delete
 
 // DeleteReusableDelegationSetRequest indicates an expected call of DeleteReusableDelegationSetRequest
 func (mr *MockRoute53APIMockRecorder) DeleteReusableDelegationSetRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteReusableDelegationSetRequest", reflect.TypeOf((*MockRoute53API)(nil).DeleteReusableDelegationSetRequest), arg0)
 }
 
 // DeleteTrafficPolicy mocks base method
 func (m *MockRoute53API) DeleteTrafficPolicy(arg0 *route53.DeleteTrafficPolicyInput) (*route53.DeleteTrafficPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTrafficPolicy", arg0)
 	ret0, _ := ret[0].(*route53.DeleteTrafficPolicyOutput)
 	ret1, _ := ret[1].(error)
@@ -705,11 +796,13 @@ func (m *MockRoute53API) DeleteTrafficPolicy(arg0 *route53.DeleteTrafficPolicyIn
 
 // DeleteTrafficPolicy indicates an expected call of DeleteTrafficPolicy
 func (mr *MockRoute53APIMockRecorder) DeleteTrafficPolicy(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTrafficPolicy", reflect.TypeOf((*MockRoute53API)(nil).DeleteTrafficPolicy), arg0)
 }
 
 // DeleteTrafficPolicyWithContext mocks base method
 func (m *MockRoute53API) DeleteTrafficPolicyWithContext(arg0 aws.Context, arg1 *route53.DeleteTrafficPolicyInput, arg2 ...request.Option) (*route53.DeleteTrafficPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -722,12 +815,14 @@ func (m *MockRoute53API) DeleteTrafficPolicyWithContext(arg0 aws.Context, arg1 *
 
 // DeleteTrafficPolicyWithContext indicates an expected call of DeleteTrafficPolicyWithContext
 func (mr *MockRoute53APIMockRecorder) DeleteTrafficPolicyWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTrafficPolicyWithContext", reflect.TypeOf((*MockRoute53API)(nil).DeleteTrafficPolicyWithContext), varargs...)
 }
 
 // DeleteTrafficPolicyRequest mocks base method
 func (m *MockRoute53API) DeleteTrafficPolicyRequest(arg0 *route53.DeleteTrafficPolicyInput) (*request.Request, *route53.DeleteTrafficPolicyOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTrafficPolicyRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DeleteTrafficPolicyOutput)
@@ -736,11 +831,13 @@ func (m *MockRoute53API) DeleteTrafficPolicyRequest(arg0 *route53.DeleteTrafficP
 
 // DeleteTrafficPolicyRequest indicates an expected call of DeleteTrafficPolicyRequest
 func (mr *MockRoute53APIMockRecorder) DeleteTrafficPolicyRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTrafficPolicyRequest", reflect.TypeOf((*MockRoute53API)(nil).DeleteTrafficPolicyRequest), arg0)
 }
 
 // DeleteTrafficPolicyInstance mocks base method
 func (m *MockRoute53API) DeleteTrafficPolicyInstance(arg0 *route53.DeleteTrafficPolicyInstanceInput) (*route53.DeleteTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTrafficPolicyInstance", arg0)
 	ret0, _ := ret[0].(*route53.DeleteTrafficPolicyInstanceOutput)
 	ret1, _ := ret[1].(error)
@@ -749,11 +846,13 @@ func (m *MockRoute53API) DeleteTrafficPolicyInstance(arg0 *route53.DeleteTraffic
 
 // DeleteTrafficPolicyInstance indicates an expected call of DeleteTrafficPolicyInstance
 func (mr *MockRoute53APIMockRecorder) DeleteTrafficPolicyInstance(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTrafficPolicyInstance", reflect.TypeOf((*MockRoute53API)(nil).DeleteTrafficPolicyInstance), arg0)
 }
 
 // DeleteTrafficPolicyInstanceWithContext mocks base method
 func (m *MockRoute53API) DeleteTrafficPolicyInstanceWithContext(arg0 aws.Context, arg1 *route53.DeleteTrafficPolicyInstanceInput, arg2 ...request.Option) (*route53.DeleteTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -766,12 +865,14 @@ func (m *MockRoute53API) DeleteTrafficPolicyInstanceWithContext(arg0 aws.Context
 
 // DeleteTrafficPolicyInstanceWithContext indicates an expected call of DeleteTrafficPolicyInstanceWithContext
 func (mr *MockRoute53APIMockRecorder) DeleteTrafficPolicyInstanceWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTrafficPolicyInstanceWithContext", reflect.TypeOf((*MockRoute53API)(nil).DeleteTrafficPolicyInstanceWithContext), varargs...)
 }
 
 // DeleteTrafficPolicyInstanceRequest mocks base method
 func (m *MockRoute53API) DeleteTrafficPolicyInstanceRequest(arg0 *route53.DeleteTrafficPolicyInstanceInput) (*request.Request, *route53.DeleteTrafficPolicyInstanceOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTrafficPolicyInstanceRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DeleteTrafficPolicyInstanceOutput)
@@ -780,11 +881,13 @@ func (m *MockRoute53API) DeleteTrafficPolicyInstanceRequest(arg0 *route53.Delete
 
 // DeleteTrafficPolicyInstanceRequest indicates an expected call of DeleteTrafficPolicyInstanceRequest
 func (mr *MockRoute53APIMockRecorder) DeleteTrafficPolicyInstanceRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTrafficPolicyInstanceRequest", reflect.TypeOf((*MockRoute53API)(nil).DeleteTrafficPolicyInstanceRequest), arg0)
 }
 
 // DeleteVPCAssociationAuthorization mocks base method
 func (m *MockRoute53API) DeleteVPCAssociationAuthorization(arg0 *route53.DeleteVPCAssociationAuthorizationInput) (*route53.DeleteVPCAssociationAuthorizationOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteVPCAssociationAuthorization", arg0)
 	ret0, _ := ret[0].(*route53.DeleteVPCAssociationAuthorizationOutput)
 	ret1, _ := ret[1].(error)
@@ -793,11 +896,13 @@ func (m *MockRoute53API) DeleteVPCAssociationAuthorization(arg0 *route53.DeleteV
 
 // DeleteVPCAssociationAuthorization indicates an expected call of DeleteVPCAssociationAuthorization
 func (mr *MockRoute53APIMockRecorder) DeleteVPCAssociationAuthorization(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteVPCAssociationAuthorization", reflect.TypeOf((*MockRoute53API)(nil).DeleteVPCAssociationAuthorization), arg0)
 }
 
 // DeleteVPCAssociationAuthorizationWithContext mocks base method
 func (m *MockRoute53API) DeleteVPCAssociationAuthorizationWithContext(arg0 aws.Context, arg1 *route53.DeleteVPCAssociationAuthorizationInput, arg2 ...request.Option) (*route53.DeleteVPCAssociationAuthorizationOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -810,12 +915,14 @@ func (m *MockRoute53API) DeleteVPCAssociationAuthorizationWithContext(arg0 aws.C
 
 // DeleteVPCAssociationAuthorizationWithContext indicates an expected call of DeleteVPCAssociationAuthorizationWithContext
 func (mr *MockRoute53APIMockRecorder) DeleteVPCAssociationAuthorizationWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteVPCAssociationAuthorizationWithContext", reflect.TypeOf((*MockRoute53API)(nil).DeleteVPCAssociationAuthorizationWithContext), varargs...)
 }
 
 // DeleteVPCAssociationAuthorizationRequest mocks base method
 func (m *MockRoute53API) DeleteVPCAssociationAuthorizationRequest(arg0 *route53.DeleteVPCAssociationAuthorizationInput) (*request.Request, *route53.DeleteVPCAssociationAuthorizationOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteVPCAssociationAuthorizationRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DeleteVPCAssociationAuthorizationOutput)
@@ -824,11 +931,13 @@ func (m *MockRoute53API) DeleteVPCAssociationAuthorizationRequest(arg0 *route53.
 
 // DeleteVPCAssociationAuthorizationRequest indicates an expected call of DeleteVPCAssociationAuthorizationRequest
 func (mr *MockRoute53APIMockRecorder) DeleteVPCAssociationAuthorizationRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteVPCAssociationAuthorizationRequest", reflect.TypeOf((*MockRoute53API)(nil).DeleteVPCAssociationAuthorizationRequest), arg0)
 }
 
 // DisassociateVPCFromHostedZone mocks base method
 func (m *MockRoute53API) DisassociateVPCFromHostedZone(arg0 *route53.DisassociateVPCFromHostedZoneInput) (*route53.DisassociateVPCFromHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DisassociateVPCFromHostedZone", arg0)
 	ret0, _ := ret[0].(*route53.DisassociateVPCFromHostedZoneOutput)
 	ret1, _ := ret[1].(error)
@@ -837,11 +946,13 @@ func (m *MockRoute53API) DisassociateVPCFromHostedZone(arg0 *route53.Disassociat
 
 // DisassociateVPCFromHostedZone indicates an expected call of DisassociateVPCFromHostedZone
 func (mr *MockRoute53APIMockRecorder) DisassociateVPCFromHostedZone(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisassociateVPCFromHostedZone", reflect.TypeOf((*MockRoute53API)(nil).DisassociateVPCFromHostedZone), arg0)
 }
 
 // DisassociateVPCFromHostedZoneWithContext mocks base method
 func (m *MockRoute53API) DisassociateVPCFromHostedZoneWithContext(arg0 aws.Context, arg1 *route53.DisassociateVPCFromHostedZoneInput, arg2 ...request.Option) (*route53.DisassociateVPCFromHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -854,12 +965,14 @@ func (m *MockRoute53API) DisassociateVPCFromHostedZoneWithContext(arg0 aws.Conte
 
 // DisassociateVPCFromHostedZoneWithContext indicates an expected call of DisassociateVPCFromHostedZoneWithContext
 func (mr *MockRoute53APIMockRecorder) DisassociateVPCFromHostedZoneWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisassociateVPCFromHostedZoneWithContext", reflect.TypeOf((*MockRoute53API)(nil).DisassociateVPCFromHostedZoneWithContext), varargs...)
 }
 
 // DisassociateVPCFromHostedZoneRequest mocks base method
 func (m *MockRoute53API) DisassociateVPCFromHostedZoneRequest(arg0 *route53.DisassociateVPCFromHostedZoneInput) (*request.Request, *route53.DisassociateVPCFromHostedZoneOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DisassociateVPCFromHostedZoneRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.DisassociateVPCFromHostedZoneOutput)
@@ -868,11 +981,13 @@ func (m *MockRoute53API) DisassociateVPCFromHostedZoneRequest(arg0 *route53.Disa
 
 // DisassociateVPCFromHostedZoneRequest indicates an expected call of DisassociateVPCFromHostedZoneRequest
 func (mr *MockRoute53APIMockRecorder) DisassociateVPCFromHostedZoneRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisassociateVPCFromHostedZoneRequest", reflect.TypeOf((*MockRoute53API)(nil).DisassociateVPCFromHostedZoneRequest), arg0)
 }
 
 // GetAccountLimit mocks base method
 func (m *MockRoute53API) GetAccountLimit(arg0 *route53.GetAccountLimitInput) (*route53.GetAccountLimitOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAccountLimit", arg0)
 	ret0, _ := ret[0].(*route53.GetAccountLimitOutput)
 	ret1, _ := ret[1].(error)
@@ -881,11 +996,13 @@ func (m *MockRoute53API) GetAccountLimit(arg0 *route53.GetAccountLimitInput) (*r
 
 // GetAccountLimit indicates an expected call of GetAccountLimit
 func (mr *MockRoute53APIMockRecorder) GetAccountLimit(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountLimit", reflect.TypeOf((*MockRoute53API)(nil).GetAccountLimit), arg0)
 }
 
 // GetAccountLimitWithContext mocks base method
 func (m *MockRoute53API) GetAccountLimitWithContext(arg0 aws.Context, arg1 *route53.GetAccountLimitInput, arg2 ...request.Option) (*route53.GetAccountLimitOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -898,12 +1015,14 @@ func (m *MockRoute53API) GetAccountLimitWithContext(arg0 aws.Context, arg1 *rout
 
 // GetAccountLimitWithContext indicates an expected call of GetAccountLimitWithContext
 func (mr *MockRoute53APIMockRecorder) GetAccountLimitWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountLimitWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetAccountLimitWithContext), varargs...)
 }
 
 // GetAccountLimitRequest mocks base method
 func (m *MockRoute53API) GetAccountLimitRequest(arg0 *route53.GetAccountLimitInput) (*request.Request, *route53.GetAccountLimitOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAccountLimitRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetAccountLimitOutput)
@@ -912,11 +1031,13 @@ func (m *MockRoute53API) GetAccountLimitRequest(arg0 *route53.GetAccountLimitInp
 
 // GetAccountLimitRequest indicates an expected call of GetAccountLimitRequest
 func (mr *MockRoute53APIMockRecorder) GetAccountLimitRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountLimitRequest", reflect.TypeOf((*MockRoute53API)(nil).GetAccountLimitRequest), arg0)
 }
 
 // GetChange mocks base method
 func (m *MockRoute53API) GetChange(arg0 *route53.GetChangeInput) (*route53.GetChangeOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetChange", arg0)
 	ret0, _ := ret[0].(*route53.GetChangeOutput)
 	ret1, _ := ret[1].(error)
@@ -925,11 +1046,13 @@ func (m *MockRoute53API) GetChange(arg0 *route53.GetChangeInput) (*route53.GetCh
 
 // GetChange indicates an expected call of GetChange
 func (mr *MockRoute53APIMockRecorder) GetChange(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChange", reflect.TypeOf((*MockRoute53API)(nil).GetChange), arg0)
 }
 
 // GetChangeWithContext mocks base method
 func (m *MockRoute53API) GetChangeWithContext(arg0 aws.Context, arg1 *route53.GetChangeInput, arg2 ...request.Option) (*route53.GetChangeOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -942,12 +1065,14 @@ func (m *MockRoute53API) GetChangeWithContext(arg0 aws.Context, arg1 *route53.Ge
 
 // GetChangeWithContext indicates an expected call of GetChangeWithContext
 func (mr *MockRoute53APIMockRecorder) GetChangeWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChangeWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetChangeWithContext), varargs...)
 }
 
 // GetChangeRequest mocks base method
 func (m *MockRoute53API) GetChangeRequest(arg0 *route53.GetChangeInput) (*request.Request, *route53.GetChangeOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetChangeRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetChangeOutput)
@@ -956,11 +1081,13 @@ func (m *MockRoute53API) GetChangeRequest(arg0 *route53.GetChangeInput) (*reques
 
 // GetChangeRequest indicates an expected call of GetChangeRequest
 func (mr *MockRoute53APIMockRecorder) GetChangeRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChangeRequest", reflect.TypeOf((*MockRoute53API)(nil).GetChangeRequest), arg0)
 }
 
 // GetCheckerIpRanges mocks base method
 func (m *MockRoute53API) GetCheckerIpRanges(arg0 *route53.GetCheckerIpRangesInput) (*route53.GetCheckerIpRangesOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCheckerIpRanges", arg0)
 	ret0, _ := ret[0].(*route53.GetCheckerIpRangesOutput)
 	ret1, _ := ret[1].(error)
@@ -969,11 +1096,13 @@ func (m *MockRoute53API) GetCheckerIpRanges(arg0 *route53.GetCheckerIpRangesInpu
 
 // GetCheckerIpRanges indicates an expected call of GetCheckerIpRanges
 func (mr *MockRoute53APIMockRecorder) GetCheckerIpRanges(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCheckerIpRanges", reflect.TypeOf((*MockRoute53API)(nil).GetCheckerIpRanges), arg0)
 }
 
 // GetCheckerIpRangesWithContext mocks base method
 func (m *MockRoute53API) GetCheckerIpRangesWithContext(arg0 aws.Context, arg1 *route53.GetCheckerIpRangesInput, arg2 ...request.Option) (*route53.GetCheckerIpRangesOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -986,12 +1115,14 @@ func (m *MockRoute53API) GetCheckerIpRangesWithContext(arg0 aws.Context, arg1 *r
 
 // GetCheckerIpRangesWithContext indicates an expected call of GetCheckerIpRangesWithContext
 func (mr *MockRoute53APIMockRecorder) GetCheckerIpRangesWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCheckerIpRangesWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetCheckerIpRangesWithContext), varargs...)
 }
 
 // GetCheckerIpRangesRequest mocks base method
 func (m *MockRoute53API) GetCheckerIpRangesRequest(arg0 *route53.GetCheckerIpRangesInput) (*request.Request, *route53.GetCheckerIpRangesOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCheckerIpRangesRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetCheckerIpRangesOutput)
@@ -1000,11 +1131,13 @@ func (m *MockRoute53API) GetCheckerIpRangesRequest(arg0 *route53.GetCheckerIpRan
 
 // GetCheckerIpRangesRequest indicates an expected call of GetCheckerIpRangesRequest
 func (mr *MockRoute53APIMockRecorder) GetCheckerIpRangesRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCheckerIpRangesRequest", reflect.TypeOf((*MockRoute53API)(nil).GetCheckerIpRangesRequest), arg0)
 }
 
 // GetGeoLocation mocks base method
 func (m *MockRoute53API) GetGeoLocation(arg0 *route53.GetGeoLocationInput) (*route53.GetGeoLocationOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetGeoLocation", arg0)
 	ret0, _ := ret[0].(*route53.GetGeoLocationOutput)
 	ret1, _ := ret[1].(error)
@@ -1013,11 +1146,13 @@ func (m *MockRoute53API) GetGeoLocation(arg0 *route53.GetGeoLocationInput) (*rou
 
 // GetGeoLocation indicates an expected call of GetGeoLocation
 func (mr *MockRoute53APIMockRecorder) GetGeoLocation(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGeoLocation", reflect.TypeOf((*MockRoute53API)(nil).GetGeoLocation), arg0)
 }
 
 // GetGeoLocationWithContext mocks base method
 func (m *MockRoute53API) GetGeoLocationWithContext(arg0 aws.Context, arg1 *route53.GetGeoLocationInput, arg2 ...request.Option) (*route53.GetGeoLocationOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1030,12 +1165,14 @@ func (m *MockRoute53API) GetGeoLocationWithContext(arg0 aws.Context, arg1 *route
 
 // GetGeoLocationWithContext indicates an expected call of GetGeoLocationWithContext
 func (mr *MockRoute53APIMockRecorder) GetGeoLocationWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGeoLocationWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetGeoLocationWithContext), varargs...)
 }
 
 // GetGeoLocationRequest mocks base method
 func (m *MockRoute53API) GetGeoLocationRequest(arg0 *route53.GetGeoLocationInput) (*request.Request, *route53.GetGeoLocationOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetGeoLocationRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetGeoLocationOutput)
@@ -1044,11 +1181,13 @@ func (m *MockRoute53API) GetGeoLocationRequest(arg0 *route53.GetGeoLocationInput
 
 // GetGeoLocationRequest indicates an expected call of GetGeoLocationRequest
 func (mr *MockRoute53APIMockRecorder) GetGeoLocationRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGeoLocationRequest", reflect.TypeOf((*MockRoute53API)(nil).GetGeoLocationRequest), arg0)
 }
 
 // GetHealthCheck mocks base method
 func (m *MockRoute53API) GetHealthCheck(arg0 *route53.GetHealthCheckInput) (*route53.GetHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheck", arg0)
 	ret0, _ := ret[0].(*route53.GetHealthCheckOutput)
 	ret1, _ := ret[1].(error)
@@ -1057,11 +1196,13 @@ func (m *MockRoute53API) GetHealthCheck(arg0 *route53.GetHealthCheckInput) (*rou
 
 // GetHealthCheck indicates an expected call of GetHealthCheck
 func (mr *MockRoute53APIMockRecorder) GetHealthCheck(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheck", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheck), arg0)
 }
 
 // GetHealthCheckWithContext mocks base method
 func (m *MockRoute53API) GetHealthCheckWithContext(arg0 aws.Context, arg1 *route53.GetHealthCheckInput, arg2 ...request.Option) (*route53.GetHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1074,12 +1215,14 @@ func (m *MockRoute53API) GetHealthCheckWithContext(arg0 aws.Context, arg1 *route
 
 // GetHealthCheckWithContext indicates an expected call of GetHealthCheckWithContext
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckWithContext), varargs...)
 }
 
 // GetHealthCheckRequest mocks base method
 func (m *MockRoute53API) GetHealthCheckRequest(arg0 *route53.GetHealthCheckInput) (*request.Request, *route53.GetHealthCheckOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheckRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetHealthCheckOutput)
@@ -1088,11 +1231,13 @@ func (m *MockRoute53API) GetHealthCheckRequest(arg0 *route53.GetHealthCheckInput
 
 // GetHealthCheckRequest indicates an expected call of GetHealthCheckRequest
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckRequest", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckRequest), arg0)
 }
 
 // GetHealthCheckCount mocks base method
 func (m *MockRoute53API) GetHealthCheckCount(arg0 *route53.GetHealthCheckCountInput) (*route53.GetHealthCheckCountOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheckCount", arg0)
 	ret0, _ := ret[0].(*route53.GetHealthCheckCountOutput)
 	ret1, _ := ret[1].(error)
@@ -1101,11 +1246,13 @@ func (m *MockRoute53API) GetHealthCheckCount(arg0 *route53.GetHealthCheckCountIn
 
 // GetHealthCheckCount indicates an expected call of GetHealthCheckCount
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckCount(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckCount", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckCount), arg0)
 }
 
 // GetHealthCheckCountWithContext mocks base method
 func (m *MockRoute53API) GetHealthCheckCountWithContext(arg0 aws.Context, arg1 *route53.GetHealthCheckCountInput, arg2 ...request.Option) (*route53.GetHealthCheckCountOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1118,12 +1265,14 @@ func (m *MockRoute53API) GetHealthCheckCountWithContext(arg0 aws.Context, arg1 *
 
 // GetHealthCheckCountWithContext indicates an expected call of GetHealthCheckCountWithContext
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckCountWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckCountWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckCountWithContext), varargs...)
 }
 
 // GetHealthCheckCountRequest mocks base method
 func (m *MockRoute53API) GetHealthCheckCountRequest(arg0 *route53.GetHealthCheckCountInput) (*request.Request, *route53.GetHealthCheckCountOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheckCountRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetHealthCheckCountOutput)
@@ -1132,11 +1281,13 @@ func (m *MockRoute53API) GetHealthCheckCountRequest(arg0 *route53.GetHealthCheck
 
 // GetHealthCheckCountRequest indicates an expected call of GetHealthCheckCountRequest
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckCountRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckCountRequest", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckCountRequest), arg0)
 }
 
 // GetHealthCheckLastFailureReason mocks base method
 func (m *MockRoute53API) GetHealthCheckLastFailureReason(arg0 *route53.GetHealthCheckLastFailureReasonInput) (*route53.GetHealthCheckLastFailureReasonOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheckLastFailureReason", arg0)
 	ret0, _ := ret[0].(*route53.GetHealthCheckLastFailureReasonOutput)
 	ret1, _ := ret[1].(error)
@@ -1145,11 +1296,13 @@ func (m *MockRoute53API) GetHealthCheckLastFailureReason(arg0 *route53.GetHealth
 
 // GetHealthCheckLastFailureReason indicates an expected call of GetHealthCheckLastFailureReason
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckLastFailureReason(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckLastFailureReason", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckLastFailureReason), arg0)
 }
 
 // GetHealthCheckLastFailureReasonWithContext mocks base method
 func (m *MockRoute53API) GetHealthCheckLastFailureReasonWithContext(arg0 aws.Context, arg1 *route53.GetHealthCheckLastFailureReasonInput, arg2 ...request.Option) (*route53.GetHealthCheckLastFailureReasonOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1162,12 +1315,14 @@ func (m *MockRoute53API) GetHealthCheckLastFailureReasonWithContext(arg0 aws.Con
 
 // GetHealthCheckLastFailureReasonWithContext indicates an expected call of GetHealthCheckLastFailureReasonWithContext
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckLastFailureReasonWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckLastFailureReasonWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckLastFailureReasonWithContext), varargs...)
 }
 
 // GetHealthCheckLastFailureReasonRequest mocks base method
 func (m *MockRoute53API) GetHealthCheckLastFailureReasonRequest(arg0 *route53.GetHealthCheckLastFailureReasonInput) (*request.Request, *route53.GetHealthCheckLastFailureReasonOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheckLastFailureReasonRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetHealthCheckLastFailureReasonOutput)
@@ -1176,11 +1331,13 @@ func (m *MockRoute53API) GetHealthCheckLastFailureReasonRequest(arg0 *route53.Ge
 
 // GetHealthCheckLastFailureReasonRequest indicates an expected call of GetHealthCheckLastFailureReasonRequest
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckLastFailureReasonRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckLastFailureReasonRequest", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckLastFailureReasonRequest), arg0)
 }
 
 // GetHealthCheckStatus mocks base method
 func (m *MockRoute53API) GetHealthCheckStatus(arg0 *route53.GetHealthCheckStatusInput) (*route53.GetHealthCheckStatusOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheckStatus", arg0)
 	ret0, _ := ret[0].(*route53.GetHealthCheckStatusOutput)
 	ret1, _ := ret[1].(error)
@@ -1189,11 +1346,13 @@ func (m *MockRoute53API) GetHealthCheckStatus(arg0 *route53.GetHealthCheckStatus
 
 // GetHealthCheckStatus indicates an expected call of GetHealthCheckStatus
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckStatus(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckStatus", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckStatus), arg0)
 }
 
 // GetHealthCheckStatusWithContext mocks base method
 func (m *MockRoute53API) GetHealthCheckStatusWithContext(arg0 aws.Context, arg1 *route53.GetHealthCheckStatusInput, arg2 ...request.Option) (*route53.GetHealthCheckStatusOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1206,12 +1365,14 @@ func (m *MockRoute53API) GetHealthCheckStatusWithContext(arg0 aws.Context, arg1 
 
 // GetHealthCheckStatusWithContext indicates an expected call of GetHealthCheckStatusWithContext
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckStatusWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckStatusWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckStatusWithContext), varargs...)
 }
 
 // GetHealthCheckStatusRequest mocks base method
 func (m *MockRoute53API) GetHealthCheckStatusRequest(arg0 *route53.GetHealthCheckStatusInput) (*request.Request, *route53.GetHealthCheckStatusOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHealthCheckStatusRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetHealthCheckStatusOutput)
@@ -1220,11 +1381,13 @@ func (m *MockRoute53API) GetHealthCheckStatusRequest(arg0 *route53.GetHealthChec
 
 // GetHealthCheckStatusRequest indicates an expected call of GetHealthCheckStatusRequest
 func (mr *MockRoute53APIMockRecorder) GetHealthCheckStatusRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHealthCheckStatusRequest", reflect.TypeOf((*MockRoute53API)(nil).GetHealthCheckStatusRequest), arg0)
 }
 
 // GetHostedZone mocks base method
 func (m *MockRoute53API) GetHostedZone(arg0 *route53.GetHostedZoneInput) (*route53.GetHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHostedZone", arg0)
 	ret0, _ := ret[0].(*route53.GetHostedZoneOutput)
 	ret1, _ := ret[1].(error)
@@ -1233,11 +1396,13 @@ func (m *MockRoute53API) GetHostedZone(arg0 *route53.GetHostedZoneInput) (*route
 
 // GetHostedZone indicates an expected call of GetHostedZone
 func (mr *MockRoute53APIMockRecorder) GetHostedZone(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZone", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZone), arg0)
 }
 
 // GetHostedZoneWithContext mocks base method
 func (m *MockRoute53API) GetHostedZoneWithContext(arg0 aws.Context, arg1 *route53.GetHostedZoneInput, arg2 ...request.Option) (*route53.GetHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1250,12 +1415,14 @@ func (m *MockRoute53API) GetHostedZoneWithContext(arg0 aws.Context, arg1 *route5
 
 // GetHostedZoneWithContext indicates an expected call of GetHostedZoneWithContext
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneWithContext), varargs...)
 }
 
 // GetHostedZoneRequest mocks base method
 func (m *MockRoute53API) GetHostedZoneRequest(arg0 *route53.GetHostedZoneInput) (*request.Request, *route53.GetHostedZoneOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHostedZoneRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetHostedZoneOutput)
@@ -1264,11 +1431,13 @@ func (m *MockRoute53API) GetHostedZoneRequest(arg0 *route53.GetHostedZoneInput) 
 
 // GetHostedZoneRequest indicates an expected call of GetHostedZoneRequest
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneRequest", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneRequest), arg0)
 }
 
 // GetHostedZoneCount mocks base method
 func (m *MockRoute53API) GetHostedZoneCount(arg0 *route53.GetHostedZoneCountInput) (*route53.GetHostedZoneCountOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHostedZoneCount", arg0)
 	ret0, _ := ret[0].(*route53.GetHostedZoneCountOutput)
 	ret1, _ := ret[1].(error)
@@ -1277,11 +1446,13 @@ func (m *MockRoute53API) GetHostedZoneCount(arg0 *route53.GetHostedZoneCountInpu
 
 // GetHostedZoneCount indicates an expected call of GetHostedZoneCount
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneCount(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneCount", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneCount), arg0)
 }
 
 // GetHostedZoneCountWithContext mocks base method
 func (m *MockRoute53API) GetHostedZoneCountWithContext(arg0 aws.Context, arg1 *route53.GetHostedZoneCountInput, arg2 ...request.Option) (*route53.GetHostedZoneCountOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1294,12 +1465,14 @@ func (m *MockRoute53API) GetHostedZoneCountWithContext(arg0 aws.Context, arg1 *r
 
 // GetHostedZoneCountWithContext indicates an expected call of GetHostedZoneCountWithContext
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneCountWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneCountWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneCountWithContext), varargs...)
 }
 
 // GetHostedZoneCountRequest mocks base method
 func (m *MockRoute53API) GetHostedZoneCountRequest(arg0 *route53.GetHostedZoneCountInput) (*request.Request, *route53.GetHostedZoneCountOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHostedZoneCountRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetHostedZoneCountOutput)
@@ -1308,11 +1481,13 @@ func (m *MockRoute53API) GetHostedZoneCountRequest(arg0 *route53.GetHostedZoneCo
 
 // GetHostedZoneCountRequest indicates an expected call of GetHostedZoneCountRequest
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneCountRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneCountRequest", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneCountRequest), arg0)
 }
 
 // GetHostedZoneLimit mocks base method
 func (m *MockRoute53API) GetHostedZoneLimit(arg0 *route53.GetHostedZoneLimitInput) (*route53.GetHostedZoneLimitOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHostedZoneLimit", arg0)
 	ret0, _ := ret[0].(*route53.GetHostedZoneLimitOutput)
 	ret1, _ := ret[1].(error)
@@ -1321,11 +1496,13 @@ func (m *MockRoute53API) GetHostedZoneLimit(arg0 *route53.GetHostedZoneLimitInpu
 
 // GetHostedZoneLimit indicates an expected call of GetHostedZoneLimit
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneLimit(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneLimit", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneLimit), arg0)
 }
 
 // GetHostedZoneLimitWithContext mocks base method
 func (m *MockRoute53API) GetHostedZoneLimitWithContext(arg0 aws.Context, arg1 *route53.GetHostedZoneLimitInput, arg2 ...request.Option) (*route53.GetHostedZoneLimitOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1338,12 +1515,14 @@ func (m *MockRoute53API) GetHostedZoneLimitWithContext(arg0 aws.Context, arg1 *r
 
 // GetHostedZoneLimitWithContext indicates an expected call of GetHostedZoneLimitWithContext
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneLimitWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneLimitWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneLimitWithContext), varargs...)
 }
 
 // GetHostedZoneLimitRequest mocks base method
 func (m *MockRoute53API) GetHostedZoneLimitRequest(arg0 *route53.GetHostedZoneLimitInput) (*request.Request, *route53.GetHostedZoneLimitOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHostedZoneLimitRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetHostedZoneLimitOutput)
@@ -1352,11 +1531,13 @@ func (m *MockRoute53API) GetHostedZoneLimitRequest(arg0 *route53.GetHostedZoneLi
 
 // GetHostedZoneLimitRequest indicates an expected call of GetHostedZoneLimitRequest
 func (mr *MockRoute53APIMockRecorder) GetHostedZoneLimitRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostedZoneLimitRequest", reflect.TypeOf((*MockRoute53API)(nil).GetHostedZoneLimitRequest), arg0)
 }
 
 // GetQueryLoggingConfig mocks base method
 func (m *MockRoute53API) GetQueryLoggingConfig(arg0 *route53.GetQueryLoggingConfigInput) (*route53.GetQueryLoggingConfigOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetQueryLoggingConfig", arg0)
 	ret0, _ := ret[0].(*route53.GetQueryLoggingConfigOutput)
 	ret1, _ := ret[1].(error)
@@ -1365,11 +1546,13 @@ func (m *MockRoute53API) GetQueryLoggingConfig(arg0 *route53.GetQueryLoggingConf
 
 // GetQueryLoggingConfig indicates an expected call of GetQueryLoggingConfig
 func (mr *MockRoute53APIMockRecorder) GetQueryLoggingConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQueryLoggingConfig", reflect.TypeOf((*MockRoute53API)(nil).GetQueryLoggingConfig), arg0)
 }
 
 // GetQueryLoggingConfigWithContext mocks base method
 func (m *MockRoute53API) GetQueryLoggingConfigWithContext(arg0 aws.Context, arg1 *route53.GetQueryLoggingConfigInput, arg2 ...request.Option) (*route53.GetQueryLoggingConfigOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1382,12 +1565,14 @@ func (m *MockRoute53API) GetQueryLoggingConfigWithContext(arg0 aws.Context, arg1
 
 // GetQueryLoggingConfigWithContext indicates an expected call of GetQueryLoggingConfigWithContext
 func (mr *MockRoute53APIMockRecorder) GetQueryLoggingConfigWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQueryLoggingConfigWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetQueryLoggingConfigWithContext), varargs...)
 }
 
 // GetQueryLoggingConfigRequest mocks base method
 func (m *MockRoute53API) GetQueryLoggingConfigRequest(arg0 *route53.GetQueryLoggingConfigInput) (*request.Request, *route53.GetQueryLoggingConfigOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetQueryLoggingConfigRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetQueryLoggingConfigOutput)
@@ -1396,11 +1581,13 @@ func (m *MockRoute53API) GetQueryLoggingConfigRequest(arg0 *route53.GetQueryLogg
 
 // GetQueryLoggingConfigRequest indicates an expected call of GetQueryLoggingConfigRequest
 func (mr *MockRoute53APIMockRecorder) GetQueryLoggingConfigRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQueryLoggingConfigRequest", reflect.TypeOf((*MockRoute53API)(nil).GetQueryLoggingConfigRequest), arg0)
 }
 
 // GetReusableDelegationSet mocks base method
 func (m *MockRoute53API) GetReusableDelegationSet(arg0 *route53.GetReusableDelegationSetInput) (*route53.GetReusableDelegationSetOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReusableDelegationSet", arg0)
 	ret0, _ := ret[0].(*route53.GetReusableDelegationSetOutput)
 	ret1, _ := ret[1].(error)
@@ -1409,11 +1596,13 @@ func (m *MockRoute53API) GetReusableDelegationSet(arg0 *route53.GetReusableDeleg
 
 // GetReusableDelegationSet indicates an expected call of GetReusableDelegationSet
 func (mr *MockRoute53APIMockRecorder) GetReusableDelegationSet(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReusableDelegationSet", reflect.TypeOf((*MockRoute53API)(nil).GetReusableDelegationSet), arg0)
 }
 
 // GetReusableDelegationSetWithContext mocks base method
 func (m *MockRoute53API) GetReusableDelegationSetWithContext(arg0 aws.Context, arg1 *route53.GetReusableDelegationSetInput, arg2 ...request.Option) (*route53.GetReusableDelegationSetOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1426,12 +1615,14 @@ func (m *MockRoute53API) GetReusableDelegationSetWithContext(arg0 aws.Context, a
 
 // GetReusableDelegationSetWithContext indicates an expected call of GetReusableDelegationSetWithContext
 func (mr *MockRoute53APIMockRecorder) GetReusableDelegationSetWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReusableDelegationSetWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetReusableDelegationSetWithContext), varargs...)
 }
 
 // GetReusableDelegationSetRequest mocks base method
 func (m *MockRoute53API) GetReusableDelegationSetRequest(arg0 *route53.GetReusableDelegationSetInput) (*request.Request, *route53.GetReusableDelegationSetOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReusableDelegationSetRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetReusableDelegationSetOutput)
@@ -1440,11 +1631,13 @@ func (m *MockRoute53API) GetReusableDelegationSetRequest(arg0 *route53.GetReusab
 
 // GetReusableDelegationSetRequest indicates an expected call of GetReusableDelegationSetRequest
 func (mr *MockRoute53APIMockRecorder) GetReusableDelegationSetRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReusableDelegationSetRequest", reflect.TypeOf((*MockRoute53API)(nil).GetReusableDelegationSetRequest), arg0)
 }
 
 // GetReusableDelegationSetLimit mocks base method
 func (m *MockRoute53API) GetReusableDelegationSetLimit(arg0 *route53.GetReusableDelegationSetLimitInput) (*route53.GetReusableDelegationSetLimitOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReusableDelegationSetLimit", arg0)
 	ret0, _ := ret[0].(*route53.GetReusableDelegationSetLimitOutput)
 	ret1, _ := ret[1].(error)
@@ -1453,11 +1646,13 @@ func (m *MockRoute53API) GetReusableDelegationSetLimit(arg0 *route53.GetReusable
 
 // GetReusableDelegationSetLimit indicates an expected call of GetReusableDelegationSetLimit
 func (mr *MockRoute53APIMockRecorder) GetReusableDelegationSetLimit(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReusableDelegationSetLimit", reflect.TypeOf((*MockRoute53API)(nil).GetReusableDelegationSetLimit), arg0)
 }
 
 // GetReusableDelegationSetLimitWithContext mocks base method
 func (m *MockRoute53API) GetReusableDelegationSetLimitWithContext(arg0 aws.Context, arg1 *route53.GetReusableDelegationSetLimitInput, arg2 ...request.Option) (*route53.GetReusableDelegationSetLimitOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1470,12 +1665,14 @@ func (m *MockRoute53API) GetReusableDelegationSetLimitWithContext(arg0 aws.Conte
 
 // GetReusableDelegationSetLimitWithContext indicates an expected call of GetReusableDelegationSetLimitWithContext
 func (mr *MockRoute53APIMockRecorder) GetReusableDelegationSetLimitWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReusableDelegationSetLimitWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetReusableDelegationSetLimitWithContext), varargs...)
 }
 
 // GetReusableDelegationSetLimitRequest mocks base method
 func (m *MockRoute53API) GetReusableDelegationSetLimitRequest(arg0 *route53.GetReusableDelegationSetLimitInput) (*request.Request, *route53.GetReusableDelegationSetLimitOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReusableDelegationSetLimitRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetReusableDelegationSetLimitOutput)
@@ -1484,11 +1681,13 @@ func (m *MockRoute53API) GetReusableDelegationSetLimitRequest(arg0 *route53.GetR
 
 // GetReusableDelegationSetLimitRequest indicates an expected call of GetReusableDelegationSetLimitRequest
 func (mr *MockRoute53APIMockRecorder) GetReusableDelegationSetLimitRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReusableDelegationSetLimitRequest", reflect.TypeOf((*MockRoute53API)(nil).GetReusableDelegationSetLimitRequest), arg0)
 }
 
 // GetTrafficPolicy mocks base method
 func (m *MockRoute53API) GetTrafficPolicy(arg0 *route53.GetTrafficPolicyInput) (*route53.GetTrafficPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTrafficPolicy", arg0)
 	ret0, _ := ret[0].(*route53.GetTrafficPolicyOutput)
 	ret1, _ := ret[1].(error)
@@ -1497,11 +1696,13 @@ func (m *MockRoute53API) GetTrafficPolicy(arg0 *route53.GetTrafficPolicyInput) (
 
 // GetTrafficPolicy indicates an expected call of GetTrafficPolicy
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicy(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicy", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicy), arg0)
 }
 
 // GetTrafficPolicyWithContext mocks base method
 func (m *MockRoute53API) GetTrafficPolicyWithContext(arg0 aws.Context, arg1 *route53.GetTrafficPolicyInput, arg2 ...request.Option) (*route53.GetTrafficPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1514,12 +1715,14 @@ func (m *MockRoute53API) GetTrafficPolicyWithContext(arg0 aws.Context, arg1 *rou
 
 // GetTrafficPolicyWithContext indicates an expected call of GetTrafficPolicyWithContext
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyWithContext), varargs...)
 }
 
 // GetTrafficPolicyRequest mocks base method
 func (m *MockRoute53API) GetTrafficPolicyRequest(arg0 *route53.GetTrafficPolicyInput) (*request.Request, *route53.GetTrafficPolicyOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTrafficPolicyRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetTrafficPolicyOutput)
@@ -1528,11 +1731,13 @@ func (m *MockRoute53API) GetTrafficPolicyRequest(arg0 *route53.GetTrafficPolicyI
 
 // GetTrafficPolicyRequest indicates an expected call of GetTrafficPolicyRequest
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyRequest", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyRequest), arg0)
 }
 
 // GetTrafficPolicyInstance mocks base method
 func (m *MockRoute53API) GetTrafficPolicyInstance(arg0 *route53.GetTrafficPolicyInstanceInput) (*route53.GetTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTrafficPolicyInstance", arg0)
 	ret0, _ := ret[0].(*route53.GetTrafficPolicyInstanceOutput)
 	ret1, _ := ret[1].(error)
@@ -1541,11 +1746,13 @@ func (m *MockRoute53API) GetTrafficPolicyInstance(arg0 *route53.GetTrafficPolicy
 
 // GetTrafficPolicyInstance indicates an expected call of GetTrafficPolicyInstance
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyInstance(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyInstance", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyInstance), arg0)
 }
 
 // GetTrafficPolicyInstanceWithContext mocks base method
 func (m *MockRoute53API) GetTrafficPolicyInstanceWithContext(arg0 aws.Context, arg1 *route53.GetTrafficPolicyInstanceInput, arg2 ...request.Option) (*route53.GetTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1558,12 +1765,14 @@ func (m *MockRoute53API) GetTrafficPolicyInstanceWithContext(arg0 aws.Context, a
 
 // GetTrafficPolicyInstanceWithContext indicates an expected call of GetTrafficPolicyInstanceWithContext
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyInstanceWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyInstanceWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyInstanceWithContext), varargs...)
 }
 
 // GetTrafficPolicyInstanceRequest mocks base method
 func (m *MockRoute53API) GetTrafficPolicyInstanceRequest(arg0 *route53.GetTrafficPolicyInstanceInput) (*request.Request, *route53.GetTrafficPolicyInstanceOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTrafficPolicyInstanceRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetTrafficPolicyInstanceOutput)
@@ -1572,11 +1781,13 @@ func (m *MockRoute53API) GetTrafficPolicyInstanceRequest(arg0 *route53.GetTraffi
 
 // GetTrafficPolicyInstanceRequest indicates an expected call of GetTrafficPolicyInstanceRequest
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyInstanceRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyInstanceRequest", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyInstanceRequest), arg0)
 }
 
 // GetTrafficPolicyInstanceCount mocks base method
 func (m *MockRoute53API) GetTrafficPolicyInstanceCount(arg0 *route53.GetTrafficPolicyInstanceCountInput) (*route53.GetTrafficPolicyInstanceCountOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTrafficPolicyInstanceCount", arg0)
 	ret0, _ := ret[0].(*route53.GetTrafficPolicyInstanceCountOutput)
 	ret1, _ := ret[1].(error)
@@ -1585,11 +1796,13 @@ func (m *MockRoute53API) GetTrafficPolicyInstanceCount(arg0 *route53.GetTrafficP
 
 // GetTrafficPolicyInstanceCount indicates an expected call of GetTrafficPolicyInstanceCount
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyInstanceCount(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyInstanceCount", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyInstanceCount), arg0)
 }
 
 // GetTrafficPolicyInstanceCountWithContext mocks base method
 func (m *MockRoute53API) GetTrafficPolicyInstanceCountWithContext(arg0 aws.Context, arg1 *route53.GetTrafficPolicyInstanceCountInput, arg2 ...request.Option) (*route53.GetTrafficPolicyInstanceCountOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1602,12 +1815,14 @@ func (m *MockRoute53API) GetTrafficPolicyInstanceCountWithContext(arg0 aws.Conte
 
 // GetTrafficPolicyInstanceCountWithContext indicates an expected call of GetTrafficPolicyInstanceCountWithContext
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyInstanceCountWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyInstanceCountWithContext", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyInstanceCountWithContext), varargs...)
 }
 
 // GetTrafficPolicyInstanceCountRequest mocks base method
 func (m *MockRoute53API) GetTrafficPolicyInstanceCountRequest(arg0 *route53.GetTrafficPolicyInstanceCountInput) (*request.Request, *route53.GetTrafficPolicyInstanceCountOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTrafficPolicyInstanceCountRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.GetTrafficPolicyInstanceCountOutput)
@@ -1616,11 +1831,13 @@ func (m *MockRoute53API) GetTrafficPolicyInstanceCountRequest(arg0 *route53.GetT
 
 // GetTrafficPolicyInstanceCountRequest indicates an expected call of GetTrafficPolicyInstanceCountRequest
 func (mr *MockRoute53APIMockRecorder) GetTrafficPolicyInstanceCountRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrafficPolicyInstanceCountRequest", reflect.TypeOf((*MockRoute53API)(nil).GetTrafficPolicyInstanceCountRequest), arg0)
 }
 
 // ListGeoLocations mocks base method
 func (m *MockRoute53API) ListGeoLocations(arg0 *route53.ListGeoLocationsInput) (*route53.ListGeoLocationsOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListGeoLocations", arg0)
 	ret0, _ := ret[0].(*route53.ListGeoLocationsOutput)
 	ret1, _ := ret[1].(error)
@@ -1629,11 +1846,13 @@ func (m *MockRoute53API) ListGeoLocations(arg0 *route53.ListGeoLocationsInput) (
 
 // ListGeoLocations indicates an expected call of ListGeoLocations
 func (mr *MockRoute53APIMockRecorder) ListGeoLocations(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListGeoLocations", reflect.TypeOf((*MockRoute53API)(nil).ListGeoLocations), arg0)
 }
 
 // ListGeoLocationsWithContext mocks base method
 func (m *MockRoute53API) ListGeoLocationsWithContext(arg0 aws.Context, arg1 *route53.ListGeoLocationsInput, arg2 ...request.Option) (*route53.ListGeoLocationsOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1646,12 +1865,14 @@ func (m *MockRoute53API) ListGeoLocationsWithContext(arg0 aws.Context, arg1 *rou
 
 // ListGeoLocationsWithContext indicates an expected call of ListGeoLocationsWithContext
 func (mr *MockRoute53APIMockRecorder) ListGeoLocationsWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListGeoLocationsWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListGeoLocationsWithContext), varargs...)
 }
 
 // ListGeoLocationsRequest mocks base method
 func (m *MockRoute53API) ListGeoLocationsRequest(arg0 *route53.ListGeoLocationsInput) (*request.Request, *route53.ListGeoLocationsOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListGeoLocationsRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListGeoLocationsOutput)
@@ -1660,11 +1881,13 @@ func (m *MockRoute53API) ListGeoLocationsRequest(arg0 *route53.ListGeoLocationsI
 
 // ListGeoLocationsRequest indicates an expected call of ListGeoLocationsRequest
 func (mr *MockRoute53APIMockRecorder) ListGeoLocationsRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListGeoLocationsRequest", reflect.TypeOf((*MockRoute53API)(nil).ListGeoLocationsRequest), arg0)
 }
 
 // ListHealthChecks mocks base method
 func (m *MockRoute53API) ListHealthChecks(arg0 *route53.ListHealthChecksInput) (*route53.ListHealthChecksOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHealthChecks", arg0)
 	ret0, _ := ret[0].(*route53.ListHealthChecksOutput)
 	ret1, _ := ret[1].(error)
@@ -1673,11 +1896,13 @@ func (m *MockRoute53API) ListHealthChecks(arg0 *route53.ListHealthChecksInput) (
 
 // ListHealthChecks indicates an expected call of ListHealthChecks
 func (mr *MockRoute53APIMockRecorder) ListHealthChecks(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHealthChecks", reflect.TypeOf((*MockRoute53API)(nil).ListHealthChecks), arg0)
 }
 
 // ListHealthChecksWithContext mocks base method
 func (m *MockRoute53API) ListHealthChecksWithContext(arg0 aws.Context, arg1 *route53.ListHealthChecksInput, arg2 ...request.Option) (*route53.ListHealthChecksOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1690,12 +1915,14 @@ func (m *MockRoute53API) ListHealthChecksWithContext(arg0 aws.Context, arg1 *rou
 
 // ListHealthChecksWithContext indicates an expected call of ListHealthChecksWithContext
 func (mr *MockRoute53APIMockRecorder) ListHealthChecksWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHealthChecksWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListHealthChecksWithContext), varargs...)
 }
 
 // ListHealthChecksRequest mocks base method
 func (m *MockRoute53API) ListHealthChecksRequest(arg0 *route53.ListHealthChecksInput) (*request.Request, *route53.ListHealthChecksOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHealthChecksRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListHealthChecksOutput)
@@ -1704,11 +1931,13 @@ func (m *MockRoute53API) ListHealthChecksRequest(arg0 *route53.ListHealthChecksI
 
 // ListHealthChecksRequest indicates an expected call of ListHealthChecksRequest
 func (mr *MockRoute53APIMockRecorder) ListHealthChecksRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHealthChecksRequest", reflect.TypeOf((*MockRoute53API)(nil).ListHealthChecksRequest), arg0)
 }
 
 // ListHealthChecksPages mocks base method
 func (m *MockRoute53API) ListHealthChecksPages(arg0 *route53.ListHealthChecksInput, arg1 func(*route53.ListHealthChecksOutput, bool) bool) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHealthChecksPages", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -1716,11 +1945,13 @@ func (m *MockRoute53API) ListHealthChecksPages(arg0 *route53.ListHealthChecksInp
 
 // ListHealthChecksPages indicates an expected call of ListHealthChecksPages
 func (mr *MockRoute53APIMockRecorder) ListHealthChecksPages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHealthChecksPages", reflect.TypeOf((*MockRoute53API)(nil).ListHealthChecksPages), arg0, arg1)
 }
 
 // ListHealthChecksPagesWithContext mocks base method
 func (m *MockRoute53API) ListHealthChecksPagesWithContext(arg0 aws.Context, arg1 *route53.ListHealthChecksInput, arg2 func(*route53.ListHealthChecksOutput, bool) bool, arg3 ...request.Option) error {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1, arg2}
 	for _, a := range arg3 {
 		varargs = append(varargs, a)
@@ -1732,12 +1963,14 @@ func (m *MockRoute53API) ListHealthChecksPagesWithContext(arg0 aws.Context, arg1
 
 // ListHealthChecksPagesWithContext indicates an expected call of ListHealthChecksPagesWithContext
 func (mr *MockRoute53APIMockRecorder) ListHealthChecksPagesWithContext(arg0, arg1, arg2 interface{}, arg3 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1, arg2}, arg3...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHealthChecksPagesWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListHealthChecksPagesWithContext), varargs...)
 }
 
 // ListHostedZones mocks base method
 func (m *MockRoute53API) ListHostedZones(arg0 *route53.ListHostedZonesInput) (*route53.ListHostedZonesOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHostedZones", arg0)
 	ret0, _ := ret[0].(*route53.ListHostedZonesOutput)
 	ret1, _ := ret[1].(error)
@@ -1746,11 +1979,13 @@ func (m *MockRoute53API) ListHostedZones(arg0 *route53.ListHostedZonesInput) (*r
 
 // ListHostedZones indicates an expected call of ListHostedZones
 func (mr *MockRoute53APIMockRecorder) ListHostedZones(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZones", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZones), arg0)
 }
 
 // ListHostedZonesWithContext mocks base method
 func (m *MockRoute53API) ListHostedZonesWithContext(arg0 aws.Context, arg1 *route53.ListHostedZonesInput, arg2 ...request.Option) (*route53.ListHostedZonesOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1763,12 +1998,14 @@ func (m *MockRoute53API) ListHostedZonesWithContext(arg0 aws.Context, arg1 *rout
 
 // ListHostedZonesWithContext indicates an expected call of ListHostedZonesWithContext
 func (mr *MockRoute53APIMockRecorder) ListHostedZonesWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZonesWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZonesWithContext), varargs...)
 }
 
 // ListHostedZonesRequest mocks base method
 func (m *MockRoute53API) ListHostedZonesRequest(arg0 *route53.ListHostedZonesInput) (*request.Request, *route53.ListHostedZonesOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHostedZonesRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListHostedZonesOutput)
@@ -1777,11 +2014,13 @@ func (m *MockRoute53API) ListHostedZonesRequest(arg0 *route53.ListHostedZonesInp
 
 // ListHostedZonesRequest indicates an expected call of ListHostedZonesRequest
 func (mr *MockRoute53APIMockRecorder) ListHostedZonesRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZonesRequest", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZonesRequest), arg0)
 }
 
 // ListHostedZonesPages mocks base method
 func (m *MockRoute53API) ListHostedZonesPages(arg0 *route53.ListHostedZonesInput, arg1 func(*route53.ListHostedZonesOutput, bool) bool) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHostedZonesPages", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -1789,11 +2028,13 @@ func (m *MockRoute53API) ListHostedZonesPages(arg0 *route53.ListHostedZonesInput
 
 // ListHostedZonesPages indicates an expected call of ListHostedZonesPages
 func (mr *MockRoute53APIMockRecorder) ListHostedZonesPages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZonesPages", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZonesPages), arg0, arg1)
 }
 
 // ListHostedZonesPagesWithContext mocks base method
 func (m *MockRoute53API) ListHostedZonesPagesWithContext(arg0 aws.Context, arg1 *route53.ListHostedZonesInput, arg2 func(*route53.ListHostedZonesOutput, bool) bool, arg3 ...request.Option) error {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1, arg2}
 	for _, a := range arg3 {
 		varargs = append(varargs, a)
@@ -1805,12 +2046,14 @@ func (m *MockRoute53API) ListHostedZonesPagesWithContext(arg0 aws.Context, arg1 
 
 // ListHostedZonesPagesWithContext indicates an expected call of ListHostedZonesPagesWithContext
 func (mr *MockRoute53APIMockRecorder) ListHostedZonesPagesWithContext(arg0, arg1, arg2 interface{}, arg3 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1, arg2}, arg3...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZonesPagesWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZonesPagesWithContext), varargs...)
 }
 
 // ListHostedZonesByName mocks base method
 func (m *MockRoute53API) ListHostedZonesByName(arg0 *route53.ListHostedZonesByNameInput) (*route53.ListHostedZonesByNameOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHostedZonesByName", arg0)
 	ret0, _ := ret[0].(*route53.ListHostedZonesByNameOutput)
 	ret1, _ := ret[1].(error)
@@ -1819,11 +2062,13 @@ func (m *MockRoute53API) ListHostedZonesByName(arg0 *route53.ListHostedZonesByNa
 
 // ListHostedZonesByName indicates an expected call of ListHostedZonesByName
 func (mr *MockRoute53APIMockRecorder) ListHostedZonesByName(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZonesByName", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZonesByName), arg0)
 }
 
 // ListHostedZonesByNameWithContext mocks base method
 func (m *MockRoute53API) ListHostedZonesByNameWithContext(arg0 aws.Context, arg1 *route53.ListHostedZonesByNameInput, arg2 ...request.Option) (*route53.ListHostedZonesByNameOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1836,12 +2081,14 @@ func (m *MockRoute53API) ListHostedZonesByNameWithContext(arg0 aws.Context, arg1
 
 // ListHostedZonesByNameWithContext indicates an expected call of ListHostedZonesByNameWithContext
 func (mr *MockRoute53APIMockRecorder) ListHostedZonesByNameWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZonesByNameWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZonesByNameWithContext), varargs...)
 }
 
 // ListHostedZonesByNameRequest mocks base method
 func (m *MockRoute53API) ListHostedZonesByNameRequest(arg0 *route53.ListHostedZonesByNameInput) (*request.Request, *route53.ListHostedZonesByNameOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListHostedZonesByNameRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListHostedZonesByNameOutput)
@@ -1850,11 +2097,13 @@ func (m *MockRoute53API) ListHostedZonesByNameRequest(arg0 *route53.ListHostedZo
 
 // ListHostedZonesByNameRequest indicates an expected call of ListHostedZonesByNameRequest
 func (mr *MockRoute53APIMockRecorder) ListHostedZonesByNameRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListHostedZonesByNameRequest", reflect.TypeOf((*MockRoute53API)(nil).ListHostedZonesByNameRequest), arg0)
 }
 
 // ListQueryLoggingConfigs mocks base method
 func (m *MockRoute53API) ListQueryLoggingConfigs(arg0 *route53.ListQueryLoggingConfigsInput) (*route53.ListQueryLoggingConfigsOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListQueryLoggingConfigs", arg0)
 	ret0, _ := ret[0].(*route53.ListQueryLoggingConfigsOutput)
 	ret1, _ := ret[1].(error)
@@ -1863,11 +2112,13 @@ func (m *MockRoute53API) ListQueryLoggingConfigs(arg0 *route53.ListQueryLoggingC
 
 // ListQueryLoggingConfigs indicates an expected call of ListQueryLoggingConfigs
 func (mr *MockRoute53APIMockRecorder) ListQueryLoggingConfigs(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListQueryLoggingConfigs", reflect.TypeOf((*MockRoute53API)(nil).ListQueryLoggingConfigs), arg0)
 }
 
 // ListQueryLoggingConfigsWithContext mocks base method
 func (m *MockRoute53API) ListQueryLoggingConfigsWithContext(arg0 aws.Context, arg1 *route53.ListQueryLoggingConfigsInput, arg2 ...request.Option) (*route53.ListQueryLoggingConfigsOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1880,12 +2131,14 @@ func (m *MockRoute53API) ListQueryLoggingConfigsWithContext(arg0 aws.Context, ar
 
 // ListQueryLoggingConfigsWithContext indicates an expected call of ListQueryLoggingConfigsWithContext
 func (mr *MockRoute53APIMockRecorder) ListQueryLoggingConfigsWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListQueryLoggingConfigsWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListQueryLoggingConfigsWithContext), varargs...)
 }
 
 // ListQueryLoggingConfigsRequest mocks base method
 func (m *MockRoute53API) ListQueryLoggingConfigsRequest(arg0 *route53.ListQueryLoggingConfigsInput) (*request.Request, *route53.ListQueryLoggingConfigsOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListQueryLoggingConfigsRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListQueryLoggingConfigsOutput)
@@ -1894,11 +2147,13 @@ func (m *MockRoute53API) ListQueryLoggingConfigsRequest(arg0 *route53.ListQueryL
 
 // ListQueryLoggingConfigsRequest indicates an expected call of ListQueryLoggingConfigsRequest
 func (mr *MockRoute53APIMockRecorder) ListQueryLoggingConfigsRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListQueryLoggingConfigsRequest", reflect.TypeOf((*MockRoute53API)(nil).ListQueryLoggingConfigsRequest), arg0)
 }
 
 // ListResourceRecordSets mocks base method
 func (m *MockRoute53API) ListResourceRecordSets(arg0 *route53.ListResourceRecordSetsInput) (*route53.ListResourceRecordSetsOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListResourceRecordSets", arg0)
 	ret0, _ := ret[0].(*route53.ListResourceRecordSetsOutput)
 	ret1, _ := ret[1].(error)
@@ -1907,11 +2162,13 @@ func (m *MockRoute53API) ListResourceRecordSets(arg0 *route53.ListResourceRecord
 
 // ListResourceRecordSets indicates an expected call of ListResourceRecordSets
 func (mr *MockRoute53APIMockRecorder) ListResourceRecordSets(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceRecordSets", reflect.TypeOf((*MockRoute53API)(nil).ListResourceRecordSets), arg0)
 }
 
 // ListResourceRecordSetsWithContext mocks base method
 func (m *MockRoute53API) ListResourceRecordSetsWithContext(arg0 aws.Context, arg1 *route53.ListResourceRecordSetsInput, arg2 ...request.Option) (*route53.ListResourceRecordSetsOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1924,12 +2181,14 @@ func (m *MockRoute53API) ListResourceRecordSetsWithContext(arg0 aws.Context, arg
 
 // ListResourceRecordSetsWithContext indicates an expected call of ListResourceRecordSetsWithContext
 func (mr *MockRoute53APIMockRecorder) ListResourceRecordSetsWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceRecordSetsWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListResourceRecordSetsWithContext), varargs...)
 }
 
 // ListResourceRecordSetsRequest mocks base method
 func (m *MockRoute53API) ListResourceRecordSetsRequest(arg0 *route53.ListResourceRecordSetsInput) (*request.Request, *route53.ListResourceRecordSetsOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListResourceRecordSetsRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListResourceRecordSetsOutput)
@@ -1938,11 +2197,13 @@ func (m *MockRoute53API) ListResourceRecordSetsRequest(arg0 *route53.ListResourc
 
 // ListResourceRecordSetsRequest indicates an expected call of ListResourceRecordSetsRequest
 func (mr *MockRoute53APIMockRecorder) ListResourceRecordSetsRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceRecordSetsRequest", reflect.TypeOf((*MockRoute53API)(nil).ListResourceRecordSetsRequest), arg0)
 }
 
 // ListResourceRecordSetsPages mocks base method
 func (m *MockRoute53API) ListResourceRecordSetsPages(arg0 *route53.ListResourceRecordSetsInput, arg1 func(*route53.ListResourceRecordSetsOutput, bool) bool) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListResourceRecordSetsPages", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -1950,11 +2211,13 @@ func (m *MockRoute53API) ListResourceRecordSetsPages(arg0 *route53.ListResourceR
 
 // ListResourceRecordSetsPages indicates an expected call of ListResourceRecordSetsPages
 func (mr *MockRoute53APIMockRecorder) ListResourceRecordSetsPages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceRecordSetsPages", reflect.TypeOf((*MockRoute53API)(nil).ListResourceRecordSetsPages), arg0, arg1)
 }
 
 // ListResourceRecordSetsPagesWithContext mocks base method
 func (m *MockRoute53API) ListResourceRecordSetsPagesWithContext(arg0 aws.Context, arg1 *route53.ListResourceRecordSetsInput, arg2 func(*route53.ListResourceRecordSetsOutput, bool) bool, arg3 ...request.Option) error {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1, arg2}
 	for _, a := range arg3 {
 		varargs = append(varargs, a)
@@ -1966,12 +2229,14 @@ func (m *MockRoute53API) ListResourceRecordSetsPagesWithContext(arg0 aws.Context
 
 // ListResourceRecordSetsPagesWithContext indicates an expected call of ListResourceRecordSetsPagesWithContext
 func (mr *MockRoute53APIMockRecorder) ListResourceRecordSetsPagesWithContext(arg0, arg1, arg2 interface{}, arg3 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1, arg2}, arg3...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceRecordSetsPagesWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListResourceRecordSetsPagesWithContext), varargs...)
 }
 
 // ListReusableDelegationSets mocks base method
 func (m *MockRoute53API) ListReusableDelegationSets(arg0 *route53.ListReusableDelegationSetsInput) (*route53.ListReusableDelegationSetsOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListReusableDelegationSets", arg0)
 	ret0, _ := ret[0].(*route53.ListReusableDelegationSetsOutput)
 	ret1, _ := ret[1].(error)
@@ -1980,11 +2245,13 @@ func (m *MockRoute53API) ListReusableDelegationSets(arg0 *route53.ListReusableDe
 
 // ListReusableDelegationSets indicates an expected call of ListReusableDelegationSets
 func (mr *MockRoute53APIMockRecorder) ListReusableDelegationSets(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReusableDelegationSets", reflect.TypeOf((*MockRoute53API)(nil).ListReusableDelegationSets), arg0)
 }
 
 // ListReusableDelegationSetsWithContext mocks base method
 func (m *MockRoute53API) ListReusableDelegationSetsWithContext(arg0 aws.Context, arg1 *route53.ListReusableDelegationSetsInput, arg2 ...request.Option) (*route53.ListReusableDelegationSetsOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -1997,12 +2264,14 @@ func (m *MockRoute53API) ListReusableDelegationSetsWithContext(arg0 aws.Context,
 
 // ListReusableDelegationSetsWithContext indicates an expected call of ListReusableDelegationSetsWithContext
 func (mr *MockRoute53APIMockRecorder) ListReusableDelegationSetsWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReusableDelegationSetsWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListReusableDelegationSetsWithContext), varargs...)
 }
 
 // ListReusableDelegationSetsRequest mocks base method
 func (m *MockRoute53API) ListReusableDelegationSetsRequest(arg0 *route53.ListReusableDelegationSetsInput) (*request.Request, *route53.ListReusableDelegationSetsOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListReusableDelegationSetsRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListReusableDelegationSetsOutput)
@@ -2011,11 +2280,13 @@ func (m *MockRoute53API) ListReusableDelegationSetsRequest(arg0 *route53.ListReu
 
 // ListReusableDelegationSetsRequest indicates an expected call of ListReusableDelegationSetsRequest
 func (mr *MockRoute53APIMockRecorder) ListReusableDelegationSetsRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReusableDelegationSetsRequest", reflect.TypeOf((*MockRoute53API)(nil).ListReusableDelegationSetsRequest), arg0)
 }
 
 // ListTagsForResource mocks base method
 func (m *MockRoute53API) ListTagsForResource(arg0 *route53.ListTagsForResourceInput) (*route53.ListTagsForResourceOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTagsForResource", arg0)
 	ret0, _ := ret[0].(*route53.ListTagsForResourceOutput)
 	ret1, _ := ret[1].(error)
@@ -2024,11 +2295,13 @@ func (m *MockRoute53API) ListTagsForResource(arg0 *route53.ListTagsForResourceIn
 
 // ListTagsForResource indicates an expected call of ListTagsForResource
 func (mr *MockRoute53APIMockRecorder) ListTagsForResource(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTagsForResource", reflect.TypeOf((*MockRoute53API)(nil).ListTagsForResource), arg0)
 }
 
 // ListTagsForResourceWithContext mocks base method
 func (m *MockRoute53API) ListTagsForResourceWithContext(arg0 aws.Context, arg1 *route53.ListTagsForResourceInput, arg2 ...request.Option) (*route53.ListTagsForResourceOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2041,12 +2314,14 @@ func (m *MockRoute53API) ListTagsForResourceWithContext(arg0 aws.Context, arg1 *
 
 // ListTagsForResourceWithContext indicates an expected call of ListTagsForResourceWithContext
 func (mr *MockRoute53APIMockRecorder) ListTagsForResourceWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTagsForResourceWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListTagsForResourceWithContext), varargs...)
 }
 
 // ListTagsForResourceRequest mocks base method
 func (m *MockRoute53API) ListTagsForResourceRequest(arg0 *route53.ListTagsForResourceInput) (*request.Request, *route53.ListTagsForResourceOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTagsForResourceRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListTagsForResourceOutput)
@@ -2055,11 +2330,13 @@ func (m *MockRoute53API) ListTagsForResourceRequest(arg0 *route53.ListTagsForRes
 
 // ListTagsForResourceRequest indicates an expected call of ListTagsForResourceRequest
 func (mr *MockRoute53APIMockRecorder) ListTagsForResourceRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTagsForResourceRequest", reflect.TypeOf((*MockRoute53API)(nil).ListTagsForResourceRequest), arg0)
 }
 
 // ListTagsForResources mocks base method
 func (m *MockRoute53API) ListTagsForResources(arg0 *route53.ListTagsForResourcesInput) (*route53.ListTagsForResourcesOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTagsForResources", arg0)
 	ret0, _ := ret[0].(*route53.ListTagsForResourcesOutput)
 	ret1, _ := ret[1].(error)
@@ -2068,11 +2345,13 @@ func (m *MockRoute53API) ListTagsForResources(arg0 *route53.ListTagsForResources
 
 // ListTagsForResources indicates an expected call of ListTagsForResources
 func (mr *MockRoute53APIMockRecorder) ListTagsForResources(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTagsForResources", reflect.TypeOf((*MockRoute53API)(nil).ListTagsForResources), arg0)
 }
 
 // ListTagsForResourcesWithContext mocks base method
 func (m *MockRoute53API) ListTagsForResourcesWithContext(arg0 aws.Context, arg1 *route53.ListTagsForResourcesInput, arg2 ...request.Option) (*route53.ListTagsForResourcesOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2085,12 +2364,14 @@ func (m *MockRoute53API) ListTagsForResourcesWithContext(arg0 aws.Context, arg1 
 
 // ListTagsForResourcesWithContext indicates an expected call of ListTagsForResourcesWithContext
 func (mr *MockRoute53APIMockRecorder) ListTagsForResourcesWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTagsForResourcesWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListTagsForResourcesWithContext), varargs...)
 }
 
 // ListTagsForResourcesRequest mocks base method
 func (m *MockRoute53API) ListTagsForResourcesRequest(arg0 *route53.ListTagsForResourcesInput) (*request.Request, *route53.ListTagsForResourcesOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTagsForResourcesRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListTagsForResourcesOutput)
@@ -2099,11 +2380,13 @@ func (m *MockRoute53API) ListTagsForResourcesRequest(arg0 *route53.ListTagsForRe
 
 // ListTagsForResourcesRequest indicates an expected call of ListTagsForResourcesRequest
 func (mr *MockRoute53APIMockRecorder) ListTagsForResourcesRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTagsForResourcesRequest", reflect.TypeOf((*MockRoute53API)(nil).ListTagsForResourcesRequest), arg0)
 }
 
 // ListTrafficPolicies mocks base method
 func (m *MockRoute53API) ListTrafficPolicies(arg0 *route53.ListTrafficPoliciesInput) (*route53.ListTrafficPoliciesOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicies", arg0)
 	ret0, _ := ret[0].(*route53.ListTrafficPoliciesOutput)
 	ret1, _ := ret[1].(error)
@@ -2112,11 +2395,13 @@ func (m *MockRoute53API) ListTrafficPolicies(arg0 *route53.ListTrafficPoliciesIn
 
 // ListTrafficPolicies indicates an expected call of ListTrafficPolicies
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicies(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicies", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicies), arg0)
 }
 
 // ListTrafficPoliciesWithContext mocks base method
 func (m *MockRoute53API) ListTrafficPoliciesWithContext(arg0 aws.Context, arg1 *route53.ListTrafficPoliciesInput, arg2 ...request.Option) (*route53.ListTrafficPoliciesOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2129,12 +2414,14 @@ func (m *MockRoute53API) ListTrafficPoliciesWithContext(arg0 aws.Context, arg1 *
 
 // ListTrafficPoliciesWithContext indicates an expected call of ListTrafficPoliciesWithContext
 func (mr *MockRoute53APIMockRecorder) ListTrafficPoliciesWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPoliciesWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPoliciesWithContext), varargs...)
 }
 
 // ListTrafficPoliciesRequest mocks base method
 func (m *MockRoute53API) ListTrafficPoliciesRequest(arg0 *route53.ListTrafficPoliciesInput) (*request.Request, *route53.ListTrafficPoliciesOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPoliciesRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListTrafficPoliciesOutput)
@@ -2143,11 +2430,13 @@ func (m *MockRoute53API) ListTrafficPoliciesRequest(arg0 *route53.ListTrafficPol
 
 // ListTrafficPoliciesRequest indicates an expected call of ListTrafficPoliciesRequest
 func (mr *MockRoute53APIMockRecorder) ListTrafficPoliciesRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPoliciesRequest", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPoliciesRequest), arg0)
 }
 
 // ListTrafficPolicyInstances mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstances(arg0 *route53.ListTrafficPolicyInstancesInput) (*route53.ListTrafficPolicyInstancesOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyInstances", arg0)
 	ret0, _ := ret[0].(*route53.ListTrafficPolicyInstancesOutput)
 	ret1, _ := ret[1].(error)
@@ -2156,11 +2445,13 @@ func (m *MockRoute53API) ListTrafficPolicyInstances(arg0 *route53.ListTrafficPol
 
 // ListTrafficPolicyInstances indicates an expected call of ListTrafficPolicyInstances
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstances(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstances", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstances), arg0)
 }
 
 // ListTrafficPolicyInstancesWithContext mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesWithContext(arg0 aws.Context, arg1 *route53.ListTrafficPolicyInstancesInput, arg2 ...request.Option) (*route53.ListTrafficPolicyInstancesOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2173,12 +2464,14 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesWithContext(arg0 aws.Context,
 
 // ListTrafficPolicyInstancesWithContext indicates an expected call of ListTrafficPolicyInstancesWithContext
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesWithContext), varargs...)
 }
 
 // ListTrafficPolicyInstancesRequest mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesRequest(arg0 *route53.ListTrafficPolicyInstancesInput) (*request.Request, *route53.ListTrafficPolicyInstancesOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyInstancesRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListTrafficPolicyInstancesOutput)
@@ -2187,11 +2480,13 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesRequest(arg0 *route53.ListTra
 
 // ListTrafficPolicyInstancesRequest indicates an expected call of ListTrafficPolicyInstancesRequest
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesRequest", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesRequest), arg0)
 }
 
 // ListTrafficPolicyInstancesByHostedZone mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesByHostedZone(arg0 *route53.ListTrafficPolicyInstancesByHostedZoneInput) (*route53.ListTrafficPolicyInstancesByHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyInstancesByHostedZone", arg0)
 	ret0, _ := ret[0].(*route53.ListTrafficPolicyInstancesByHostedZoneOutput)
 	ret1, _ := ret[1].(error)
@@ -2200,11 +2495,13 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesByHostedZone(arg0 *route53.Li
 
 // ListTrafficPolicyInstancesByHostedZone indicates an expected call of ListTrafficPolicyInstancesByHostedZone
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesByHostedZone(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesByHostedZone", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesByHostedZone), arg0)
 }
 
 // ListTrafficPolicyInstancesByHostedZoneWithContext mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesByHostedZoneWithContext(arg0 aws.Context, arg1 *route53.ListTrafficPolicyInstancesByHostedZoneInput, arg2 ...request.Option) (*route53.ListTrafficPolicyInstancesByHostedZoneOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2217,12 +2514,14 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesByHostedZoneWithContext(arg0 
 
 // ListTrafficPolicyInstancesByHostedZoneWithContext indicates an expected call of ListTrafficPolicyInstancesByHostedZoneWithContext
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesByHostedZoneWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesByHostedZoneWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesByHostedZoneWithContext), varargs...)
 }
 
 // ListTrafficPolicyInstancesByHostedZoneRequest mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesByHostedZoneRequest(arg0 *route53.ListTrafficPolicyInstancesByHostedZoneInput) (*request.Request, *route53.ListTrafficPolicyInstancesByHostedZoneOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyInstancesByHostedZoneRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListTrafficPolicyInstancesByHostedZoneOutput)
@@ -2231,11 +2530,13 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesByHostedZoneRequest(arg0 *rou
 
 // ListTrafficPolicyInstancesByHostedZoneRequest indicates an expected call of ListTrafficPolicyInstancesByHostedZoneRequest
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesByHostedZoneRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesByHostedZoneRequest", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesByHostedZoneRequest), arg0)
 }
 
 // ListTrafficPolicyInstancesByPolicy mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesByPolicy(arg0 *route53.ListTrafficPolicyInstancesByPolicyInput) (*route53.ListTrafficPolicyInstancesByPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyInstancesByPolicy", arg0)
 	ret0, _ := ret[0].(*route53.ListTrafficPolicyInstancesByPolicyOutput)
 	ret1, _ := ret[1].(error)
@@ -2244,11 +2545,13 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesByPolicy(arg0 *route53.ListTr
 
 // ListTrafficPolicyInstancesByPolicy indicates an expected call of ListTrafficPolicyInstancesByPolicy
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesByPolicy(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesByPolicy", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesByPolicy), arg0)
 }
 
 // ListTrafficPolicyInstancesByPolicyWithContext mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesByPolicyWithContext(arg0 aws.Context, arg1 *route53.ListTrafficPolicyInstancesByPolicyInput, arg2 ...request.Option) (*route53.ListTrafficPolicyInstancesByPolicyOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2261,12 +2564,14 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesByPolicyWithContext(arg0 aws.
 
 // ListTrafficPolicyInstancesByPolicyWithContext indicates an expected call of ListTrafficPolicyInstancesByPolicyWithContext
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesByPolicyWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesByPolicyWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesByPolicyWithContext), varargs...)
 }
 
 // ListTrafficPolicyInstancesByPolicyRequest mocks base method
 func (m *MockRoute53API) ListTrafficPolicyInstancesByPolicyRequest(arg0 *route53.ListTrafficPolicyInstancesByPolicyInput) (*request.Request, *route53.ListTrafficPolicyInstancesByPolicyOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyInstancesByPolicyRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListTrafficPolicyInstancesByPolicyOutput)
@@ -2275,11 +2580,13 @@ func (m *MockRoute53API) ListTrafficPolicyInstancesByPolicyRequest(arg0 *route53
 
 // ListTrafficPolicyInstancesByPolicyRequest indicates an expected call of ListTrafficPolicyInstancesByPolicyRequest
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyInstancesByPolicyRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyInstancesByPolicyRequest", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyInstancesByPolicyRequest), arg0)
 }
 
 // ListTrafficPolicyVersions mocks base method
 func (m *MockRoute53API) ListTrafficPolicyVersions(arg0 *route53.ListTrafficPolicyVersionsInput) (*route53.ListTrafficPolicyVersionsOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyVersions", arg0)
 	ret0, _ := ret[0].(*route53.ListTrafficPolicyVersionsOutput)
 	ret1, _ := ret[1].(error)
@@ -2288,11 +2595,13 @@ func (m *MockRoute53API) ListTrafficPolicyVersions(arg0 *route53.ListTrafficPoli
 
 // ListTrafficPolicyVersions indicates an expected call of ListTrafficPolicyVersions
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyVersions(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyVersions", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyVersions), arg0)
 }
 
 // ListTrafficPolicyVersionsWithContext mocks base method
 func (m *MockRoute53API) ListTrafficPolicyVersionsWithContext(arg0 aws.Context, arg1 *route53.ListTrafficPolicyVersionsInput, arg2 ...request.Option) (*route53.ListTrafficPolicyVersionsOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2305,12 +2614,14 @@ func (m *MockRoute53API) ListTrafficPolicyVersionsWithContext(arg0 aws.Context, 
 
 // ListTrafficPolicyVersionsWithContext indicates an expected call of ListTrafficPolicyVersionsWithContext
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyVersionsWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyVersionsWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyVersionsWithContext), varargs...)
 }
 
 // ListTrafficPolicyVersionsRequest mocks base method
 func (m *MockRoute53API) ListTrafficPolicyVersionsRequest(arg0 *route53.ListTrafficPolicyVersionsInput) (*request.Request, *route53.ListTrafficPolicyVersionsOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTrafficPolicyVersionsRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListTrafficPolicyVersionsOutput)
@@ -2319,11 +2630,13 @@ func (m *MockRoute53API) ListTrafficPolicyVersionsRequest(arg0 *route53.ListTraf
 
 // ListTrafficPolicyVersionsRequest indicates an expected call of ListTrafficPolicyVersionsRequest
 func (mr *MockRoute53APIMockRecorder) ListTrafficPolicyVersionsRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrafficPolicyVersionsRequest", reflect.TypeOf((*MockRoute53API)(nil).ListTrafficPolicyVersionsRequest), arg0)
 }
 
 // ListVPCAssociationAuthorizations mocks base method
 func (m *MockRoute53API) ListVPCAssociationAuthorizations(arg0 *route53.ListVPCAssociationAuthorizationsInput) (*route53.ListVPCAssociationAuthorizationsOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListVPCAssociationAuthorizations", arg0)
 	ret0, _ := ret[0].(*route53.ListVPCAssociationAuthorizationsOutput)
 	ret1, _ := ret[1].(error)
@@ -2332,11 +2645,13 @@ func (m *MockRoute53API) ListVPCAssociationAuthorizations(arg0 *route53.ListVPCA
 
 // ListVPCAssociationAuthorizations indicates an expected call of ListVPCAssociationAuthorizations
 func (mr *MockRoute53APIMockRecorder) ListVPCAssociationAuthorizations(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVPCAssociationAuthorizations", reflect.TypeOf((*MockRoute53API)(nil).ListVPCAssociationAuthorizations), arg0)
 }
 
 // ListVPCAssociationAuthorizationsWithContext mocks base method
 func (m *MockRoute53API) ListVPCAssociationAuthorizationsWithContext(arg0 aws.Context, arg1 *route53.ListVPCAssociationAuthorizationsInput, arg2 ...request.Option) (*route53.ListVPCAssociationAuthorizationsOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2349,12 +2664,14 @@ func (m *MockRoute53API) ListVPCAssociationAuthorizationsWithContext(arg0 aws.Co
 
 // ListVPCAssociationAuthorizationsWithContext indicates an expected call of ListVPCAssociationAuthorizationsWithContext
 func (mr *MockRoute53APIMockRecorder) ListVPCAssociationAuthorizationsWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVPCAssociationAuthorizationsWithContext", reflect.TypeOf((*MockRoute53API)(nil).ListVPCAssociationAuthorizationsWithContext), varargs...)
 }
 
 // ListVPCAssociationAuthorizationsRequest mocks base method
 func (m *MockRoute53API) ListVPCAssociationAuthorizationsRequest(arg0 *route53.ListVPCAssociationAuthorizationsInput) (*request.Request, *route53.ListVPCAssociationAuthorizationsOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListVPCAssociationAuthorizationsRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.ListVPCAssociationAuthorizationsOutput)
@@ -2363,11 +2680,13 @@ func (m *MockRoute53API) ListVPCAssociationAuthorizationsRequest(arg0 *route53.L
 
 // ListVPCAssociationAuthorizationsRequest indicates an expected call of ListVPCAssociationAuthorizationsRequest
 func (mr *MockRoute53APIMockRecorder) ListVPCAssociationAuthorizationsRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVPCAssociationAuthorizationsRequest", reflect.TypeOf((*MockRoute53API)(nil).ListVPCAssociationAuthorizationsRequest), arg0)
 }
 
 // TestDNSAnswer mocks base method
 func (m *MockRoute53API) TestDNSAnswer(arg0 *route53.TestDNSAnswerInput) (*route53.TestDNSAnswerOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TestDNSAnswer", arg0)
 	ret0, _ := ret[0].(*route53.TestDNSAnswerOutput)
 	ret1, _ := ret[1].(error)
@@ -2376,11 +2695,13 @@ func (m *MockRoute53API) TestDNSAnswer(arg0 *route53.TestDNSAnswerInput) (*route
 
 // TestDNSAnswer indicates an expected call of TestDNSAnswer
 func (mr *MockRoute53APIMockRecorder) TestDNSAnswer(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TestDNSAnswer", reflect.TypeOf((*MockRoute53API)(nil).TestDNSAnswer), arg0)
 }
 
 // TestDNSAnswerWithContext mocks base method
 func (m *MockRoute53API) TestDNSAnswerWithContext(arg0 aws.Context, arg1 *route53.TestDNSAnswerInput, arg2 ...request.Option) (*route53.TestDNSAnswerOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2393,12 +2714,14 @@ func (m *MockRoute53API) TestDNSAnswerWithContext(arg0 aws.Context, arg1 *route5
 
 // TestDNSAnswerWithContext indicates an expected call of TestDNSAnswerWithContext
 func (mr *MockRoute53APIMockRecorder) TestDNSAnswerWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TestDNSAnswerWithContext", reflect.TypeOf((*MockRoute53API)(nil).TestDNSAnswerWithContext), varargs...)
 }
 
 // TestDNSAnswerRequest mocks base method
 func (m *MockRoute53API) TestDNSAnswerRequest(arg0 *route53.TestDNSAnswerInput) (*request.Request, *route53.TestDNSAnswerOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TestDNSAnswerRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.TestDNSAnswerOutput)
@@ -2407,11 +2730,13 @@ func (m *MockRoute53API) TestDNSAnswerRequest(arg0 *route53.TestDNSAnswerInput) 
 
 // TestDNSAnswerRequest indicates an expected call of TestDNSAnswerRequest
 func (mr *MockRoute53APIMockRecorder) TestDNSAnswerRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TestDNSAnswerRequest", reflect.TypeOf((*MockRoute53API)(nil).TestDNSAnswerRequest), arg0)
 }
 
 // UpdateHealthCheck mocks base method
 func (m *MockRoute53API) UpdateHealthCheck(arg0 *route53.UpdateHealthCheckInput) (*route53.UpdateHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateHealthCheck", arg0)
 	ret0, _ := ret[0].(*route53.UpdateHealthCheckOutput)
 	ret1, _ := ret[1].(error)
@@ -2420,11 +2745,13 @@ func (m *MockRoute53API) UpdateHealthCheck(arg0 *route53.UpdateHealthCheckInput)
 
 // UpdateHealthCheck indicates an expected call of UpdateHealthCheck
 func (mr *MockRoute53APIMockRecorder) UpdateHealthCheck(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateHealthCheck", reflect.TypeOf((*MockRoute53API)(nil).UpdateHealthCheck), arg0)
 }
 
 // UpdateHealthCheckWithContext mocks base method
 func (m *MockRoute53API) UpdateHealthCheckWithContext(arg0 aws.Context, arg1 *route53.UpdateHealthCheckInput, arg2 ...request.Option) (*route53.UpdateHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2437,12 +2764,14 @@ func (m *MockRoute53API) UpdateHealthCheckWithContext(arg0 aws.Context, arg1 *ro
 
 // UpdateHealthCheckWithContext indicates an expected call of UpdateHealthCheckWithContext
 func (mr *MockRoute53APIMockRecorder) UpdateHealthCheckWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateHealthCheckWithContext", reflect.TypeOf((*MockRoute53API)(nil).UpdateHealthCheckWithContext), varargs...)
 }
 
 // UpdateHealthCheckRequest mocks base method
 func (m *MockRoute53API) UpdateHealthCheckRequest(arg0 *route53.UpdateHealthCheckInput) (*request.Request, *route53.UpdateHealthCheckOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateHealthCheckRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.UpdateHealthCheckOutput)
@@ -2451,11 +2780,13 @@ func (m *MockRoute53API) UpdateHealthCheckRequest(arg0 *route53.UpdateHealthChec
 
 // UpdateHealthCheckRequest indicates an expected call of UpdateHealthCheckRequest
 func (mr *MockRoute53APIMockRecorder) UpdateHealthCheckRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateHealthCheckRequest", reflect.TypeOf((*MockRoute53API)(nil).UpdateHealthCheckRequest), arg0)
 }
 
 // UpdateHostedZoneComment mocks base method
 func (m *MockRoute53API) UpdateHostedZoneComment(arg0 *route53.UpdateHostedZoneCommentInput) (*route53.UpdateHostedZoneCommentOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateHostedZoneComment", arg0)
 	ret0, _ := ret[0].(*route53.UpdateHostedZoneCommentOutput)
 	ret1, _ := ret[1].(error)
@@ -2464,11 +2795,13 @@ func (m *MockRoute53API) UpdateHostedZoneComment(arg0 *route53.UpdateHostedZoneC
 
 // UpdateHostedZoneComment indicates an expected call of UpdateHostedZoneComment
 func (mr *MockRoute53APIMockRecorder) UpdateHostedZoneComment(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateHostedZoneComment", reflect.TypeOf((*MockRoute53API)(nil).UpdateHostedZoneComment), arg0)
 }
 
 // UpdateHostedZoneCommentWithContext mocks base method
 func (m *MockRoute53API) UpdateHostedZoneCommentWithContext(arg0 aws.Context, arg1 *route53.UpdateHostedZoneCommentInput, arg2 ...request.Option) (*route53.UpdateHostedZoneCommentOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2481,12 +2814,14 @@ func (m *MockRoute53API) UpdateHostedZoneCommentWithContext(arg0 aws.Context, ar
 
 // UpdateHostedZoneCommentWithContext indicates an expected call of UpdateHostedZoneCommentWithContext
 func (mr *MockRoute53APIMockRecorder) UpdateHostedZoneCommentWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateHostedZoneCommentWithContext", reflect.TypeOf((*MockRoute53API)(nil).UpdateHostedZoneCommentWithContext), varargs...)
 }
 
 // UpdateHostedZoneCommentRequest mocks base method
 func (m *MockRoute53API) UpdateHostedZoneCommentRequest(arg0 *route53.UpdateHostedZoneCommentInput) (*request.Request, *route53.UpdateHostedZoneCommentOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateHostedZoneCommentRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.UpdateHostedZoneCommentOutput)
@@ -2495,11 +2830,13 @@ func (m *MockRoute53API) UpdateHostedZoneCommentRequest(arg0 *route53.UpdateHost
 
 // UpdateHostedZoneCommentRequest indicates an expected call of UpdateHostedZoneCommentRequest
 func (mr *MockRoute53APIMockRecorder) UpdateHostedZoneCommentRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateHostedZoneCommentRequest", reflect.TypeOf((*MockRoute53API)(nil).UpdateHostedZoneCommentRequest), arg0)
 }
 
 // UpdateTrafficPolicyComment mocks base method
 func (m *MockRoute53API) UpdateTrafficPolicyComment(arg0 *route53.UpdateTrafficPolicyCommentInput) (*route53.UpdateTrafficPolicyCommentOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTrafficPolicyComment", arg0)
 	ret0, _ := ret[0].(*route53.UpdateTrafficPolicyCommentOutput)
 	ret1, _ := ret[1].(error)
@@ -2508,11 +2845,13 @@ func (m *MockRoute53API) UpdateTrafficPolicyComment(arg0 *route53.UpdateTrafficP
 
 // UpdateTrafficPolicyComment indicates an expected call of UpdateTrafficPolicyComment
 func (mr *MockRoute53APIMockRecorder) UpdateTrafficPolicyComment(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTrafficPolicyComment", reflect.TypeOf((*MockRoute53API)(nil).UpdateTrafficPolicyComment), arg0)
 }
 
 // UpdateTrafficPolicyCommentWithContext mocks base method
 func (m *MockRoute53API) UpdateTrafficPolicyCommentWithContext(arg0 aws.Context, arg1 *route53.UpdateTrafficPolicyCommentInput, arg2 ...request.Option) (*route53.UpdateTrafficPolicyCommentOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2525,12 +2864,14 @@ func (m *MockRoute53API) UpdateTrafficPolicyCommentWithContext(arg0 aws.Context,
 
 // UpdateTrafficPolicyCommentWithContext indicates an expected call of UpdateTrafficPolicyCommentWithContext
 func (mr *MockRoute53APIMockRecorder) UpdateTrafficPolicyCommentWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTrafficPolicyCommentWithContext", reflect.TypeOf((*MockRoute53API)(nil).UpdateTrafficPolicyCommentWithContext), varargs...)
 }
 
 // UpdateTrafficPolicyCommentRequest mocks base method
 func (m *MockRoute53API) UpdateTrafficPolicyCommentRequest(arg0 *route53.UpdateTrafficPolicyCommentInput) (*request.Request, *route53.UpdateTrafficPolicyCommentOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTrafficPolicyCommentRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.UpdateTrafficPolicyCommentOutput)
@@ -2539,11 +2880,13 @@ func (m *MockRoute53API) UpdateTrafficPolicyCommentRequest(arg0 *route53.UpdateT
 
 // UpdateTrafficPolicyCommentRequest indicates an expected call of UpdateTrafficPolicyCommentRequest
 func (mr *MockRoute53APIMockRecorder) UpdateTrafficPolicyCommentRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTrafficPolicyCommentRequest", reflect.TypeOf((*MockRoute53API)(nil).UpdateTrafficPolicyCommentRequest), arg0)
 }
 
 // UpdateTrafficPolicyInstance mocks base method
 func (m *MockRoute53API) UpdateTrafficPolicyInstance(arg0 *route53.UpdateTrafficPolicyInstanceInput) (*route53.UpdateTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTrafficPolicyInstance", arg0)
 	ret0, _ := ret[0].(*route53.UpdateTrafficPolicyInstanceOutput)
 	ret1, _ := ret[1].(error)
@@ -2552,11 +2895,13 @@ func (m *MockRoute53API) UpdateTrafficPolicyInstance(arg0 *route53.UpdateTraffic
 
 // UpdateTrafficPolicyInstance indicates an expected call of UpdateTrafficPolicyInstance
 func (mr *MockRoute53APIMockRecorder) UpdateTrafficPolicyInstance(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTrafficPolicyInstance", reflect.TypeOf((*MockRoute53API)(nil).UpdateTrafficPolicyInstance), arg0)
 }
 
 // UpdateTrafficPolicyInstanceWithContext mocks base method
 func (m *MockRoute53API) UpdateTrafficPolicyInstanceWithContext(arg0 aws.Context, arg1 *route53.UpdateTrafficPolicyInstanceInput, arg2 ...request.Option) (*route53.UpdateTrafficPolicyInstanceOutput, error) {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2569,12 +2914,14 @@ func (m *MockRoute53API) UpdateTrafficPolicyInstanceWithContext(arg0 aws.Context
 
 // UpdateTrafficPolicyInstanceWithContext indicates an expected call of UpdateTrafficPolicyInstanceWithContext
 func (mr *MockRoute53APIMockRecorder) UpdateTrafficPolicyInstanceWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTrafficPolicyInstanceWithContext", reflect.TypeOf((*MockRoute53API)(nil).UpdateTrafficPolicyInstanceWithContext), varargs...)
 }
 
 // UpdateTrafficPolicyInstanceRequest mocks base method
 func (m *MockRoute53API) UpdateTrafficPolicyInstanceRequest(arg0 *route53.UpdateTrafficPolicyInstanceInput) (*request.Request, *route53.UpdateTrafficPolicyInstanceOutput) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTrafficPolicyInstanceRequest", arg0)
 	ret0, _ := ret[0].(*request.Request)
 	ret1, _ := ret[1].(*route53.UpdateTrafficPolicyInstanceOutput)
@@ -2583,11 +2930,13 @@ func (m *MockRoute53API) UpdateTrafficPolicyInstanceRequest(arg0 *route53.Update
 
 // UpdateTrafficPolicyInstanceRequest indicates an expected call of UpdateTrafficPolicyInstanceRequest
 func (mr *MockRoute53APIMockRecorder) UpdateTrafficPolicyInstanceRequest(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTrafficPolicyInstanceRequest", reflect.TypeOf((*MockRoute53API)(nil).UpdateTrafficPolicyInstanceRequest), arg0)
 }
 
 // WaitUntilResourceRecordSetsChanged mocks base method
 func (m *MockRoute53API) WaitUntilResourceRecordSetsChanged(arg0 *route53.GetChangeInput) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WaitUntilResourceRecordSetsChanged", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -2595,11 +2944,13 @@ func (m *MockRoute53API) WaitUntilResourceRecordSetsChanged(arg0 *route53.GetCha
 
 // WaitUntilResourceRecordSetsChanged indicates an expected call of WaitUntilResourceRecordSetsChanged
 func (mr *MockRoute53APIMockRecorder) WaitUntilResourceRecordSetsChanged(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WaitUntilResourceRecordSetsChanged", reflect.TypeOf((*MockRoute53API)(nil).WaitUntilResourceRecordSetsChanged), arg0)
 }
 
 // WaitUntilResourceRecordSetsChangedWithContext mocks base method
 func (m *MockRoute53API) WaitUntilResourceRecordSetsChangedWithContext(arg0 aws.Context, arg1 *route53.GetChangeInput, arg2 ...request.WaiterOption) error {
+	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
@@ -2611,6 +2962,7 @@ func (m *MockRoute53API) WaitUntilResourceRecordSetsChangedWithContext(arg0 aws.
 
 // WaitUntilResourceRecordSetsChangedWithContext indicates an expected call of WaitUntilResourceRecordSetsChangedWithContext
 func (mr *MockRoute53APIMockRecorder) WaitUntilResourceRecordSetsChangedWithContext(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WaitUntilResourceRecordSetsChangedWithContext", reflect.TypeOf((*MockRoute53API)(nil).WaitUntilResourceRecordSetsChangedWithContext), varargs...)
 }

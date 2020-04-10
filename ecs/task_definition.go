@@ -137,6 +137,7 @@ func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) strin
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
 			TaskRoleArn:             taskDefinition.TaskRoleArn,
+			Volumes:                 taskDefinition.Volumes,
 		},
 	)
 
@@ -172,6 +173,7 @@ func (ecs *ECS) AddEnvVarsToTaskDefinition(taskDefinitionArn string, envVars []E
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
 			TaskRoleArn:             taskDefinition.TaskRoleArn,
+			Volumes:                 taskDefinition.Volumes,
 		},
 	)
 
@@ -210,6 +212,7 @@ func (ecs *ECS) RemoveEnvVarsFromTaskDefinition(taskDefinitionArn string, keys [
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
 			TaskRoleArn:             taskDefinition.TaskRoleArn,
+			Volumes:                 taskDefinition.Volumes,
 		},
 	)
 
@@ -258,6 +261,7 @@ func (ecs *ECS) UpdateTaskDefinitionCpuAndMemory(taskDefinitionArn, cpu, memory 
 			NetworkMode:             taskDefinition.NetworkMode,
 			RequiresCompatibilities: taskDefinition.RequiresCompatibilities,
 			TaskRoleArn:             taskDefinition.TaskRoleArn,
+			Volumes:                 taskDefinition.Volumes,
 		},
 	)
 

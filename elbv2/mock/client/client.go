@@ -5,8 +5,8 @@
 package client
 
 import (
-	gomock "github.com/golang/mock/gomock"
 	elbv2 "github.com/awslabs/fargatecli/elbv2"
+	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
 

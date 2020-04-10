@@ -10,8 +10,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	awsacm "github.com/aws/aws-sdk-go/service/acm"
-	"github.com/golang/mock/gomock"
 	"github.com/awslabs/fargatecli/acm/mock/sdk"
+	"github.com/golang/mock/gomock"
 )
 
 func TestValidateAlias(t *testing.T) {
