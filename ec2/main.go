@@ -16,6 +16,7 @@ type Client interface {
 	GetDefaultSecurityGroupID() (string, error)
 	GetDefaultSubnetIDs() ([]string, error)
 	GetSubnetVPCID(string) (string, error)
+	SetDefaultSecurityGroupID() (string, error)
 }
 
 // SDKClient implements access to EC2 via the AWS SDK.

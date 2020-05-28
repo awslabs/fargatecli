@@ -105,3 +105,18 @@ func (mr *MockClientMockRecorder) GetSubnetVPCID(arg0 interface{}) *gomock.Call 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubnetVPCID", reflect.TypeOf((*MockClient)(nil).GetSubnetVPCID), arg0)
 }
+
+// SetDefaultSecurityGroupID mocks base method
+func (m *MockClient) SetDefaultSecurityGroupID() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetDefaultSecurityGroupID")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SetDefaultSecurityGroupID indicates an expected call of SetDefaultSecurityGroupID
+func (mr *MockClientMockRecorder) SetDefaultSecurityGroupID() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDefaultSecurityGroupID", reflect.TypeOf((*MockClient)(nil).SetDefaultSecurityGroupID))
+}

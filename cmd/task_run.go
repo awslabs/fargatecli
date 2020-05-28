@@ -25,6 +25,7 @@ type TaskRunOperation struct {
 	TaskName         string
 	TaskRole         string
 	TaskCommand      []string
+	output           Output
 }
 
 func (o *TaskRunOperation) Validate() {
@@ -125,12 +126,18 @@ the requirements of the docker CMD syntax`,
 			TaskName:         args[0],
 			TaskRole:         flagTaskRunTaskRole,
 			TaskCommand:      flagTaskRunTaskCommand,
+			output:           output,
 		}
 
 		operation.SetEnvVars(flagTaskRunEnvVars)
 		operation.Validate()
 
-		runTask(operation)
+		errs := runTask(operation)
+
+		if len(errs) > 0 {
+			output.Fatals(errs, "Errors found while executing [COMMAND=task Action=run]")
+			return
+		}
 	},
 }
 
@@ -147,7 +154,7 @@ func init() {
 	taskCmd.AddCommand(taskRunCmd)
 }
 
-func runTask(operation *TaskRunOperation) {
+func runTask(operation *TaskRunOperation) (errors []error) {
 	cwl := CWL.New(sess)
 	ec2 := EC2.New(sess)
 	ecr := ECR.New(sess)
@@ -157,12 +164,20 @@ func runTask(operation *TaskRunOperation) {
 	logGroupName := cwl.CreateLogGroup(taskLogGroupFormat, operation.TaskName)
 
 	if len(operation.SecurityGroupIds) == 0 {
-		defaultSecurityGroupID, _ := ec2.GetDefaultSecurityGroupID()
+		operation.output.Debug("Find the default security group, and creates it if it does not exist [COMMAND=task Action=run]")
+		defaultSecurityGroupID, err := ec2.SetDefaultSecurityGroupID()
+		if err != nil {
+			errors = append(errors, err)
+		}
 		operation.SecurityGroupIds = []string{defaultSecurityGroupID}
 	}
 
 	if len(operation.SubnetIds) == 0 {
-		operation.SubnetIds, _ = ec2.GetDefaultSubnetIDs()
+		var err error
+		operation.SubnetIds, err = ec2.GetDefaultSubnetIDs()
+		if err != nil {
+			errors = append(errors, err)
+		}
 	}
 
 	if operation.Image == "" {
@@ -218,4 +233,6 @@ func runTask(operation *TaskRunOperation) {
 	)
 
 	console.Info("Running task %s", operation.TaskName)
+
+	return
 }

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/awslabs/fargatecli/cmd/mock"
 	ec2client "github.com/awslabs/fargatecli/ec2/mock/client"
+	"github.com/golang/mock/gomock"
 )
 
 func TestSetSubnetIDs(t *testing.T) {
@@ -74,7 +74,7 @@ func TestSetDefaultSecurityGroupID(t *testing.T) {
 	mockEC2Client := ec2client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockEC2Client.EXPECT().GetDefaultSecurityGroupID().Return("sg-1234567", nil)
+	mockEC2Client.EXPECT().SetDefaultSecurityGroupID().Return("sg-1234567", nil) //SGCreate fallback is tested in vpc_test.go
 
 	operation := vpcOperation{
 		ec2:    mockEC2Client,
@@ -103,7 +103,7 @@ func TestSetDefaultSecurityGroupIDLookupError(t *testing.T) {
 	mockEC2Client := ec2client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockEC2Client.EXPECT().GetDefaultSecurityGroupID().Return("", errors.New("boom"))
+	mockEC2Client.EXPECT().SetDefaultSecurityGroupID().Return("", errors.New("boom"))
 
 	operation := vpcOperation{
 		ec2:    mockEC2Client,
@@ -121,37 +121,6 @@ func TestSetDefaultSecurityGroupIDLookupError(t *testing.T) {
 	}
 }
 
-func TestSetDefaultSecurityGroupIDWithCreate(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	mockEC2Client := ec2client.NewMockClient(mockCtrl)
-	mockOutput := &mock.Output{}
-
-	mockEC2Client.EXPECT().GetDefaultSecurityGroupID().Return("", nil)
-	mockEC2Client.EXPECT().CreateDefaultSecurityGroup().Return("sg-1234567", nil)
-	mockEC2Client.EXPECT().AuthorizeAllSecurityGroupIngress("sg-1234567").Return(nil)
-
-	operation := vpcOperation{
-		ec2:    mockEC2Client,
-		output: mockOutput,
-	}
-
-	err := operation.setDefaultSecurityGroupID()
-
-	if err != nil {
-		t.Errorf("expected no error, got: %v", err)
-	}
-
-	if len(operation.securityGroupIDs) != 1 {
-		t.Fatalf("expected 1 security group ID, got: %d", len(operation.securityGroupIDs))
-	}
-
-	if expected := "sg-1234567"; operation.securityGroupIDs[0] != expected {
-		t.Errorf("expected: %s, got: %s", expected, operation.securityGroupIDs[0])
-	}
-}
-
 func TestSetDefaultSecurityGroupIDWithCreateError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -159,8 +128,7 @@ func TestSetDefaultSecurityGroupIDWithCreateError(t *testing.T) {
 	mockEC2Client := ec2client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockEC2Client.EXPECT().GetDefaultSecurityGroupID().Return("", nil)
-	mockEC2Client.EXPECT().CreateDefaultSecurityGroup().Return("", errors.New("boom"))
+	mockEC2Client.EXPECT().SetDefaultSecurityGroupID().Return("", errors.New("boom"))
 
 	operation := vpcOperation{
 		ec2:    mockEC2Client,
@@ -185,9 +153,7 @@ func TestSetDefaultSecurityGroupIDWithAuthorizeError(t *testing.T) {
 	mockEC2Client := ec2client.NewMockClient(mockCtrl)
 	mockOutput := &mock.Output{}
 
-	mockEC2Client.EXPECT().GetDefaultSecurityGroupID().Return("", nil)
-	mockEC2Client.EXPECT().CreateDefaultSecurityGroup().Return("sg-1234567", nil)
-	mockEC2Client.EXPECT().AuthorizeAllSecurityGroupIngress("sg-1234567").Return(errors.New("boom"))
+	mockEC2Client.EXPECT().SetDefaultSecurityGroupID().Return("sg-1234567", errors.New("boom"))
 
 	operation := vpcOperation{
 		ec2:    mockEC2Client,

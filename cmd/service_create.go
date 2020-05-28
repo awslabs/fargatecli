@@ -20,21 +20,22 @@ import (
 const typeService = "service"
 
 type ServiceCreateOperation struct {
-	Cpu              string
-	EnvVars          []ECS.EnvVar
-	Image            string
-	LoadBalancerArn  string
-	LoadBalancerName string
-	Memory           string
-	Num              int64
-	Port             Port
-	Rules            []ELBV2.Rule
-	SecurityGroupIds []string
-	ServiceName      string
-	SubnetIds        []string
-	TaskRole         string
-	TaskCommand      []string
-  AssignPublicIPEnabled bool
+	Cpu                   string
+	EnvVars               []ECS.EnvVar
+	Image                 string
+	LoadBalancerArn       string
+	LoadBalancerName      string
+	Memory                string
+	Num                   int64
+	Port                  Port
+	Rules                 []ELBV2.Rule
+	SecurityGroupIds      []string
+	ServiceName           string
+	SubnetIds             []string
+	TaskRole              string
+	TaskCommand           []string
+	AssignPublicIPEnabled bool
+	output                Output
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -149,7 +150,7 @@ var (
 	flagServiceCreateSecurityGroupIds []string
 	flagServiceCreateSubnetIds        []string
 	flagServiceCreateTaskRole         string
-  flagServiceCreateTaskCommand      []string
+	flagServiceCreateTaskCommand      []string
 	flagServiceAssignPublicIP         bool
 )
 
@@ -241,8 +242,9 @@ Services can be configured to have only private ip address via the
 			ServiceName:           args[0],
 			SubnetIds:             flagServiceCreateSubnetIds,
 			TaskRole:              flagServiceCreateTaskRole,
-      TaskCommand:      flagServiceCreateTaskCommand,
+			TaskCommand:           flagServiceCreateTaskCommand,
 			AssignPublicIPEnabled: flagServiceAssignPublicIP,
+			output:                output,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -262,7 +264,12 @@ Services can be configured to have only private ip address via the
 		}
 
 		operation.Validate()
-		createService(operation)
+		errs := createService(operation)
+
+		if len(errs) > 0 {
+			output.Fatals(errs, "Errors found while executing [COMMAND=service Action=create]")
+			return
+		}
 	},
 }
 
@@ -279,11 +286,11 @@ func init() {
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the service (can be specified multiple times)")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the service's tasks can assume")
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateTaskCommand, "task-command", []string{}, "Command to run inside container instead of the one specified in the docker image")
-  serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
+	serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
 
-func createService(operation *ServiceCreateOperation) {
+func createService(operation *ServiceCreateOperation) (errors []error) {
 	var targetGroupArn string
 
 	cwl := CWL.New(sess)
@@ -296,12 +303,20 @@ func createService(operation *ServiceCreateOperation) {
 	logGroupName := cwl.CreateLogGroup(serviceLogGroupFormat, operation.ServiceName)
 
 	if len(operation.SecurityGroupIds) == 0 {
-		defaultSecurityGroupID, _ := ec2.GetDefaultSecurityGroupID()
+		operation.output.Debug("Find the default security group, and creates it if it does not exist [COMMAND=task Action=run]")
+		defaultSecurityGroupID, err := ec2.SetDefaultSecurityGroupID()
+		if err != nil {
+			errors = append(errors, err)
+		}
 		operation.SecurityGroupIds = []string{defaultSecurityGroupID}
 	}
 
 	if len(operation.SubnetIds) == 0 {
-		operation.SubnetIds, _ = ec2.GetDefaultSubnetIDs()
+		var err error
+		operation.SubnetIds, err = ec2.GetDefaultSubnetIDs()
+		if err != nil {
+			errors = append(errors, err)
+		}
 	}
 
 	if operation.Image == "" {
@@ -381,4 +396,6 @@ func createService(operation *ServiceCreateOperation) {
 	)
 
 	console.Info("Created service %s", operation.ServiceName)
+
+	return
 }
