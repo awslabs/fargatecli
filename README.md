@@ -3,6 +3,11 @@
 [![CircleCI](https://circleci.com/gh/jpignata/fargate/tree/master.svg?style=svg)](https://circleci.com/gh/jpignata/fargate/tree/master)
 [![GoDoc](https://godoc.org/github.com/awslabs/fargatecli?status.svg)](https://godoc.org/github.com/awslabs/fargatecli)
 
+# NOTICE
+
+:exclamation: :exclamation: :exclamation: Please note that this project is no longer actively maintained. A better option for new Fargate deployments on AWS is [the AWS Copilot CLI](https://github.com/aws/copilot-cli), which is both more featureful, and actively maintained by AWS. :exclamation: :exclamation: :exclamation:
+
+
 ## Screencast
 
 [![fargate CLI screencast](http://img.youtube.com/vi/P6iY6ovhbfc/0.jpg)](http://www.youtube.com/watch?v=P6iY6ovhbfc)
