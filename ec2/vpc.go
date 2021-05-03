@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	awsec2 "github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/awslabs/fargatecli/console"
 )
 
 const (
@@ -14,6 +15,32 @@ const (
 	defaultSecurityGroupIngressCIDR     = "0.0.0.0/0"
 	defaultSecurityGroupIngressProtocol = "-1"
 )
+
+// SetDefaultSecurityGroupID tries to find the default security group, and creates it if it does not exist.
+func (ec2 SDKClient) SetDefaultSecurityGroupID() (string, error) {
+	var defaultSecurityGroupID string
+	defaultSecurityGroupID, err := ec2.GetDefaultSecurityGroupID()
+
+	if err != nil {
+		return defaultSecurityGroupID, err
+	}
+
+	if defaultSecurityGroupID == "" {
+		defaultSecurityGroupID, err = ec2.CreateDefaultSecurityGroup()
+
+		if err != nil {
+			return defaultSecurityGroupID, err
+		}
+
+		console.Debug("Created default security group [ID=%s]", defaultSecurityGroupID)
+
+		if err := ec2.AuthorizeAllSecurityGroupIngress(defaultSecurityGroupID); err != nil {
+			return defaultSecurityGroupID, err
+		}
+	}
+
+	return defaultSecurityGroupID, nil
+}
 
 // GetDefaultSubnetIDs finds and returns the subnet IDs marked as default.
 func (ec2 SDKClient) GetDefaultSubnetIDs() ([]string, error) {
@@ -24,6 +51,7 @@ func (ec2 SDKClient) GetDefaultSubnetIDs() ([]string, error) {
 		Values: aws.StringSlice([]string{"true"}),
 	}
 
+	console.Debug("Retrieving subnet information [API=ec2 Action=DescribeSubnets]")
 	resp, err := ec2.client.DescribeSubnets(
 		&awsec2.DescribeSubnetsInput{
 			Filters: []*awsec2.Filter{defaultFilter},
@@ -43,6 +71,7 @@ func (ec2 SDKClient) GetDefaultSubnetIDs() ([]string, error) {
 
 // GetDefaultSecurityGroupID returns the ID of the permissive security group created by default.
 func (ec2 SDKClient) GetDefaultSecurityGroupID() (string, error) {
+	console.Debug("Retrieving security group information [API=ec2 Action=DescribeSecurityGroups]")
 	resp, err := ec2.client.DescribeSecurityGroups(
 		&awsec2.DescribeSecurityGroupsInput{
 			GroupNames: aws.StringSlice([]string{defaultSecurityGroupName}),
@@ -64,6 +93,7 @@ func (ec2 SDKClient) GetDefaultSecurityGroupID() (string, error) {
 
 // GetSubnetVPCID returns the VPC ID for a given subnet ID.
 func (ec2 SDKClient) GetSubnetVPCID(subnetID string) (string, error) {
+	console.Debug("Retrieving subnet information [API=ec2 Action=DescribeSubnets]")
 	resp, err := ec2.client.DescribeSubnets(
 		&awsec2.DescribeSubnetsInput{
 			SubnetIds: aws.StringSlice([]string{subnetID}),
@@ -82,6 +112,7 @@ func (ec2 SDKClient) GetSubnetVPCID(subnetID string) (string, error) {
 
 // CreateDefaultSecurityGroup creates a new security group for use as the default.
 func (ec2 SDKClient) CreateDefaultSecurityGroup() (string, error) {
+	console.Debug("Creating security group [API=ec2 Action=CreateSecurityGroup]")
 	resp, err := ec2.client.CreateSecurityGroup(
 		&awsec2.CreateSecurityGroupInput{
 			GroupName:   aws.String(defaultSecurityGroupName),
@@ -98,6 +129,7 @@ func (ec2 SDKClient) CreateDefaultSecurityGroup() (string, error) {
 
 // AuthorizeAllSecurityGroupIngress configures a security group to allow all ingress traffic.
 func (ec2 SDKClient) AuthorizeAllSecurityGroupIngress(groupID string) error {
+	console.Debug("Configuring default security group [API=ec2 Action=AuthorizeSecurityGroupIngress]")
 	_, err := ec2.client.AuthorizeSecurityGroupIngress(
 		&awsec2.AuthorizeSecurityGroupIngressInput{
 			CidrIp:     aws.String(defaultSecurityGroupIngressCIDR),

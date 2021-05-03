@@ -31,27 +31,11 @@ func (o *vpcOperation) setSecurityGroupIDs(securityGroupIDs []string) {
 }
 
 func (o *vpcOperation) setDefaultSecurityGroupID() error {
-	o.output.Debug("Finding default security group [API=ec2 Action=DescribeSecurityGroups]")
-	defaultSecurityGroupID, err := o.ec2.GetDefaultSecurityGroupID()
 
+	// setting of default security group id is delegated to the ec2 module
+	defaultSecurityGroupID, err := o.ec2.SetDefaultSecurityGroupID()
 	if err != nil {
 		return err
-	}
-
-	if defaultSecurityGroupID == "" {
-		o.output.Debug("Creating default security group [API=ec2 Action=CreateSecurityGroup]")
-		defaultSecurityGroupID, err = o.ec2.CreateDefaultSecurityGroup()
-
-		if err != nil {
-			return err
-		}
-
-		o.output.Debug("Created default security group [ID=%s]", defaultSecurityGroupID)
-
-		o.output.Debug("Configuring default security group [API=ec2 Action=AuthorizeSecurityGroupIngress]")
-		if err := o.ec2.AuthorizeAllSecurityGroupIngress(defaultSecurityGroupID); err != nil {
-			return err
-		}
 	}
 
 	o.securityGroupIDs = []string{defaultSecurityGroupID}

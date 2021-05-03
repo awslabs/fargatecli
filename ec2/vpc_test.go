@@ -7,8 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	awsec2 "github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/golang/mock/gomock"
 	"github.com/awslabs/fargatecli/ec2/mock/sdk"
+	"github.com/golang/mock/gomock"
 )
 
 func TestGetDefaultSubnetIDs(t *testing.T) {
@@ -135,6 +135,186 @@ func TestGetDefaultSecurityGroupIDGroupNotFound(t *testing.T) {
 
 	if out != "" {
 		t.Errorf("expected no result, got %v", out)
+	}
+}
+
+func TestSetDefaultSecurityGroupID(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	securityGroupID := "sg-abcdef"
+	securityGroup := &awsec2.SecurityGroup{
+		GroupId: aws.String(securityGroupID),
+	}
+	input := &awsec2.DescribeSecurityGroupsInput{
+		GroupNames: aws.StringSlice([]string{"fargate-default"}),
+	}
+	output := &awsec2.DescribeSecurityGroupsOutput{
+		SecurityGroups: []*awsec2.SecurityGroup{securityGroup},
+	}
+
+	mockEC2Client := sdk.NewMockEC2API(mockCtrl)
+	ec2 := SDKClient{client: mockEC2Client}
+
+	mockEC2Client.EXPECT().DescribeSecurityGroups(input).Return(output, nil)
+
+	out, err := ec2.SetDefaultSecurityGroupID()
+
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
+	if out != securityGroupID {
+		t.Errorf("expected %s, got %s", securityGroupID, out)
+	}
+
+}
+
+func TestSetDefaultSecurityGroupIDWithErrorFromDescribeSecurityGroups(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	securityGroupID := "sg-abcdef"
+	securityGroup := &awsec2.SecurityGroup{
+		GroupId: aws.String(securityGroupID),
+	}
+	input := &awsec2.DescribeSecurityGroupsInput{
+		GroupNames: aws.StringSlice([]string{"fargate-default"}),
+	}
+	output := &awsec2.DescribeSecurityGroupsOutput{
+		SecurityGroups: []*awsec2.SecurityGroup{securityGroup},
+	}
+
+	mockEC2Client := sdk.NewMockEC2API(mockCtrl)
+	ec2 := SDKClient{client: mockEC2Client}
+
+	mockEC2Client.EXPECT().DescribeSecurityGroups(input).Return(output, errors.New("boom"))
+
+	out, err := ec2.SetDefaultSecurityGroupID()
+
+	if out != "" {
+		t.Errorf("expected no result, got %v", out)
+	}
+
+	if err == nil {
+		t.Errorf("expected error, got none")
+	}
+
+}
+
+func TestSetDefaultSecurityGroupIDWithSGCreate(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockEC2Client := sdk.NewMockEC2API(mockCtrl)
+	ec2 := SDKClient{client: mockEC2Client}
+
+	securityGroupID := "sg-abcdef"
+	inputDescribeSecurityGroups := &awsec2.DescribeSecurityGroupsInput{
+		GroupNames: aws.StringSlice([]string{"fargate-default"}),
+	}
+	errorDescribeSecurityGroups := awserr.New("InvalidGroup.NotFound", "Group not found", errors.New("boom"))
+	mockEC2Client.EXPECT().DescribeSecurityGroups(inputDescribeSecurityGroups).Return(&awsec2.DescribeSecurityGroupsOutput{}, errorDescribeSecurityGroups)
+
+	inputCreateSecurityGroup := &awsec2.CreateSecurityGroupInput{
+		GroupName:   aws.String("fargate-default"),
+		Description: aws.String("Default Fargate CLI SG"),
+	}
+	outputCreateSecurityGroup := &awsec2.CreateSecurityGroupOutput{
+		GroupId: aws.String(securityGroupID),
+	}
+	mockEC2Client.EXPECT().CreateSecurityGroup(inputCreateSecurityGroup).Return(outputCreateSecurityGroup, nil)
+
+	inputAuthorizeSecurityGroupIngress := &awsec2.AuthorizeSecurityGroupIngressInput{
+		CidrIp:     aws.String("0.0.0.0/0"),
+		GroupId:    aws.String(securityGroupID),
+		IpProtocol: aws.String("-1"),
+	}
+	mockEC2Client.EXPECT().AuthorizeSecurityGroupIngress(inputAuthorizeSecurityGroupIngress).Return(&awsec2.AuthorizeSecurityGroupIngressOutput{}, nil)
+
+	out, err := ec2.SetDefaultSecurityGroupID()
+
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
+	if out != securityGroupID {
+		t.Errorf("expected %s, got %s", securityGroupID, out)
+	}
+}
+
+func TestSetDefaultSecurityGroupIDWithSGCreateErrorFromCreateSecurityGroup(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockEC2Client := sdk.NewMockEC2API(mockCtrl)
+	ec2 := SDKClient{client: mockEC2Client}
+
+	securityGroupID := "sg-abcdef"
+	inputDescribeSecurityGroups := &awsec2.DescribeSecurityGroupsInput{
+		GroupNames: aws.StringSlice([]string{"fargate-default"}),
+	}
+	errorDescribeSecurityGroups := awserr.New("InvalidGroup.NotFound", "Group not found", errors.New("boom"))
+	mockEC2Client.EXPECT().DescribeSecurityGroups(inputDescribeSecurityGroups).Return(&awsec2.DescribeSecurityGroupsOutput{}, errorDescribeSecurityGroups)
+
+	inputCreateSecurityGroup := &awsec2.CreateSecurityGroupInput{
+		GroupName:   aws.String("fargate-default"),
+		Description: aws.String("Default Fargate CLI SG"),
+	}
+	outputCreateSecurityGroup := &awsec2.CreateSecurityGroupOutput{
+		GroupId: aws.String(securityGroupID),
+	}
+	mockEC2Client.EXPECT().CreateSecurityGroup(inputCreateSecurityGroup).Return(outputCreateSecurityGroup, errors.New("boom"))
+
+	out, err := ec2.SetDefaultSecurityGroupID()
+
+	if out != "" {
+		t.Errorf("expected no result, got %v", out)
+	}
+
+	if err == nil {
+		t.Errorf("expected error, got none")
+	}
+}
+
+func TestSetDefaultSecurityGroupIDWithSGCreateErrorFromAuthorizeSecurityGroupIngress(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockEC2Client := sdk.NewMockEC2API(mockCtrl)
+	ec2 := SDKClient{client: mockEC2Client}
+
+	securityGroupID := "sg-abcdef"
+	inputDescribeSecurityGroups := &awsec2.DescribeSecurityGroupsInput{
+		GroupNames: aws.StringSlice([]string{"fargate-default"}),
+	}
+	errorDescribeSecurityGroups := awserr.New("InvalidGroup.NotFound", "Group not found", errors.New("boom"))
+	mockEC2Client.EXPECT().DescribeSecurityGroups(inputDescribeSecurityGroups).Return(&awsec2.DescribeSecurityGroupsOutput{}, errorDescribeSecurityGroups)
+
+	inputCreateSecurityGroup := &awsec2.CreateSecurityGroupInput{
+		GroupName:   aws.String("fargate-default"),
+		Description: aws.String("Default Fargate CLI SG"),
+	}
+	outputCreateSecurityGroup := &awsec2.CreateSecurityGroupOutput{
+		GroupId: aws.String(securityGroupID),
+	}
+	mockEC2Client.EXPECT().CreateSecurityGroup(inputCreateSecurityGroup).Return(outputCreateSecurityGroup, nil)
+
+	inputAuthorizeSecurityGroupIngress := &awsec2.AuthorizeSecurityGroupIngressInput{
+		CidrIp:     aws.String("0.0.0.0/0"),
+		GroupId:    aws.String(securityGroupID),
+		IpProtocol: aws.String("-1"),
+	}
+	mockEC2Client.EXPECT().AuthorizeSecurityGroupIngress(inputAuthorizeSecurityGroupIngress).Return(&awsec2.AuthorizeSecurityGroupIngressOutput{}, errors.New("boom"))
+
+	out, err := ec2.SetDefaultSecurityGroupID()
+
+	if out != securityGroupID {
+		t.Errorf("expected %s, got %s", securityGroupID, out)
+	}
+
+	if err == nil {
+		t.Errorf("expected error, got none")
 	}
 }
 
