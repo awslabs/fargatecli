@@ -11,6 +11,7 @@ jobs:
       - run: git config --global user.name CircleCI
 
       - run: go get -u github.com/golang/dep/cmd/dep
+      - run: dep init
       - run: dep ensure
 
       - run: make test
