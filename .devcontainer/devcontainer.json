@@ -1,0 +1,33 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.117.1/containers/go
+{
+	"name": "Go",
+	"dockerFile": "Dockerfile",
+	"runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined", "-v", "${env:HOME}${env:USERPROFILE}/.aws:/root/.aws", "-v", "${env:HOME}${env:USERPROFILE}/.aws:/home/vscode/.aws" ],
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"go.gopath": "/go",
+	},
+
+	"containerEnv": {
+		"AWS_SDK_LOAD_CONFIG": "1", // enable SharedConfigEnable for fargate cli (https://docs.aws.amazon.com/sdk-for-go/api/aws/session/#hdr-Sessions_options_from_Shared_Config)
+	},
+	
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-vscode.go",
+		"eamodio.gitlens",
+		"donjayamanne.githistory",
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "go mod download",
+
+	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
+	// "remoteUser": "vscode"
+}

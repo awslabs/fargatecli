@@ -63,6 +63,25 @@ email and Google Hangouts at john@pignata.com.
 - For cross-building for all supported platforms, run `make dist` which builds
   binaries for darwin (64-bit) and linux (Arm, 32-bit, 64-bit).
 
+## Developing using Docker
+
+### Minimum requirement
+
+1. Visual Studio Code
+2. Remote - Containers extension for Visual Studio Code
+3. Docker
+
+Clone the current repository.  Open the folder with VSCode Remote - Containers extension.
+
+Note: The remote container has *AWS_SDK_LOAD_CONFIG* environment variable set to use AWS CLI configuration.
+
+Open a terminal in VS Code to execute the cli.
+
+```console
+go run main.go --version
+```
+
+
 ## Licensing
 
 This project is released under the [Apache 2.0 license][apache].

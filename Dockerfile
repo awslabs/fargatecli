@@ -9,10 +9,11 @@ RUN go mod download
 
 ADD . /fargate
 RUN go build -ldflags="-s -w"
-RUN upx --brute fargate
+RUN upx --brute -o fargate fargatecli
 
 FROM alpine
 
 RUN apk add --no-cache ca-certificates
 
-COPY --from=0 /fargate/fargate /usr/local/bin/
+COPY --from=0 /fargate/fargate /usr/local/bin/fargate
+ENTRYPOINT [ "/usr/local/bin/fargate" ]

@@ -12,6 +12,29 @@
 
 [![fargate CLI screencast](http://img.youtube.com/vi/P6iY6ovhbfc/0.jpg)](http://www.youtube.com/watch?v=P6iY6ovhbfc)
 
+## Installation
+
+### Latest release builds
+
+Download and unzip specific platform releases from [Releases](https://github.com/awslabs/fargatecli/releases).
+
+### Latest changes (unstable)
+
+With Docker installed, run the following:
+
+### Windows
+
+```console
+docker build -t local/fargatecli https://github.com/awslabs/fargatecli.git
+docker run --rm -it -e "AWS_SDK_LOAD_CONFIG=1" -v %USERPROFILE%/.aws:/root/.aws -v %cd%:/aws -w /aws local/fargatecli --version
+```
+
+### Linux / MacOS
+```console
+docker build -t local/fargatecli https://github.com/awslabs/fargatecli.git
+docker run --rm -it -e "AWS_SDK_LOAD_CONFIG=1" -v $HOME/.aws:/root/.aws -v $PWD:/aws -w /aws local/fargatecli --version
+```
+
 ## Usage
 
 ### Configuration
@@ -19,8 +42,17 @@
 #### Region
 
 By default, fargate uses *us-east-1*. The CLI accepts a --region parameter and
-will honor *AWS_REGION* and *AWS_DEFAULT_REGION* environment settings. Note that
-specifying a region where all required services aren't available will return an
+will honor *AWS_REGION* and *AWS_DEFAULT_REGION* environment settings.
+
+The CLI also makes use of the AWS CLI SDK and supports the [Shared Config](https://docs.aws.amazon.com/sdk-for-go/api/aws/session/#hdr-Sessions_options_from_Shared_Config) of the [AWS CLI](https://aws.amazon.com/cli/).  If the *AWS_SDK_LOAD_CONFIG* environment variable is set to a truthy value the Session will be created from the configuration values from the shared config (`~/.aws/config`) and shared credentials (`~/.aws/credentials`) files.
+
+```console
+> aws configure #set credentials and region here
+...
+> set AWS_SDK_LOAD_CONFIG=1
+```
+
+Note that specifying a region where all required services aren't available will return an
 error.
 
 See the [Region Table][region-table] for a breakdown of what services are
