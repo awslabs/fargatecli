@@ -1,7 +1,7 @@
 module github.com/awslabs/fargatecli
 
 require (
-	github.com/aws/aws-sdk-go v1.30.7
+	github.com/aws/aws-sdk-go v1.40.16
 	github.com/go-ini/ini v1.32.0 // indirect
 	github.com/golang/mock v1.4.3
 	github.com/hashicorp/golang-lru v0.0.0-20180201235237-0fb14efe8c47
