@@ -123,9 +123,15 @@ func (ecs *ECS) DescribeTaskDefinition(taskDefinitionArn string) *awsecs.TaskDef
 	return taskDefinitionCache[taskDefinitionArn]
 }
 
-func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, image string) string {
+func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, container string, image string) string {
 	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
 	taskDefinition.ContainerDefinitions[0].Image = aws.String(image)
+
+	for _, containerDefinition := range taskDefinition.ContainerDefinitions {
+		if containerDefinition.Name == aws.String(container) {
+			containerDefinition.Image = aws.String(image)
+		}
+	}
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
 		&awsecs.RegisterTaskDefinitionInput{
