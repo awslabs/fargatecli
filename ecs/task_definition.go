@@ -127,7 +127,7 @@ func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, container string, i
 	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
 
 	for _, containerDefinition := range taskDefinition.ContainerDefinitions {
-		if containerDefinition.Name == aws.String(container) {
+		if aws.StringValue(containerDefinition.Name) == container {
 			containerDefinition.Image = aws.String(image)
 		}
 	}
