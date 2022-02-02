@@ -12,9 +12,11 @@ import (
 type ServiceDeployOperation struct {
 	ServiceName string
 	Image       string
+	TaskRoleArn string
 }
 
 var flagServiceDeployImage string
+var flagServiceDeployTaskRoleArn string
 
 var serviceDeployCmd = &cobra.Command{
 	Use:   "deploy <service-name>",
@@ -32,6 +34,7 @@ HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.`,
 		operation := &ServiceDeployOperation{
 			ServiceName: args[0],
 			Image:       flagServiceDeployImage,
+			TaskRoleArn: flagServiceDeployTaskRoleArn,
 		}
 
 		deployService(operation)
@@ -40,6 +43,7 @@ HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.`,
 
 func init() {
 	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployImage, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
+	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployTaskRoleArn, "role", "r", "", "Task Role ARN for the service; if omitted existing value will be used")
 
 	serviceCmd.AddCommand(serviceDeployCmd)
 }
@@ -69,7 +73,14 @@ func deployService(operation *ServiceDeployOperation) {
 		operation.Image = repository.UriFor(tag)
 	}
 
-	taskDefinitionArn := ecs.UpdateTaskDefinitionImage(service.TaskDefinitionArn, operation.Image)
+	var taskDefinitionArn string
+	if operation.TaskRoleArn != "" && operation.Image != "" {
+		taskDefinitionArn = ecs.UpdateTaskDefinitionImageAndTaskRoleArn(
+			service.TaskDefinitionArn, operation.Image, operation.TaskRoleArn)
+	} else {
+		taskDefinitionArn = ecs.UpdateTaskDefinitionImage(service.TaskDefinitionArn, operation.Image)
+	}
+
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
 	console.Info("Deployed %s to service %s", operation.Image, operation.ServiceName)
 }
