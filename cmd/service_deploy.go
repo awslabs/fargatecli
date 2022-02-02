@@ -58,6 +58,7 @@ func deployService(operation *ServiceDeployOperation) {
 	service := ecs.DescribeService(operation.ServiceName)
 
 	taskDefinition := ecs.DescribeTaskDefinition(service.TaskDefinitionArn)
+
 	containerNameList := "["
 	validContainerName := false
 	for _, containerDefinition := range taskDefinition.ContainerDefinitions {
@@ -65,13 +66,14 @@ func deployService(operation *ServiceDeployOperation) {
 			validContainerName = true
 		}
 		containerNameList += aws.StringValue(containerDefinition.Name) + ", "
-		containerNameList = containerNameList[:len(containerNameList)-2]
-		containerNameList += "]"
 	}
+	containerNameList = containerNameList[:len(containerNameList)-2]
+	containerNameList += "]"
+
 	if operation.Container == "" {
-		console.IssueExit("Container name must be specified (--container or -c). Available container names: " + containerNameList)
+		console.InfoExit("Container name must be specified (--container or -c). Available container names: " + containerNameList)
 	} else if !validContainerName {
-		console.IssueExit("Invalid container name must be specified. Available container names: " + containerNameList)
+		console.InfoExit("Invalid container name must be specified. Available container names: " + containerNameList)
 	}
 
 	if operation.Image == "" {

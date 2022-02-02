@@ -125,12 +125,16 @@ func (ecs *ECS) DescribeTaskDefinition(taskDefinitionArn string) *awsecs.TaskDef
 
 func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, container string, image string) string {
 	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
-	taskDefinition.ContainerDefinitions[0].Image = aws.String(image)
 
 	for _, containerDefinition := range taskDefinition.ContainerDefinitions {
 		if containerDefinition.Name == aws.String(container) {
 			containerDefinition.Image = aws.String(image)
 		}
+	}
+
+	console.Info("New container definitions:")
+	for _, containerDefinition := range taskDefinition.ContainerDefinitions {
+		console.Info(containerDefinition.String())
 	}
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
