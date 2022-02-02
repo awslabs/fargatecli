@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const taskLogGroupFormat = "/fargate/task/%s"
+const taskLogGroupFormat = "/ecs/%s"
 
 var taskCmd = &cobra.Command{
 	Use:   "task",
