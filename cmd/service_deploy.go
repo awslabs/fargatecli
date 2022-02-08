@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/awslabs/fargatecli/console"
 	"github.com/awslabs/fargatecli/docker"
 	ECR "github.com/awslabs/fargatecli/ecr"
@@ -11,11 +12,13 @@ import (
 
 type ServiceDeployOperation struct {
 	ServiceName string
+	Container   string
 	Image       string
 	TaskRoleArn string
 }
 
 var flagServiceDeployImage string
+var flagServiceDeployContainer string
 var flagServiceDeployTaskRoleArn string
 
 var serviceDeployCmd = &cobra.Command{
@@ -33,6 +36,7 @@ HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceDeployOperation{
 			ServiceName: args[0],
+			Container:   flagServiceDeployContainer,
 			Image:       flagServiceDeployImage,
 			TaskRoleArn: flagServiceDeployTaskRoleArn,
 		}
@@ -42,6 +46,7 @@ HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.`,
 }
 
 func init() {
+	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployContainer, "container", "c", "", "Container to update the task; if omitted deployment will fail")
 	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployImage, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
 	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployTaskRoleArn, "role", "r", "", "Task Role ARN for the service; if omitted existing value will be used")
 
@@ -51,6 +56,25 @@ func init() {
 func deployService(operation *ServiceDeployOperation) {
 	ecs := ECS.New(sess, clusterName)
 	service := ecs.DescribeService(operation.ServiceName)
+
+	taskDefinition := ecs.DescribeTaskDefinition(service.TaskDefinitionArn)
+
+	containerNameList := "["
+	validContainerName := false
+	for _, containerDefinition := range taskDefinition.ContainerDefinitions {
+		if aws.StringValue(containerDefinition.Name) == operation.Container {
+			validContainerName = true
+		}
+		containerNameList += aws.StringValue(containerDefinition.Name) + ", "
+	}
+	containerNameList = containerNameList[:len(containerNameList)-2]
+	containerNameList += "]"
+
+	if operation.Container == "" {
+		console.InfoExit("Container name must be specified (--container or -c). Available container names: " + containerNameList)
+	} else if !validContainerName {
+		console.InfoExit("Invalid container name must be specified. Available container names: " + containerNameList)
+	}
 
 	if operation.Image == "" {
 		var tag string
@@ -78,7 +102,7 @@ func deployService(operation *ServiceDeployOperation) {
 		taskDefinitionArn = ecs.UpdateTaskDefinitionImageAndTaskRoleArn(
 			service.TaskDefinitionArn, operation.Image, operation.TaskRoleArn)
 	} else {
-		taskDefinitionArn = ecs.UpdateTaskDefinitionImage(service.TaskDefinitionArn, operation.Image)
+		taskDefinitionArn = ecs.UpdateTaskDefinitionImage(service.TaskDefinitionArn, operation.Container, operation.Image)
 	}
 
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
