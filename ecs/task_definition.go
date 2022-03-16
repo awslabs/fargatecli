@@ -123,12 +123,24 @@ func (ecs *ECS) DescribeTaskDefinition(taskDefinitionArn string) *awsecs.TaskDef
 	return taskDefinitionCache[taskDefinitionArn]
 }
 
-func (ecs *ECS) UpdateTaskDefinitionImage(taskDefinitionArn, container string, image string) string {
+func (ecs *ECS) UpdateTaskDefinitionImageAndEnvVars(taskDefinitionArn, container string, image string, envVars []EnvVar) string {
 	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
 
 	for _, containerDefinition := range taskDefinition.ContainerDefinitions {
 		if aws.StringValue(containerDefinition.Name) == container {
 			containerDefinition.Image = aws.String(image)
+
+			for _, envVar := range envVars {
+				keyValuePair := &awsecs.KeyValuePair{
+					Name:  aws.String(envVar.Key),
+					Value: aws.String(envVar.Value),
+				}
+
+				containerDefinition.Environment = append(
+					containerDefinition.Environment,
+					keyValuePair,
+				)
+			}
 		}
 	}
 

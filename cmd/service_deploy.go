@@ -15,11 +15,17 @@ type ServiceDeployOperation struct {
 	Container   string
 	Image       string
 	TaskRoleArn string
+	EnvVars     []ECS.EnvVar
 }
 
 var flagServiceDeployImage string
 var flagServiceDeployContainer string
 var flagServiceDeployTaskRoleArn string
+var flagServiceDeployEnvVars []string
+
+func (o *ServiceDeployOperation) SetEnvVars(inputEnvVars []string) {
+	o.EnvVars = extractEnvVars(inputEnvVars)
+}
 
 var serviceDeployCmd = &cobra.Command{
 	Use:   "deploy <service-name>",
@@ -41,6 +47,7 @@ HEAD commit. If not, a timestamp in the format of YYYYMMDDHHMMSS will be used.`,
 			TaskRoleArn: flagServiceDeployTaskRoleArn,
 		}
 
+		operation.SetEnvVars(flagServiceEnvSetEnvVars)
 		deployService(operation)
 	},
 }
@@ -49,6 +56,7 @@ func init() {
 	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployContainer, "container", "c", "", "Container to update the task; if omitted deployment will fail")
 	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployImage, "image", "i", "", "Docker image to run in the service; if omitted Fargate will build an image from the Dockerfile in the current directory")
 	serviceDeployCmd.Flags().StringVarP(&flagServiceDeployTaskRoleArn, "role", "r", "", "Task Role ARN for the service; if omitted existing value will be used")
+	serviceDeployCmd.Flags().StringArrayVarP(&flagServiceEnvSetEnvVars, "env", "e", []string{}, "Environment variables to set [e.g. --env <key=value> [--env <key=value>] ...]")
 
 	serviceCmd.AddCommand(serviceDeployCmd)
 }
@@ -102,7 +110,7 @@ func deployService(operation *ServiceDeployOperation) {
 		taskDefinitionArn = ecs.UpdateTaskDefinitionImageAndTaskRoleArn(
 			service.TaskDefinitionArn, operation.Image, operation.TaskRoleArn)
 	} else {
-		taskDefinitionArn = ecs.UpdateTaskDefinitionImage(service.TaskDefinitionArn, operation.Container, operation.Image)
+		taskDefinitionArn = ecs.UpdateTaskDefinitionImageAndEnvVars(service.TaskDefinitionArn, operation.Container, operation.Image, operation.EnvVars)
 	}
 
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, taskDefinitionArn)
