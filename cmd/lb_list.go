@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"sync"
 
@@ -44,7 +43,7 @@ func (o lbListOperation) execute() {
 				Titleize(loadBalancer.Type),
 				Titleize(loadBalancer.Status),
 				loadBalancer.DNSName,
-				fmt.Sprintf("%s", loadBalancer.Listeners),
+				loadBalancer.Listeners.String(),
 			},
 		)
 	}
