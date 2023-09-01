@@ -171,9 +171,7 @@ func (ecs *ECS) listTasks(input *awsecs.ListTasksInput) []Task {
 
 	if len(taskArnBatches) > 0 {
 		for _, taskArnBatch := range taskArnBatches {
-			for _, task := range ecs.DescribeTasks(taskArnBatch) {
-				tasks = append(tasks, task)
-			}
+			tasks = append(tasks, ecs.DescribeTasks(taskArnBatch)...)
 		}
 	}
 
