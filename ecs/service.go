@@ -178,9 +178,7 @@ func (ecs *ECS) ListServices() []Service {
 
 	if len(serviceArnBatches) > 0 {
 		for _, serviceArnBatch := range serviceArnBatches {
-			for _, service := range ecs.DescribeServices(serviceArnBatch) {
-				services = append(services, service)
-			}
+			services = append(services, ecs.DescribeServices(serviceArnBatch)...)
 		}
 	}
 
